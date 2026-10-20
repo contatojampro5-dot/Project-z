@@ -166,3 +166,9 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Tiro forte: braços e pernas voam; a cabeça só sai em explosão (o corpo inteiro se desfaz e não fica cadáver inteiro).
 - Membro perdido com o zumbi vivo apenas se solta e cai perto dele.
 - Folha: `assets/images/game/infectados/comum-pecas.webp` (34 KB).
+
+## Atlas A5.1c · Zumbis mutilados
+- Perdeu um braço: troca para a folha sem aquele braço (andar, atacar, levar tiro, morrer), com o coto sangrando no ombro. Se perder os dois, usa a folha sem o direito.
+- Perdeu as duas pernas: rasteja sem as pernas, com os cotos nos joelhos.
+- O cadáver também cai sem o braço perdido.
+- 7 folhas novas (~1,35 MB). O jogo passou de 8,2 para 10 MB; a redução de peso fica para a etapa 5.

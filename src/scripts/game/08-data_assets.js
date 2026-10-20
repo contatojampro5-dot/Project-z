@@ -20,6 +20,14 @@ ASSETS.zombieAtlas = '@@ASSET:assets/images/game/zombieAtlas.095fe4e2.png@@';
 ASSETS.infComumOperario = '@@ASSET:assets/images/game/infectados/comum-operario.webp@@';
 ASSETS.infComumExecutivo = '@@ASSET:assets/images/game/infectados/comum-executivo.webp@@';
 ASSETS.infComumPaciente = '@@ASSET:assets/images/game/infectados/comum-paciente.webp@@';
+// mutilações: sem o braço esquerdo/direito (andar, atacar, levar tiro, morrer) e rastejando sem as pernas
+ASSETS.infComumOperarioSemL = '@@ASSET:assets/images/game/infectados/comum-operario-semL.webp@@';
+ASSETS.infComumOperarioSemR = '@@ASSET:assets/images/game/infectados/comum-operario-semR.webp@@';
+ASSETS.infComumExecutivoSemL = '@@ASSET:assets/images/game/infectados/comum-executivo-semL.webp@@';
+ASSETS.infComumExecutivoSemR = '@@ASSET:assets/images/game/infectados/comum-executivo-semR.webp@@';
+ASSETS.infComumPacienteSemL = '@@ASSET:assets/images/game/infectados/comum-paciente-semL.webp@@';
+ASSETS.infComumPacienteSemR = '@@ASSET:assets/images/game/infectados/comum-paciente-semR.webp@@';
+ASSETS.infComumSemPernas = '@@ASSET:assets/images/game/infectados/comum-sem-pernas.webp@@';
 ASSETS.infComumPecas = '@@ASSET:assets/images/game/infectados/comum-pecas.webp@@'; // cabeça, braço e perna girando em 12 quadros
 ASSETS.runner = '@@ASSET:assets/images/game/runner.49c6e247.png@@';
 ASSETS.runnerAtlas = '@@ASSET:assets/images/game/runnerAtlas.6421e857.png@@';

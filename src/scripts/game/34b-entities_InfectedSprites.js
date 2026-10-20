@@ -8,6 +8,10 @@ const PZ_SPRITES=Object.freeze({
     variants:['infComumOperario','infComumExecutivo','infComumPaciente'],
     anims:{idle:{row:0,frames:6},walk:{row:6,frames:8},attack:{row:14,frames:7},hit:{row:21,frames:4},death:{row:25,frames:9,fps:10},crawl:{row:34,frames:8}},
     corpseLife:9,
+    // folhas de mutilação: mesmo recorte, só andar/atacar/levar tiro/morrer
+    armless:{L:['infComumOperarioSemL','infComumExecutivoSemL','infComumPacienteSemL'],R:['infComumOperarioSemR','infComumExecutivoSemR','infComumPacienteSemR'],
+      anims:{walk:{row:0,frames:8},attack:{row:8,frames:7},hit:{row:15,frames:4},death:{row:19,frames:9,fps:10}}},
+    legless:{key:'infComumSemPernas',rowsPer:8},
   },
 });
 const PZ_CORPSES={list:[],skip:0,max:40};
@@ -20,8 +24,15 @@ function pzSpriteSheet(enemy,assets){
   const img=assets.get(spec.variants[enemy._sv]);
   return img&&img.width?{spec,img}:null;
 }
-function pzBlit(ctx,img,spec,anim,frame,dir,x,y,alpha=1){
-  const c=spec.cell,a=spec.anims[anim];const row=a.row+Math.min(a.frames-1,Math.max(0,frame));
+// Escolhe a folha conforme os membros perdidos: braço → folha sem aquele braço; as duas pernas → rastejador sem pernas.
+function pzMutation(enemy){const L=enemy.lostLimbs;if(!L||!L.size)return null;
+  if(L.has('leftLeg')&&L.has('rightLeg'))return'legless';
+  if(L.has('rightArm'))return'R';if(L.has('leftArm'))return'L';return null;}
+function pzSheetFor(spec,v,mut,assets){
+  if(mut==='L'||mut==='R'){const img=assets.get(spec.armless[mut][v]);if(img&&img.width)return{img,anims:spec.armless.anims};}
+  return null;}
+function pzBlit(ctx,img,spec,anim,frame,dir,x,y,alpha=1,anims){
+  const c=spec.cell,a=(anims||spec.anims)[anim]||spec.anims[anim];const row=a.row+Math.min(a.frames-1,Math.max(0,frame));
   if(alpha<1)ctx.globalAlpha=alpha;
   ctx.drawImage(img,dir*c.w,row*c.h,c.w,c.h,Math.round(x-c.cx),Math.round(y+24-c.ground),c.w,c.h);
   if(alpha<1)ctx.globalAlpha=1;
@@ -34,6 +45,11 @@ Enemy.prototype.draw=function(ctx,assets){
   if(!S)return _pzEnemyDraw.call(this,ctx,assets);
   const{spec,img}=S;const TAU=Math.PI*2;
   let anim='walk',frame=0;
+  const mut=pzMutation(this);
+  if(this.crawling&&mut==='legless'){const li=assets.get(spec.legless.key);
+    if(li&&li.width){const f=Math.floor(this.stride/TAU*8)%8;const row=this._sv*spec.legless.rowsPer+f;const c=spec.cell;const dir=pzDir8(this.heading);
+      ctx.save();if(this.flinch>0)ctx.filter='brightness(1.7)';ctx.drawImage(li,dir*c.w,row*c.h,c.w,c.h,Math.round(this.x-c.cx),Math.round(this.y+24-c.ground),c.w,c.h);ctx.filter='none';ctx.restore();return;}}
+  const alt=pzSheetFor(spec,this._sv,mut,assets);
   if(this.crawling){anim='crawl';frame=Math.floor(this.stride/TAU*spec.anims.crawl.frames)%spec.anims.crawl.frames;}
   else if(this.flinch>0||this.hitStun>0){anim='hit';const k=this.flinch>0?1-this.flinch/.15:.6;frame=Math.floor(k*spec.anims.hit.frames);}
   else if(this.animation==='attack'){anim='attack';frame=Math.floor(this.stride*1.1)%spec.anims.attack.frames;}
@@ -43,7 +59,8 @@ Enemy.prototype.draw=function(ctx,assets){
   if(this.flinch>0)ctx.filter='brightness(1.7)';
   // A folha já traz sombra, rosto, olhos e mãos; o recuo do tiro continua vindo do jogo.
   const reaction=this.flinch>0?Math.sin((this.flinch/.15)*Math.PI):0;
-  pzBlit(ctx,img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2);
+  if(alt&&alt.anims[anim])pzBlit(ctx,alt.img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2,1,alt.anims);
+  else pzBlit(ctx,img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2);
   ctx.filter='none';ctx.restore();
 };
 
@@ -54,7 +71,7 @@ Enemy.prototype.hit=function(damage,impact){
   if(wasAlive&&!this.alive&&PZ_SPRITES[this.kind]&&this._sv!=null&&!this.deadByExplosion){
     const spec=PZ_SPRITES[this.kind];
     if(PZ_CORPSES.list.length>=PZ_CORPSES.max)PZ_CORPSES.list.shift();
-    PZ_CORPSES.list.push({x:this.x,y:this.y,kind:this.kind,v:this._sv,dir:pzDir8(this.heading),t:0,life:spec.corpseLife});
+    const m=pzMutation(this);PZ_CORPSES.list.push({x:this.x,y:this.y,kind:this.kind,v:this._sv,mut:(m==='L'||m==='R')?m:null,dir:pzDir8(this.heading),t:0,life:spec.corpseLife});
     PZ_CORPSES.skip++;
   }
   return died;
@@ -73,9 +90,9 @@ const _pzFxDrawUnder=CombatEffects.prototype.drawUnder;
 CombatEffects.prototype.drawUnder=function(ctx){
   _pzFxDrawUnder.call(this,ctx);
   const assets=window.__PZ_ASSETS__;if(!assets)return;
-  for(const c of PZ_CORPSES.list){const spec=PZ_SPRITES[c.kind];const img=assets.get(spec.variants[c.v]);if(!img||!img.width)continue;
+  for(const c of PZ_CORPSES.list){const spec=PZ_SPRITES[c.kind];const alt=c.mut?pzSheetFor(spec,c.v,c.mut,assets):null;const img=alt?alt.img:assets.get(spec.variants[c.v]);if(!img||!img.width)continue;
     const a=spec.anims.death;const f=Math.min(a.frames-1,Math.floor(c.t*(a.fps||10)));const fade=Math.min(1,(c.life-c.t)/1.2);
-    pzBlit(ctx,img,spec,'death',f,c.dir,c.x,c.y,fade);}
+    pzBlit(ctx,img,spec,'death',f,c.dir,c.x,c.y,fade,alt?alt.anims:null);}
 };
 // Partida nova: limpa os corpos da anterior.
 function pzResetCorpses(){PZ_CORPSES.list.length=0;PZ_CORPSES.skip=0;}
