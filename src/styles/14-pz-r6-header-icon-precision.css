@@ -1,0 +1,15 @@
+
+/* Shared optical axis: equal hit targets and symmetrical settings glyph. */
+.app .topbar-right .icon-button{
+  display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 40px;width:40px;height:40px;padding:0;
+}
+.app .topbar-right .icon-button svg{
+  display:block;flex:none;width:20px;height:20px;
+  transform:none!important;transform-origin:50% 50%;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+@media(max-width:650px){
+  .app .topbar-right .icon-button{flex-basis:34px;width:34px;height:34px}
+  .app .topbar-right .icon-button svg{width:18px;height:18px}
+}

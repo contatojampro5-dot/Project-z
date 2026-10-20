@@ -1,0 +1,128 @@
+
+/* G.3.1.14: Xbox-inspired thumbstick placement (25%, 84%) and compact top HUD. */
+@media (orientation:landscape) and (max-height:540px) and (max-width:1024px){
+  .app[data-scene="field"] .topbar{display:none!important}
+  .app[data-scene="field"] .combat-hud{
+    top:calc(5px + env(safe-area-inset-top));
+    left:max(43px,env(safe-area-inset-left));
+    right:max(12px,env(safe-area-inset-right));
+    height:0;display:block;pointer-events:none;
+  }
+  .app[data-scene="field"] .combat-hud .hud-health{
+    position:absolute;left:0;top:0;box-sizing:border-box;
+    width:clamp(128px,19vw,168px);padding:5px 7px 4px;
+    border-radius:6px;box-shadow:0 2px 9px #0009;
+  }
+  .app[data-scene="field"] .hud-health-row{font-size:6.5px;gap:3px;white-space:nowrap;line-height:1.1}
+  .app[data-scene="field"] .hud-health-row b{font-size:8px}
+  .app[data-scene="field"] .health-track{height:4px;margin:3px 0 3px}
+  .app[data-scene="field"] .hud-xp-row{font-size:6px;line-height:1.1}
+  .app[data-scene="field"] .xp-track{height:3px;margin:2px 0}
+  .app[data-scene="field"] .hud-area,.app[data-scene="field"] .hud-special{display:none}
+  .app[data-scene="field"] .combat-hud .hud-center-stack{
+    position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:clamp(108px,19vw,155px);max-width:100%;gap:3px;
+  }
+  .app[data-scene="field"] .hud-center-stack .hud-center{
+    width:100%;box-sizing:border-box;min-height:0;
+    padding:3px 5px 4px;border-radius:6px;
+  }
+  .app[data-scene="field"] .hud-center [data-wave]{font-size:7px;letter-spacing:.06em}
+  .app[data-scene="field"] .hud-center b{font-size:17px;line-height:1.08}
+  .app[data-scene="field"] .hud-center small{font-size:6px;line-height:1}
+  .app[data-scene="field"] .hud-center-stack .boss-hud{
+    width:100%;padding:4px 5px;border-radius:5px;
+  }
+  .app[data-scene="field"] .hud-center-stack .boss-header{font-size:6px;margin-bottom:3px;gap:2px}
+  .app[data-scene="field"] .hud-center-stack .boss-header b{font-size:7px}
+  .app[data-scene="field"] .hud-center-stack .boss-header [data-boss-hp]{font-size:6px}
+  .app[data-scene="field"] .hud-center-stack .boss-track{height:3px}
+  .app[data-scene="field"] .combat-hud .hud-pause{
+    position:absolute;top:0;right:0;width:28px;height:28px;
+    min-width:28px;border-radius:6px;pointer-events:auto;
+  }
+  .app[data-scene="field"] .hud-pause svg{width:14px;height:14px}
+  .app[data-scene="field"] .hud-combat-stats,
+  .app[data-scene="field"] .combat-ui.has-boss .hud-combat-stats{
+    position:absolute;top:calc(5px + env(safe-area-inset-top));
+    left:auto;right:max(47px,calc(env(safe-area-inset-right) + 39px));
+    width:auto;max-width:min(175px,23vw);min-height:28px;
+    display:flex;align-items:center;justify-content:flex-end;flex-wrap:nowrap;
+    gap:5px;padding:4px 5px;border-radius:6px;font-size:6px;line-height:1.1;
+    box-shadow:0 2px 9px #0009;
+  }
+  .app[data-scene="field"] .hud-combat-stats .nearby-supplies{display:none}
+  .app[data-scene="field"] .hud-combat-stats > span:nth-child(2){white-space:nowrap;font-size:6px}
+  .app[data-scene="field"] .hud-combat-stats > span:nth-child(2) b{font-size:9px;margin-left:1px}
+  .app[data-scene="field"] .hud-weapon-identity{padding-left:3px;gap:1px}
+  .app[data-scene="field"] .hud-weapon-art{min-width:34px;height:18px}
+  .app[data-scene="field"] .hud-weapon-art .pz-weapon-svg{width:39px;height:18px}
+  .app[data-scene="field"] .hud-weapon-name{display:none}
+  .app[data-scene="field"] .hud-ammo{font-size:0;white-space:nowrap}
+  .app[data-scene="field"] .hud-ammo [data-ammo]{font-size:11px;margin-left:1px}
+  .app[data-scene="field"] .hud-ammo [data-reload]{display:none}
+  .app[data-scene="field"] .control-hint{display:none}
+  .app[data-scene="field"] .combat-sticks .stick-zone{
+    width:88px;height:88px;bottom:auto;
+    top:84%;transform:translate(-50%,-50%);
+    opacity:.72;border-radius:50%;
+  }
+  .app[data-scene="field"] .combat-sticks .stick-zone.stick-move{left:25%;right:auto}
+  .app[data-scene="field"] .combat-sticks .stick-zone.stick-aim{left:76%;right:auto}
+  .app[data-scene="field"] .stick-ring{
+    inset:7px;border:2px solid rgba(197,207,208,.43);
+    background:radial-gradient(circle,rgba(85,94,99,.16),rgba(9,11,13,.39));
+  }
+  .app[data-scene="field"] .stick-knob{
+    width:35px;height:35px;background:linear-gradient(135deg,#c0c9ca,#3c4850);
+    border:2px solid #b2bec0;box-shadow:0 3px 9px #0009;
+  }
+  .app[data-scene="field"] .stick-aim .stick-knob{background:linear-gradient(135deg,#b7bfc0,#333d43);border-color:#aab4b7}
+  .app[data-scene="field"] .stick-cross{font-size:20px;opacity:.55}
+  .app[data-scene="field"] .stick-label{bottom:-9px;font-size:7px;letter-spacing:.04em}
+  .app[data-scene="field"] .grenade-button{
+    right:6%;bottom:16%;width:52px;min-width:52px;
+    height:51px;min-height:51px;padding:3px;
+    border-radius:9px;
+  }
+  .app[data-scene="field"] .grenade-icon svg{height:17px;width:17px}
+  .app[data-scene="field"] .grenade-caption{font-size:6px;letter-spacing:0}
+  .app[data-scene="field"] .grenade-quantity{font-size:9px}
+  .app[data-scene="field"] .auto-fire-button{
+    right:6%;bottom:42%;width:52px;min-width:52px;
+    height:49px;min-height:49px;padding:3px;gap:1px;border-radius:9px;
+  }
+  .app[data-scene="field"] .auto-fire-symbol{font-size:16px}
+  .app[data-scene="field"] .auto-fire-name{font-size:7px}
+  .app[data-scene="field"] .auto-fire-status{font-size:6px}
+  .app[data-scene="field"] .antonio-caption{bottom:calc(13px + env(safe-area-inset-bottom));max-width:min(320px,44vw)}
+  .app[data-scene="field"] .loot-toast{top:calc(64px + env(safe-area-inset-top));max-width:180px}
+  .app[data-scene="field"] .pz-performance-monitor{top:calc(58px + env(safe-area-inset-top))}
+}
+@media (orientation:landscape) and (max-height:360px) and (max-width:740px){
+ .app[data-scene="field"] .combat-hud .hud-health{width:126px}
+ .app[data-scene="field"] .combat-hud .hud-center-stack{width:105px}
+ .app[data-scene="field"] .hud-combat-stats{max-width:120px!important}
+ .app[data-scene="field"] .combat-sticks .stick-zone{width:78px;height:78px}
+ .app[data-scene="field"] .stick-knob{width:32px;height:32px}
+}
+@media (orientation:portrait) and (max-width:650px){
+  .app[data-scene="field"] .topbar{display:none!important}
+  .app[data-scene="field"] .combat-hud{top:calc(5px + env(safe-area-inset-top))}
+  .app[data-scene="field"] .hud-combat-stats{top:calc(78px + env(safe-area-inset-top))}
+  .app[data-scene="field"] .combat-ui.has-boss .hud-combat-stats{top:calc(127px + env(safe-area-inset-top))}
+  .app[data-scene="field"] .combat-sticks .stick-zone{
+    top:84%;bottom:auto;transform:translate(-50%,-50%);
+    width:92px;height:92px;opacity:.72;
+  }
+  .app[data-scene="field"] .combat-sticks .stick-zone.stick-move{left:25%;right:auto}
+  .app[data-scene="field"] .combat-sticks .stick-zone.stick-aim{left:76%;right:auto}
+  .app[data-scene="field"] .stick-ring{inset:7px;border-color:rgba(197,207,208,.45);background:rgba(15,17,20,.43)}
+  .app[data-scene="field"] .stick-knob{width:36px;height:36px;background:linear-gradient(135deg,#c0c9ca,#3c4850);border-color:#b2bec0}
+  .app[data-scene="field"] .stick-aim .stick-knob{background:linear-gradient(135deg,#b7bfc0,#333d43);border-color:#aab4b7}
+  .app[data-scene="field"] .auto-fire-button{bottom:calc(278px + env(safe-area-inset-bottom));right:max(12px,env(safe-area-inset-right));}
+  .app[data-scene="field"] .grenade-button{bottom:calc(206px + env(safe-area-inset-bottom));right:max(12px,env(safe-area-inset-right));}
+  .app[data-scene="field"] .antonio-caption{bottom:calc(200px + env(safe-area-inset-bottom));}
+  .app[data-scene="field"] .loot-toast{top:calc(127px + env(safe-area-inset-top))}
+  .app[data-scene="field"] .combat-ui.has-boss .loot-toast{top:calc(180px + env(safe-area-inset-top))}
+}

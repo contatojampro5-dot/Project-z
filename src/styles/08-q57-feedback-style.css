@@ -1,0 +1,2 @@
+
+.q53-toggle{position:relative;overflow:hidden}.q57-charge-track{display:block;position:absolute;bottom:0;left:0;right:0;height:4px;background:rgba(0,0,0,.4)}.q57-charge-track>span{display:block;height:100%;width:0;background:#64bfff;box-shadow:0 0 12px #64bfff;transition:width .07s linear}.q57-medical .q57-charge-track>span{background:#66e5a0;box-shadow:0 0 12px #66e5a0}.q57-charging{outline:2px solid rgba(106,192,255,.55);outline-offset:-2px}.q57-medical.q57-charging{outline-color:rgba(105,229,157,.6)}

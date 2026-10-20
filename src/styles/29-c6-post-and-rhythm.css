@@ -1,0 +1,15 @@
+/* C6 · Hefesto — pós-processamento composto pela placa de vídeo, só durante a partida. */
+.pz-post{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.app:not([data-scene="field"]) .pz-post{display:none}
+.pz-post i{position:absolute;inset:0;display:block}
+.pz-post-grade{background:var(--pz-tint,transparent)} /* Atlas A1: sem modo de mistura (custava ~45% do FPS) */
+.pz-post-vignette{background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,var(--pz-vig,.3)) 100%)}
+.pz-post-grain{background-image:var(--pz-grain);opacity:.035;display:none}
+.pz-post.grain-on .pz-post-grain{display:block}
+@keyframes pz-grain{0%{transform:translate(0,0)}20%{transform:translate(-37px,21px)}40%{transform:translate(53px,-44px)}60%{transform:translate(-61px,-13px)}80%{transform:translate(29px,58px)}100%{transform:translate(0,0)}}
+
+/* C6 · Hermes — o aviso (loot-toast) no computador fica preso à esquerda; o deslocamento
+   de centralização antigo o cortava pela metade na borda da tela. */
+@media (min-width:901px){
+  .app[data-scene="field"] .loot-toast{transform:none!important;max-width:min(560px,60vw)!important;width:max-content!important;white-space:normal!important}
+}

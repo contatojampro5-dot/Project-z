@@ -1,0 +1,43 @@
+
+/* CRONOS Part 1: original position, fill-only double heartbeat, external glow.
+   No damage-only flash, shaking or textual low-life notification. */
+.app[data-scene="field"] .health-track.cronos-hp-critical{
+  position:relative;
+  overflow:visible;
+  isolation:isolate;
+}
+.app[data-scene="field"] .health-track.cronos-hp-critical > [data-health-fill]{
+  border-radius:inherit;
+  background:linear-gradient(90deg,#9b1825,#ef3647);
+  transform-origin:left center;
+  animation:cronos-hp-double-beat var(--cronos-hp-period,1.4s) ease-in-out infinite;
+}
+.app[data-scene="field"] .health-track.cronos-hp-critical::after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:-3px;
+  border-radius:inherit;
+  pointer-events:none;
+  box-shadow:0 0 9px 2px rgba(236,34,57,var(--cronos-hp-glow,.28));
+  animation:cronos-hp-glow-beat var(--cronos-hp-period,1.4s) ease-in-out infinite;
+}
+@keyframes cronos-hp-double-beat{
+  0%,35%,100%{filter:brightness(.95)}
+  6%{filter:brightness(1.95)}
+  12%{filter:brightness(1.04)}
+  22%{filter:brightness(1.67)}
+  30%{filter:brightness(1.02)}
+}
+@keyframes cronos-hp-glow-beat{
+  0%,35%,100%{opacity:.28}
+  6%{opacity:1}
+  12%{opacity:.38}
+  22%{opacity:.82}
+  30%{opacity:.34}
+}
+@media(prefers-reduced-motion:reduce){
+  .app[data-scene="field"] .health-track.cronos-hp-critical > [data-health-fill],
+  .app[data-scene="field"] .health-track.cronos-hp-critical::after{animation:none!important}
+  .app[data-scene="field"] .health-track.cronos-hp-critical::after{opacity:.8}
+}

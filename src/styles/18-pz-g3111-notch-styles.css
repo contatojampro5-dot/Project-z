@@ -1,0 +1,80 @@
+
+/* NOTCH LAB 05 -> PROJECT Z G3.1.11, standalone visual layer. iPhone 11 Pro notch; no system island API. */
+:root{--pz-notch-y:env(safe-area-inset-top, 0px)}
+.app[data-scene="field"] .pz-notch-system{display:block}
+.pz-notch-system{position:absolute;inset:0;z-index:11;pointer-events:none;display:none;overflow:hidden;isolation:isolate;--pz-neon:247,52,74;--pz-strength:.76;--pz-beam-height:290px;--pz-n-top:calc(var(--pz-notch-y) + 1px);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.pz-notch-system[hidden]{display:none!important}
+.pz-notch-emitter{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;opacity:0;transition:opacity .55s ease}
+.pz-notch-system.is-active .pz-notch-emitter,.pz-notch-system.is-persistent .pz-notch-emitter{opacity:1}
+.pz-notch-edges{position:absolute;left:50%;top:var(--pz-n-top);width:min(55vw,205px);height:42px;transform:translateX(-50%);pointer-events:none}
+.pz-notch-edges:before,.pz-notch-edges:after{content:"";position:absolute;top:0;width:29%;height:2px;background:linear-gradient(90deg,transparent,rgba(var(--pz-neon),.8));filter:drop-shadow(0 0 7px rgba(var(--pz-neon),.85));opacity:0}
+.pz-notch-edges:before{left:-19%;transform:rotate(-3deg)}.pz-notch-edges:after{right:-19%;transform:scaleX(-1) rotate(-3deg)}
+.pz-notch-system.is-active .pz-notch-edges:before,.pz-notch-system.is-active .pz-notch-edges:after{animation:pz-edge-glow 3s ease-out both}
+@keyframes pz-edge-glow{0%{opacity:0}14%{opacity:var(--pz-strength)}46%{opacity:.47}100%{opacity:0}}
+.pz-notch-halo{position:absolute;top:var(--pz-n-top);left:50%;width:min(92vw,480px);height:160px;transform:translateX(-50%);background:radial-gradient(ellipse at top,rgba(var(--pz-neon),.21),transparent 70%);opacity:.6}
+.pz-notch-system.is-persistent .pz-notch-halo{opacity:.16;animation:pz-heart 1.7s ease-in-out infinite}
+@keyframes pz-heart{0%,100%{opacity:.13}24%{opacity:.37}40%{opacity:.12}54%{opacity:.34}}
+.pz-notch-sweep{position:absolute;top:calc(var(--pz-n-top) + 34px);left:3%;right:3%;height:44px;border-top:1px solid rgba(var(--pz-neon),.35);border-radius:50%;opacity:0;transform:translateY(0);will-change:transform,opacity;box-shadow:0 -3px 15px rgba(var(--pz-neon),.15)}
+.pz-notch-system.is-active .pz-notch-sweep{animation:pz-sweep 1.7s ease-out both}
+@keyframes pz-sweep{0%{opacity:0;transform:translateY(0)}10%{opacity:.66}60%{opacity:.23}100%{opacity:0;transform:translateY(min(62vh,470px))}}
+.pz-notch-fx{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;pointer-events:none}
+.pz-notch-system[data-fx="horde"].is-active .pz-notch-drips,.pz-notch-system[data-fx="boss"].is-active .pz-notch-bolts,.pz-notch-system[data-fx="speech"].is-active .pz-notch-line,.pz-notch-system[data-fx="hit"].is-active .pz-notch-burst{opacity:1}
+/* Scanner - radar cone rotates about notch, no perspective */
+.pz-notch-cone{top:calc(var(--pz-n-top) + 22px);left:12%;width:76%;height:340px;transform-origin:50% 0;background:linear-gradient(180deg,rgba(var(--pz-neon),.32),rgba(var(--pz-neon),0) 93%);clip-path:polygon(47% 0,53% 0,100% 100%,0 100%)}
+.pz-notch-system[data-fx="scanner"].is-active .pz-notch-cone{opacity:var(--pz-strength);animation:pz-cone-sweep 3.5s ease-in-out 2}
+@keyframes pz-cone-sweep{0%,100%{transform:rotate(-25deg)}50%{transform:rotate(25deg)}}
+/* Horde - nine lightweight streaks falling down */
+.pz-notch-drips{top:calc(var(--pz-n-top) + 29px);left:19%;width:62%;height:300px}
+.pz-notch-drips i{position:absolute;top:0;width:2px;height:var(--h);border-radius:2px;background:linear-gradient(180deg,transparent,rgb(var(--pz-neon)));box-shadow:0 0 5px rgba(var(--pz-neon),.3);opacity:0}
+.pz-notch-system[data-fx="horde"].is-active .pz-notch-drips i{animation:pz-drip 1.85s cubic-bezier(.37,0,.77,.62) 4;animation-delay:var(--d)}
+@keyframes pz-drip{0%{opacity:0;transform:translateY(0)}14%{opacity:var(--pz-strength)}77%{opacity:.48}100%{opacity:0;transform:translateY(265px)}}
+/* Boss - jagged light paths taper smoothly instead of hard strobe */
+.pz-notch-bolts{top:calc(var(--pz-n-top) + 19px);left:50%;width:1px;height:1px}
+.pz-notch-bolts i{position:absolute;left:-23px;top:0;width:46px;height:var(--bh);transform:rotate(var(--r));transform-origin:50% 0;opacity:0;filter:drop-shadow(0 0 5px rgba(var(--pz-neon),.55));background:linear-gradient(180deg,#fff,rgba(var(--pz-neon),.9) 30%,rgba(var(--pz-neon),.11));clip-path:polygon(52% 0,61% 14%,48% 27%,64% 38%,46% 52%,62% 64%,49% 78%,55% 100%,49% 77%,57% 64%,42% 52%,58% 38%,43% 27%,57% 14%,47% 0)}
+.pz-notch-system[data-fx="boss"].is-active .pz-notch-bolts i{animation:pz-bolt 2.15s ease-out 3;animation-delay:var(--d)}
+@keyframes pz-bolt{0%,100%{opacity:0}9%{opacity:calc(var(--pz-strength)*.85)}26%{opacity:.37}54%{opacity:.12}78%{opacity:0}}
+.pz-notch-noise{position:absolute;top:var(--pz-n-top);left:0;right:0;height:155px;opacity:0;background:repeating-linear-gradient(0deg,transparent 0 10px,rgba(var(--pz-neon),.06) 11px,transparent 12px);mask-image:linear-gradient(180deg,#000,transparent)}
+.pz-notch-system[data-fx="boss"].is-active .pz-notch-noise{animation:pz-noise 1.6s steps(3,end) 3}
+@keyframes pz-noise{0%,100%{opacity:0}27%{opacity:.6;transform:translateY(2px)}60%{opacity:.2;transform:translateY(-2px)}}
+/* Critical HP - true ECG lines on either side of notch */
+.pz-notch-ecg{position:absolute;top:calc(var(--pz-n-top) + 29px);width:min(41vw,200px);height:57px;opacity:0;overflow:visible;filter:drop-shadow(0 0 5px rgba(var(--pz-neon),.25))}
+.pz-notch-ecg.r{left:50%}.pz-notch-ecg.l{right:50%;transform:scaleX(-1)}
+.pz-notch-ecg path{fill:none;stroke:rgb(var(--pz-neon));stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.pz-notch-system[data-fx="low"].is-active .pz-notch-ecg{opacity:var(--pz-strength)}
+.pz-notch-system[data-fx="low"].is-active .pz-notch-ecg path{animation:pz-ecg 1.65s linear infinite}
+@keyframes pz-ecg{0%{stroke-dashoffset:1;opacity:1}60%{stroke-dashoffset:0;opacity:1}85%{stroke-dashoffset:0;opacity:.72}100%{stroke-dashoffset:0;opacity:0}}
+.pz-notch-system.is-persistent .pz-notch-ecg{opacity:.35;top:calc(var(--pz-n-top) + 10px);height:26px}
+.pz-notch-system.is-persistent .pz-notch-ecg path{stroke-dashoffset:0}
+/* Radio equalizer */
+.pz-notch-eq{top:calc(var(--pz-n-top) + 30px);left:21%;width:58%;height:75px;display:flex;justify-content:space-between;gap:3px}
+.pz-notch-eq i{display:block;flex:1;max-width:5px;height:100%;border-radius:0 0 3px 3px;transform:scaleY(.12);transform-origin:top;background:linear-gradient(180deg,rgb(var(--pz-neon)),transparent)}
+.pz-notch-system[data-fx="radio"].is-active .pz-notch-eq{opacity:var(--pz-strength)}
+.pz-notch-system[data-fx="radio"].is-active .pz-notch-eq i{animation:pz-eq .85s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes pz-eq{0%,100%{transform:scaleY(.1)}28%{transform:scaleY(var(--m))}55%{transform:scaleY(calc(var(--m)*.42))}79%{transform:scaleY(calc(var(--m)*.8))}}
+/* Speech - light bar */
+.pz-notch-line{top:calc(var(--pz-n-top) + 33px);left:8%;width:84%;height:2px;background:linear-gradient(90deg,transparent,rgb(var(--pz-neon)),transparent);box-shadow:0 0 12px rgba(var(--pz-neon),.4)}
+.pz-notch-system[data-fx="speech"].is-active .pz-notch-line{animation:pz-talk 2.5s ease-in-out 3}
+@keyframes pz-talk{0%,100%{transform:scaleX(.1);opacity:0}12%{opacity:.8}35%{transform:scaleX(.78)}54%{transform:scaleX(.3)}78%{transform:scaleX(.92)}}
+/* Bullet hit - ellipse translates downward; does not scale or recede */
+.pz-notch-burst{top:calc(var(--pz-n-top) + 33px);left:16%;width:68%;height:32px;border:1.5px solid rgba(var(--pz-neon),.78);border-radius:50%;box-shadow:0 0 13px rgba(var(--pz-neon),.23);opacity:0}
+.pz-notch-burst.b2{left:24%;width:52%;height:23px;border-width:1px}
+.pz-notch-system[data-fx="hit"].is-active .pz-notch-burst{animation:pz-burst 1.65s ease-out both}
+.pz-notch-system[data-fx="hit"].is-active .pz-notch-burst.b2{animation-delay:.16s}
+@keyframes pz-burst{0%{opacity:0;transform:translateY(0)}15%{opacity:.85}60%{opacity:.37}100%{opacity:0;transform:translateY(350px)}}
+/* Dynamic panel: deliberately stays on screen (long enough to read), never obscures controls */
+.pz-notch-card{position:absolute;z-index:5;top:calc(var(--pz-n-top) + 55px);left:50%;transform:translate3d(-50%,-10px,0);width:min(340px,calc(100vw - 36px));max-width:calc(100vw - 20px);padding:12px 14px;border:1px solid rgba(var(--pz-neon),.60);border-radius:10px;background:linear-gradient(125deg,rgba(9,12,15,.96),rgba(24,17,19,.95));box-shadow:0 11px 42px #000b,0 0 26px rgba(var(--pz-neon),.12);opacity:0;visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility .5s;pointer-events:none;contain:layout style}
+.pz-notch-system.is-active .pz-notch-card{opacity:1;visibility:visible;transform:translate3d(-50%,0,0)}
+.pz-notch-card .pz-n-label{font:850 9px/1.25 ui-monospace,monospace;color:rgb(var(--pz-neon));letter-spacing:.15em;margin-bottom:5px}
+.pz-notch-card .pz-n-title{font:900 clamp(13px,3.65vw,18px)/1.18 system-ui,sans-serif;color:#fff;letter-spacing:-.015em}
+.pz-notch-card .pz-n-desc{font:500 11px/1.4 system-ui,sans-serif;color:#bcc2c4;margin-top:5px}
+.pz-notch-card .pz-n-progress{height:2px;background:#ffffff16;border-radius:3px;margin-top:12px;overflow:hidden}
+.pz-notch-card .pz-n-progress i{display:block;height:100%;width:100%;background:rgb(var(--pz-neon));opacity:.8;transform-origin:left;transform:scaleX(1)}
+.pz-notch-system.is-active .pz-n-progress i{animation:pz-countdown var(--pz-alert-duration,7s) linear both}
+@keyframes pz-countdown{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+/* R2 — alerts stay contextual but never wipe the HUD. */
+.app.pz-notch-isolated .combat-hud,.app.pz-notch-isolated .hud-combat-stats,.app.pz-notch-isolated .antonio-caption,.app.pz-notch-isolated .loot-toast,.app.pz-notch-isolated .control-hint,.app.pz-notch-isolated .topbar,.app.pz-notch-isolated .pz-performance-monitor{
+ opacity:1!important;visibility:visible!important;pointer-events:auto!important;transition:none!important
+}
+@media(orientation:landscape) and (max-height:540px){.pz-notch-card{top:calc(var(--pz-n-top) + 23px);width:min(245px,38vw);padding:8px 10px}.pz-notch-card .pz-n-title{font-size:12px}.pz-notch-card .pz-n-desc{font-size:9px}.pz-notch-card .pz-n-progress{margin-top:6px}.pz-notch-sweep{height:22px}}
+@media(orientation:portrait) and (max-width:420px){.pz-notch-card{top:calc(var(--pz-n-top) + 48px);padding:10px 12px;width:min(314px,calc(100vw - 30px))}.pz-notch-card .pz-n-title{font-size:15px}.pz-notch-card .pz-n-desc{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.pz-notch-system *{animation-duration:.01ms!important;transition-duration:.01ms!important}}

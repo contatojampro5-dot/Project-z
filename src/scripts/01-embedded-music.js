@@ -1,0 +1,1 @@
+window.__PROJECT_Z_EMBEDDED_MUSIC__={"gameplay":"@@ASSET:assets/audio/music/gameplay.d47ad99c.mp3@@","menu":"@@ASSET:assets/audio/music/menu.ee96d4b1.mp3@@"};

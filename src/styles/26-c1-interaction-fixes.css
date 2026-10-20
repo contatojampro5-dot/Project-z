@@ -1,0 +1,6 @@
+/* C1 · Hermes — interações básicas.
+   Arrastar o mouse ou segurar o dedo não seleciona textos, não abre menu de cópia
+   nem arrasta imagens. Campos de texto continuam editáveis. */
+html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+img,svg,canvas{-webkit-user-drag:none;user-drag:none}
+input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}

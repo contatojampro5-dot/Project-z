@@ -1,0 +1,81 @@
+
+/* G.3.1.13 — iPhone notch moves to a SIDE in landscape; alerts must follow it.
+   Portrait is intentionally unchanged. Effects are contained to an edge strip. */
+@media (orientation: landscape) and (max-height: 540px) {
+  .app[data-scene="field"] .pz-notch-system{
+    --pz-n-top:0px;
+    --pz-strength:.65;
+  }
+  /* Virtual 90-degree canvas: its top is the physical left-side notch.
+     Transform (0,+y) -> (+x,0), so all effects travel INTO the screen. */
+  .app[data-scene="field"] .pz-notch-emitter{
+    inset:auto;
+    left:0;
+    top:100%;
+    right:auto;
+    bottom:auto;
+    width:100dvh;
+    height:min(40vw,320px);
+    transform-origin:top left;
+    transform:rotate(-90deg);
+    contain:layout style paint;
+  }
+  /* Screen flipped the other way: notch is physically on the right. */
+  .app[data-scene="field"] .pz-notch-system.pz-notch-right .pz-notch-emitter{
+    left:100%;
+    right:auto;
+    top:0;
+    transform:rotate(90deg);
+    transform-origin:top left;
+  }
+  .pz-notch-edges{top:0;width:min(48%,160px);height:20px}
+  .pz-notch-halo{top:0;width:min(75%,270px);height:110px;opacity:.42;
+    background:radial-gradient(ellipse at top,rgba(var(--pz-neon),.18),transparent 72%)}
+  .pz-notch-sweep{top:18px;left:14%;right:14%;height:16px;box-shadow:0 -1px 6px rgba(var(--pz-neon),.14)}
+  .pz-notch-system.is-active .pz-notch-sweep{animation:pz-side-sweep 2.1s ease-out both}
+  @keyframes pz-side-sweep{0%{opacity:0;transform:translateY(0)}14%{opacity:.56}65%{opacity:.2}100%{opacity:0;transform:translateY(155px)}}
+  .pz-notch-cone{top:11px;left:21%;width:58%;height:178px;
+    background:linear-gradient(180deg,rgba(var(--pz-neon),.20),rgba(var(--pz-neon),0) 92%)}
+  .pz-notch-drips{top:15px;left:22%;width:56%;height:188px}
+  .pz-notch-system[data-fx="horde"].is-active .pz-notch-drips i{animation:pz-side-drip 1.8s ease-in 4;animation-delay:var(--d)}
+  @keyframes pz-side-drip{0%{opacity:0;transform:translateY(0)}12%{opacity:.62}70%{opacity:.24}100%{opacity:0;transform:translateY(160px)}}
+  .pz-notch-bolts{top:8px}
+  .pz-notch-bolts i{height:min(var(--bh),150px);width:24px;left:-12px;filter:drop-shadow(0 0 4px rgba(var(--pz-neon),.37))}
+  .pz-notch-noise{height:85px}
+  .pz-notch-ecg{top:17px;width:min(38%,148px);height:28px}
+  .pz-notch-eq{top:13px;left:28%;width:44%;height:38px}
+  .pz-notch-line{top:19px;left:23%;width:54%}
+  .pz-notch-burst{top:14px;left:27%;width:46%;height:18px}
+  .pz-notch-burst.b2{left:32%;width:36%;height:12px}
+  .pz-notch-system[data-fx="hit"].is-active .pz-notch-burst{animation:pz-side-burst 1.45s ease-out both}
+  @keyframes pz-side-burst{0%{opacity:0;transform:translateY(0)}14%{opacity:.62}60%{opacity:.22}100%{opacity:0;transform:translateY(152px)}}
+  /* Compact notification outside notch strip, alongside its safe area.
+     No overlay at center of gameplay. */
+  .app[data-scene="field"] .pz-notch-card{
+    top:max(6px,env(safe-area-inset-top,0px));
+    left:calc(max(8px,env(safe-area-inset-left,0px)) + 68px);
+    right:auto;
+    width:min(238px,34vw);
+    max-width:calc(100vw - 140px);
+    padding:7px 10px;
+    border-radius:8px;
+    transform:translate3d(0,-8px,0);
+    box-shadow:0 5px 18px #0009,0 0 9px rgba(var(--pz-neon),.12);
+  }
+  .app[data-scene="field"] .pz-notch-system.is-active .pz-notch-card{
+    transform:translate3d(0,0,0);
+  }
+  .app[data-scene="field"] .pz-notch-system.pz-notch-right .pz-notch-card{
+    left:auto;
+    right:calc(max(8px,env(safe-area-inset-right,0px)) + 68px);
+  }
+  .pz-notch-card .pz-n-label{font-size:7px;letter-spacing:.10em;margin-bottom:2px}
+  .pz-notch-card .pz-n-title{font-size:clamp(10px,1.8vw,13px);line-height:1.17}
+  .pz-notch-card .pz-n-desc{font-size:9px;line-height:1.25;margin-top:2px}
+  .pz-notch-card .pz-n-progress{margin-top:5px}
+}
+@media (orientation:landscape) and (max-height:390px) and (max-width:700px){
+  .app[data-scene="field"] .pz-notch-card{width:min(190px,32vw);padding:5px 7px}
+  .pz-notch-card .pz-n-desc{font-size:8px}
+  .pz-notch-card .pz-n-title{font-size:10px}
+}

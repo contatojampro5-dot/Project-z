@@ -1,0 +1,19 @@
+/* ATLAS A7 · Hermes — transições e microanimações.
+   Só elementos persistentes recebem animação de entrada; a interface é redesenhada a cada
+   clique, e animar nela faria tudo "piscar" a cada toque. */
+#app{background:#050506}
+/* Entrada na partida: o cenário surge do escuro. */
+.app[data-scene="field"] #game-canvas{animation:pz-field-in .9s cubic-bezier(.2,.7,.2,1) both}
+@keyframes pz-field-in{from{opacity:0;filter:brightness(.4)}to{opacity:1;filter:none}}
+/* Dificuldade: trocar o cartão não reanima o palco (o personagem é o mesmo). */
+.pz-ds .pz-cs-hero,.pz-ds .pz-cs-info{animation:none}
+/* Resposta ao toque/clique em todos os botões do jogo. */
+.app button:not(:disabled):active{filter:brightness(.88);transition:filter .05s}
+/* Botão principal: brilho que atravessa ao passar o mouse. */
+.pz-c6b-continue.pz-cs-cta{overflow:hidden}
+.pz-c6b-continue.pz-cs-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);transform:translateX(-120%);transition:transform .6s ease;pointer-events:none}
+.pz-c6b-continue.pz-cs-cta:not(:disabled):hover::after,.pz-c6b-continue.pz-cs-cta:not(:disabled):focus-visible::after{transform:translateX(120%)}
+/* Cartões de dificuldade: o selo de seleção "pulsa" uma vez. */
+.pz-ds-card.is-selected .pz-ds-check{animation:pz-check-pop .28s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pz-check-pop{from{transform:scale(.4)}to{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.app[data-scene="field"] #game-canvas,.pz-ds-card.is-selected .pz-ds-check{animation:none}.pz-c6b-continue.pz-cs-cta::after{display:none}}

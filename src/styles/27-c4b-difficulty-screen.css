@@ -1,0 +1,62 @@
+/* C4.1 · Hermes — tela de dificuldade no sistema visual da seleção (pz-cs).
+   Palco com o sobrevivente escolhido + ficha com as 3 dificuldades e o botão de iniciar. */
+.pz-ds .pz-cs-layout{grid-template-areas:"head head" "stage info" "foot foot";grid-template-rows:auto minmax(0,1fr) auto}
+.pz-ds .pz-cs-info{align-self:center;gap:14px}
+.pz-ds-tag{position:absolute;left:4%;top:6%;display:flex;flex-direction:column;gap:2px;z-index:3}
+.pz-ds-tag span{font:800 9px ui-monospace,SFMono-Regular,monospace;letter-spacing:.24em;color:#8f888e}
+.pz-ds-tag b{font-size:clamp(26px,3vw,40px);font-weight:900;letter-spacing:.02em;line-height:1;color:#fbf6f2}
+.pz-ds-tag small{font:800 11px var(--pz-font,system-ui),system-ui;letter-spacing:.28em;color:var(--char-color)}
+.pz-ds-quote{position:absolute;left:4%;bottom:5%;margin:0;z-index:3;font-size:clamp(18px,2vw,28px);font-weight:900;letter-spacing:.03em;line-height:1.05;text-transform:uppercase;color:#f1ebe8;max-width:12em;text-shadow:0 2px 18px rgba(0,0,0,.8)}
+.pz-ds-quote em{font-style:normal;color:var(--char-color)}
+
+.pz-ds-list{display:flex;flex-direction:column;gap:9px}
+.pz-ds-card{--d-color:#e3b47c;position:relative;display:grid;gap:7px;width:100%;text-align:left;padding:12px 14px 12px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-left:3px solid color-mix(in srgb,var(--d-color) 40%,transparent);border-radius:3px;color:#efe8e6;cursor:pointer;transition:background .15s,border-color .15s,transform .15s;font-family:inherit}
+.pz-ds-card:hover,.pz-ds-card:focus-visible{background:rgba(255,255,255,.06);border-color:color-mix(in srgb,var(--d-color) 45%,transparent);outline:none}
+.pz-ds-card.is-selected{background:linear-gradient(90deg,color-mix(in srgb,var(--d-color) 17%,transparent),rgba(255,255,255,.02) 70%);border-color:color-mix(in srgb,var(--d-color) 55%,transparent);border-left-color:var(--d-color);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.pz-ds-card-top{display:flex;align-items:center;gap:10px}
+.pz-ds-no{font:900 10px ui-monospace,SFMono-Regular,monospace;color:#857e85;letter-spacing:.12em}
+.is-selected .pz-ds-no{color:var(--d-color)}
+.pz-ds-name{font-size:20px;font-weight:900;letter-spacing:.06em;line-height:1}
+.pz-ds-check{margin-left:auto;width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;font:900 11px var(--pz-font,system-ui),system-ui;color:#120d10;flex:none}
+.is-selected .pz-ds-check{background:var(--d-color);border-color:var(--d-color)}
+.pz-ds-chip{justify-self:start;font:800 9px ui-monospace,SFMono-Regular,monospace;letter-spacing:.16em;color:var(--d-color)}
+.pz-ds-label{font-size:12px;line-height:1.4;color:#b9b0b6}
+.pz-ds-card:not(.is-selected) .pz-ds-chip,.pz-ds-card:not(.is-selected) .pz-ds-label{display:none}
+.pz-ds-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.pz-ds-stats span{display:flex;flex-direction:column;gap:3px;padding:6px 8px;background:rgba(0,0,0,.28);border-radius:2px;min-width:0}
+.pz-ds-stats i{font:800 8px ui-monospace,SFMono-Regular,monospace;font-style:normal;letter-spacing:.1em;color:#8b848a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pz-ds-stats b{font-size:15px;font-weight:900;color:#f4eeea}
+.is-selected .pz-ds-stats b{color:#fff}
+.pz-ds-links{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 16px}
+.pz-ds-links button{background:none;border:0;padding:6px 2px;color:#a59ca3;font:800 9.5px ui-monospace,SFMono-Regular,monospace;letter-spacing:.16em;cursor:pointer}
+.pz-ds-links button:hover,.pz-ds-links button:focus-visible{color:#fff;outline:none;text-decoration:underline;text-underline-offset:4px}
+
+/* Telas médias e baixas (ex.: 1366×768) */
+@media (max-height:820px) and (min-width:731px){
+ .pz-ds .pz-cs-info{padding:18px 20px 16px;gap:11px}
+ .pz-ds-card{padding:10px 12px 10px 14px;gap:6px}
+ .pz-ds-name{font-size:18px}
+ .pz-ds-quote{font-size:20px}
+}
+/* Celular em pé */
+@media(max-width:730px){
+ .pz-ds .pz-cs-layout{grid-template-areas:"head" "stage" "info" "foot";grid-template-columns:minmax(0,1fr)}
+ .pz-ds .pz-cs-stage{height:clamp(190px,28vh,260px)}
+ .pz-ds-quote{display:none}
+ .pz-ds-tag{display:none}
+ .pz-ds-stats i{font-size:7.5px;letter-spacing:.06em}
+ .pz-ds-stats b{font-size:13px}
+}
+/* Celular deitado */
+@media(orientation:landscape) and (max-height:520px){
+ .pz-ds .pz-cs-layout{grid-template-columns:minmax(0,1fr) minmax(280px,52%);grid-template-areas:"head head" "stage info"}
+ .pz-ds-quote{display:none}
+ .pz-ds-tag{top:2%}.pz-ds-tag b{font-size:20px}.pz-ds-tag small{font-size:8px}
+ .pz-ds-list{gap:6px}
+ .pz-ds-card{padding:7px 10px;gap:4px}
+ .pz-ds-name{font-size:14px}
+ .pz-ds-card:not(.is-selected) .pz-ds-stats{display:none}
+ .pz-ds-stats span{padding:4px 6px}.pz-ds-stats b{font-size:12px}.pz-ds-stats i{font-size:7px}
+ .pz-ds-label{font-size:10px}
+ .pz-ds-links button{padding:3px 2px;font-size:8px}
+}

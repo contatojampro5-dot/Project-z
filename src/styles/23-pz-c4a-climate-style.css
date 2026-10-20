@@ -1,0 +1,30 @@
+
+.app[data-scene="field"] .pz-climate-cycle {
+  position:absolute;z-index:12;top:calc(12px + env(safe-area-inset-top,0px));right:178px;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  min-height:35px;padding:5px 9px;border:1px solid rgba(230,220,190,.38);
+  border-radius:10px;background:rgba(10,16,22,.88);color:#e8edf0;
+  font:700 9px/1.15 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.045em;cursor:pointer;pointer-events:auto;white-space:nowrap;
+  transition:border-color .15s,background .15s;
+}
+.app[data-scene="field"] .pz-climate-cycle>[data-climate-icon]{font-size:17px;color:#eab76e}
+.app[data-scene="field"] .pz-climate-cycle small{
+  color:#a8b8c4;font:700 8px/1.2 ui-monospace,monospace;letter-spacing:.015em;
+  max-width:102px;overflow:hidden;text-overflow:ellipsis;
+}
+.app[data-scene="field"] .pz-climate-cycle.pz-climate-preview-active{border-color:rgba(255,187,98,.72);background:rgba(46,31,22,.96)}
+.app[data-scene="field"] .pz-climate-cycle.pz-climate-preview-active small{color:#ffd596}
+.app[data-scene="field"] .pz-climate-cycle:focus-visible{outline:2px solid #f4c47d;outline-offset:2px}
+@media(max-width:900px) and (orientation:landscape){
+  .app[data-scene="field"] .pz-climate-cycle{top:8px;left:210px;right:auto}
+}
+@media(max-width:650px){
+  .app[data-scene="field"] .pz-climate-cycle{min-height:31px;gap:3px;padding:4px 6px;font-size:8px}
+  .app[data-scene="field"] .pz-climate-cycle>[data-climate-icon]{font-size:13px}
+  .app[data-scene="field"] .pz-climate-cycle small{max-width:72px;font-size:7px}
+}
+@media(max-width:430px){
+  .app[data-scene="field"] .pz-climate-cycle{top:128px;left:10px;right:auto;gap:2px;padding:3px 5px;font-size:7px}
+  .app[data-scene="field"] .pz-climate-cycle small{max-width:49px}
+}

@@ -1,0 +1,18 @@
+/* Atlas A1 · Hefesto — fechamento do desempenho da Cronos.
+   Durante a partida, os painéis do HUD não usam vidro desfocado: o navegador refazia o
+   desfoque a cada quadro (o canvas muda sempre). Os fundos já são quase opacos. */
+.app[data-scene="field"] .hud-health,.app[data-scene="field"] .hud-combat-stats,.app[data-scene="field"] .control-hint,
+.app[data-scene="field"] .icon-button,.app[data-scene="field"] .hud-pause,.app[data-scene="field"] .antonio-words,
+.app[data-scene="field"] .boss-hud,.app[data-scene="field"] .pz-performance-monitor,.app[data-scene="field"] .topbar,
+.app[data-scene="field"] .topbar *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+/* Diagnóstico: desliga todo vidro desfocado na tela. */
+.pz-diag-noblur *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.pz-diag{position:fixed;z-index:10050;left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;
+  background:#0d0c11;border:1px solid rgba(255,255,255,.12);border-top:3px solid #e2555f;border-radius:4px;padding:18px 18px 14px;color:#f3eeea;font:13px/1.45 system-ui,sans-serif;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.pz-diag h3{margin:0 0 4px;font-size:16px;font-weight:900;letter-spacing:.06em}
+.pz-diag p{margin:0 0 12px;color:#b9b0b6;font-size:12px}
+.pz-diag table{width:100%;border-collapse:collapse;font:12px ui-monospace,SFMono-Regular,monospace}
+.pz-diag td{padding:6px 4px;border-top:1px solid rgba(255,255,255,.07)}
+.pz-diag td:last-child{text-align:right;font-weight:800}
+.pz-diag .gain{color:#8fd3a7}
+.pz-diag button{margin-top:12px;width:100%;min-height:40px;border:0;border-radius:3px;background:#e2555f;color:#140d10;font:900 12px system-ui;letter-spacing:.12em;cursor:pointer}

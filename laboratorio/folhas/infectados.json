@@ -1,0 +1,955 @@
+{
+  "operario": {
+    "type": "comum",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 9,
+        "loop": true,
+        "label": "Andar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 7,
+        "fps": 12,
+        "loop": false,
+        "label": "Atacar"
+      },
+      "hit": {
+        "row": 21,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 25,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 34,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "executivo": {
+    "type": "comum",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 9,
+        "loop": true,
+        "label": "Andar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 7,
+        "fps": 12,
+        "loop": false,
+        "label": "Atacar"
+      },
+      "hit": {
+        "row": 21,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 25,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 34,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "paciente": {
+    "type": "comum",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 9,
+        "loop": true,
+        "label": "Andar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 7,
+        "fps": 12,
+        "loop": false,
+        "label": "Atacar"
+      },
+      "hit": {
+        "row": 21,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 25,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 34,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "atleta": {
+    "type": "corredor",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 9,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 15,
+        "loop": true,
+        "label": "Correr"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 7,
+        "fps": 14,
+        "loop": false,
+        "label": "Bote"
+      },
+      "hit": {
+        "row": 21,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 25,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 34,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "ciclista": {
+    "type": "corredor",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 9,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 15,
+        "loop": true,
+        "label": "Correr"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 7,
+        "fps": 14,
+        "loop": false,
+        "label": "Bote"
+      },
+      "hit": {
+        "row": 21,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 25,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 34,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "inchado": {
+    "type": "explosivo",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 7,
+        "loop": true,
+        "label": "Arrastar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 8,
+        "fps": 10,
+        "loop": false,
+        "label": "Inflar"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 35,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "mecanico": {
+    "type": "explosivo",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 7,
+        "loop": true,
+        "label": "Arrastar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 8,
+        "fps": 10,
+        "loop": false,
+        "label": "Inflar"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 35,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "moletom": {
+    "type": "cuspidor",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rondar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 8,
+        "fps": 12,
+        "loop": false,
+        "label": "Cuspir"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 35,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "garconete": {
+    "type": "cuspidor",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rondar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 8,
+        "fps": 12,
+        "loop": false,
+        "label": "Cuspir"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 35,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "pedreiro": {
+    "type": "tanque",
+    "cell": {
+      "w": 88,
+      "h": 92,
+      "groundY": 80,
+      "centerX": 44
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "Pisar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 8,
+        "fps": 10,
+        "loop": false,
+        "label": "Esmagar"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 35,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "seguranca": {
+    "type": "tanque",
+    "cell": {
+      "w": 88,
+      "h": 92,
+      "groundY": 80,
+      "centerX": 44
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "Pisar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 8,
+        "fps": 10,
+        "loop": false,
+        "label": "Esmagar"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 35,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "profeta": {
+    "type": "invocador",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 8,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "Flutuar"
+      },
+      "attack": {
+        "row": 16,
+        "frames": 8,
+        "fps": 9,
+        "loop": false,
+        "label": "Invocar"
+      },
+      "hit": {
+        "row": 24,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 28,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 37,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "andarilho": {
+    "type": "invocador",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "Parado"
+      },
+      "walk": {
+        "row": 8,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "Flutuar"
+      },
+      "attack": {
+        "row": 16,
+        "frames": 8,
+        "fps": 9,
+        "loop": false,
+        "label": "Invocar"
+      },
+      "hit": {
+        "row": 24,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 28,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "crawl": {
+        "row": 37,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "label": "Rastejar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "sombrio": {
+    "type": "notivago",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 8,
+        "loop": true,
+        "label": "Espreitar"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 13,
+        "loop": true,
+        "label": "Rondar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 8,
+        "fps": 14,
+        "loop": false,
+        "label": "Saltar"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "claw": {
+        "row": 35,
+        "frames": 6,
+        "fps": 14,
+        "loop": false,
+        "label": "Garra"
+      },
+      "flee": {
+        "row": 41,
+        "frames": 8,
+        "fps": 14,
+        "loop": true,
+        "label": "Fugir"
+      },
+      "burn": {
+        "row": 49,
+        "frames": 8,
+        "fps": 9,
+        "loop": false,
+        "label": "Queimar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "cinzento": {
+    "type": "notivago",
+    "cell": {
+      "w": 64,
+      "h": 72,
+      "groundY": 60,
+      "centerX": 32
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 6,
+        "fps": 8,
+        "loop": true,
+        "label": "Espreitar"
+      },
+      "walk": {
+        "row": 6,
+        "frames": 8,
+        "fps": 13,
+        "loop": true,
+        "label": "Rondar"
+      },
+      "attack": {
+        "row": 14,
+        "frames": 8,
+        "fps": 14,
+        "loop": false,
+        "label": "Saltar"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 12,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 9,
+        "fps": 10,
+        "loop": false,
+        "label": "Morrer"
+      },
+      "claw": {
+        "row": 35,
+        "frames": 6,
+        "fps": 14,
+        "loop": false,
+        "label": "Garra"
+      },
+      "flee": {
+        "row": 41,
+        "frames": 8,
+        "fps": 14,
+        "loop": true,
+        "label": "Fugir"
+      },
+      "burn": {
+        "row": 49,
+        "frames": 8,
+        "fps": 9,
+        "loop": false,
+        "label": "Queimar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "colosso": {
+    "type": "colosso",
+    "cell": {
+      "w": 150,
+      "h": 165,
+      "groundY": 149,
+      "centerX": 75
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "Respirar"
+      },
+      "walk": {
+        "row": 8,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "AvanÃ§ar"
+      },
+      "attack": {
+        "row": 16,
+        "frames": 6,
+        "fps": 12,
+        "loop": true,
+        "label": "Investida"
+      },
+      "hit": {
+        "row": 22,
+        "frames": 4,
+        "fps": 10,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 26,
+        "frames": 12,
+        "fps": 9,
+        "loop": false,
+        "label": "Tombar"
+      },
+      "telegraph": {
+        "row": 38,
+        "frames": 8,
+        "fps": 8,
+        "loop": false,
+        "label": "Preparar investida"
+      },
+      "slam": {
+        "row": 46,
+        "frames": 8,
+        "fps": 10,
+        "loop": false,
+        "label": "Esmagar"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  },
+  "colmeia": {
+    "type": "colmeia",
+    "cell": {
+      "w": 160,
+      "h": 170,
+      "groundY": 150,
+      "centerX": 80
+    },
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "label": "Pulsar"
+      },
+      "walk": {
+        "row": 8,
+        "frames": 8,
+        "fps": 5,
+        "loop": true,
+        "label": "Arrastar"
+      },
+      "attack": {
+        "row": 16,
+        "frames": 8,
+        "fps": 10,
+        "loop": false,
+        "label": "Liberar enxame"
+      },
+      "hit": {
+        "row": 24,
+        "frames": 4,
+        "fps": 10,
+        "loop": false,
+        "label": "Levar tiro"
+      },
+      "death": {
+        "row": 28,
+        "frames": 12,
+        "fps": 9,
+        "loop": false,
+        "label": "Romper"
+      },
+      "telegraph": {
+        "row": 40,
+        "frames": 8,
+        "fps": 8,
+        "loop": false,
+        "label": "Enxame iminente"
+      }
+    },
+    "columns": "direção 0..7 (0=leste, 2=sul, 4=oeste, 6=norte)"
+  }
+}

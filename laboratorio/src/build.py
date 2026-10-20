@@ -1,0 +1,5 @@
+s=open('laboratorio/src/lab.src.html').read()
+s=s.replace('/*@@ENGINE@@*/',open('laboratorio/src/engine.js').read())
+s=s.replace('/*@@OLDS@@*/',open('laboratorio/src/old_atlases.json').read().strip())
+open('laboratorio/estudo-infectado.html','w').write(s)
+print(len(s))
