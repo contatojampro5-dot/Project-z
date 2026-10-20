@@ -185,3 +185,9 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Invocador (Profeta, Andarilho): a animação "Invocar" toca no instante em que ele chama a horda.
 - Notívago (Sombrio, Cinzento): cada estado da IA tem animação própria — espreitar, preparar o salto, saltar, garra, recuperar, fugir da luz e queimar na lanterna (com brilho de brasa).
 - Peças do corpo para as 15 variações. Jogo: 13,9 MB (otimização de peso na etapa 5).
+
+## Atlas A5.4 · Chefes
+- O Colosso: avança arrastando a clava; "preparar investida" acompanha o aviso de 1,2 s; investida em loop durante o dash; golpe de contato vira "esmagar"; tomba e fica no chão ao morrer.
+- A Colmeia: arrasta o corpo com o enxame girando; "enxame iminente" acompanha o aviso de 1,1 s; ao fim do aviso, "liberar enxame" junto com os projéteis radiais.
+- Linhas de aviso, rastro da investida e onda da Colmeia continuam iguais.
+- Jogo: 16 MB — a etapa 5 cuida do peso.

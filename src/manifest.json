@@ -75,6 +75,7 @@
     "src/scripts/game/34-entities_Enemy.js",
     "src/scripts/game/34b-entities_InfectedSprites.js",
     "src/scripts/game/35-entities_Boss.js",
+    "src/scripts/game/35b-entities_BossSprites.js",
     "src/scripts/game/36a-combat_WeaponFeel.js",
     "src/scripts/game/36-combat_Pistol.js",
     "src/scripts/game/37-input_DualStickInput.js",

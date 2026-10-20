@@ -773,7 +773,7 @@ class CombatScene {
     const g=this.game,d=DIFFICULTIES[g.save.settings.difficulty],progress=new Progression();
     document.querySelector('#app').dataset.scene='field';
     this.run={dialogue:new DialogueDirector(),dialogueState:{visibleKinds:new Set(),nearCounts:{},lastSeenAt:0,lastKillAt:-999,killCombo:0,lastDamageHp:d.hp,lastAmmo:12,lastReserve:60,coasting:0,nearVehicle:null,lastCarHit:0,quietTime:0,clearTransition:false,previousWave:1,zoneTriggers:new Set(),worldScan:0,nearbyEnemyCount:0,nearbyCarCount:0},difficulty:d.id,player:new Player(d.hp,progress),gun:new Pistol(progress),progress,waves:new WaveDirector(d.enemies*HORDE_BALANCE[d.id].spawn,HORDE_BALANCE[d.id].alive),enemies:[],boss:null,bossPending:null,bossQueue:[],enemyAttacks:new EnemyAttacks(),navigation:new EnemyNavigation(),spatial:new SpatialHash(96),effects:new CombatEffects(),killFeedback:new KillFeedback(),noticeText:'',noticeTextTime:0,loot:new LootSystem(d.resources),grenades:new GrenadeSystem(),gear:new SurvivalGear(progress),barrels:new ExplosiveBarrels(),discovery:new DiscoverySystem(g.save),district:districtAt(592,575),visited:new Set(['center']),elapsed:0,kills:0,enemyCounter:0,over:false,recorded:false,hitPulse:0,notice:0,lootToast:'',lootToastTime:0};
-    window.__PZ_ASSETS__=g.assets;pzResetCorpses();
+    window.__PZ_ASSETS__=g.assets;pzResetCorpses();pzResetBossFx();
     this.run.midnightSpawnClock=1.4;
     this.run.midnightPackId=0;
     this.run.hordeTactics=new Q04HordeTactics();

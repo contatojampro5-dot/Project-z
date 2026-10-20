@@ -42,6 +42,9 @@ ASSETS.infInvocadorProfeta = '@@ASSET:assets/images/game/infectados/invocador-pr
 ASSETS.infInvocadorAndarilho = '@@ASSET:assets/images/game/infectados/invocador-andarilho.webp@@';
 ASSETS.infNotivagoSombrio = '@@ASSET:assets/images/game/infectados/notivago-sombrio.webp@@';
 ASSETS.infNotivagoCinzento = '@@ASSET:assets/images/game/infectados/notivago-cinzento.webp@@';
+// ATLAS A5.4 · chefes
+ASSETS.infChefeColosso = '@@ASSET:assets/images/game/infectados/chefe-colosso.webp@@';
+ASSETS.infChefeColmeia = '@@ASSET:assets/images/game/infectados/chefe-colmeia.webp@@';
 ASSETS.infPecas = '@@ASSET:assets/images/game/infectados/pecas.webp@@'; // cabeça, braço e perna girando em 12 quadros
 ASSETS.runner = '@@ASSET:assets/images/game/runner.49c6e247.png@@';
 ASSETS.runnerAtlas = '@@ASSET:assets/images/game/runnerAtlas.6421e857.png@@';
