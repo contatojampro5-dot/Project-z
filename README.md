@@ -191,3 +191,10 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - A Colmeia: arrasta o corpo com o enxame girando; "enxame iminente" acompanha o aviso de 1,1 s; ao fim do aviso, "liberar enxame" junto com os projéteis radiais.
 - Linhas de aviso, rastro da investida e onda da Colmeia continuam iguais.
 - Jogo: 16 MB — a etapa 5 cuida do peso.
+
+## Atlas A5.5 · Peso e desempenho
+- Folhas sem as linhas de animação que o jogo não usa (parado dos inimigos comuns, "levar tiro" dos chefes) e recomprimidas: sprites 6,7 → 4,5 MB.
+- Duas versões geradas pelo `build.py`:
+  - `python3 build.py --web jogo` → **versão do link** (GitHub Pages): `jogo/index.html` com 3,6 MB; sprites e músicas em `jogo/assets/`, baixados em paralelo e guardados no cache (a segunda visita abre quase na hora).
+  - `python3 build.py` → `dist/index.html`, arquivo único de 13 MB que joga offline.
+- FPS com 60 inimigos misturados (navegador de teste, sem GPU): 22,7 antes dos sprites novos → 23,6 agora. Os sprites novos não custaram desempenho.

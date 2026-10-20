@@ -4,9 +4,9 @@
 // dash=investida (Colosso), golpe de contato=esmagar (Colosso), fim do aviso=liberar enxame (Colmeia).
 const PZ_BOSS_SPRITES=Object.freeze({
   colossus:{key:'infChefeColosso',cell:{w:150,h:165,ground:149,cx:75},foot:44,
-    anims:{idle:{row:0,frames:8},walk:{row:8,frames:8},attack:{row:16,frames:6,fps:12},hit:{row:22,frames:4},death:{row:26,frames:12,fps:9},telegraph:{row:38,frames:8},slam:{row:46,frames:8,fps:10}}},
+    anims:{idle:{row:0,frames:8},walk:{row:8,frames:8},attack:{row:16,frames:6,fps:12},death:{row:22,frames:12,fps:9},telegraph:{row:34,frames:8},slam:{row:42,frames:8,fps:10}}},
   hive:{key:'infChefeColmeia',cell:{w:160,h:170,ground:150,cx:80},foot:44,
-    anims:{idle:{row:0,frames:8},walk:{row:8,frames:8},attack:{row:16,frames:8,fps:10},hit:{row:24,frames:4},death:{row:28,frames:12,fps:9},telegraph:{row:40,frames:8}}},
+    anims:{idle:{row:0,frames:8},walk:{row:8,frames:8},attack:{row:16,frames:8,fps:10},death:{row:24,frames:12,fps:9},telegraph:{row:36,frames:8}}},
 });
 const PZ_BOSS_FX={dead:[]};
 
