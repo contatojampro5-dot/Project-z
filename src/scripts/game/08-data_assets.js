@@ -35,6 +35,13 @@ ASSETS.infExplosivoInchado = '@@ASSET:assets/images/game/infectados/explosivo-in
 ASSETS.infExplosivoMecanico = '@@ASSET:assets/images/game/infectados/explosivo-mecanico.webp@@';
 ASSETS.infCuspidorMoletom = '@@ASSET:assets/images/game/infectados/cuspidor-moletom.webp@@';
 ASSETS.infCuspidorGarconete = '@@ASSET:assets/images/game/infectados/cuspidor-garconete.webp@@';
+// ATLAS A5.3 · Tanque, Invocador e Notívago
+ASSETS.infTanquePedreiro = '@@ASSET:assets/images/game/infectados/tanque-pedreiro.webp@@';
+ASSETS.infTanqueSeguranca = '@@ASSET:assets/images/game/infectados/tanque-seguranca.webp@@';
+ASSETS.infInvocadorProfeta = '@@ASSET:assets/images/game/infectados/invocador-profeta.webp@@';
+ASSETS.infInvocadorAndarilho = '@@ASSET:assets/images/game/infectados/invocador-andarilho.webp@@';
+ASSETS.infNotivagoSombrio = '@@ASSET:assets/images/game/infectados/notivago-sombrio.webp@@';
+ASSETS.infNotivagoCinzento = '@@ASSET:assets/images/game/infectados/notivago-cinzento.webp@@';
 ASSETS.infPecas = '@@ASSET:assets/images/game/infectados/pecas.webp@@'; // cabeça, braço e perna girando em 12 quadros
 ASSETS.runner = '@@ASSET:assets/images/game/runner.49c6e247.png@@';
 ASSETS.runnerAtlas = '@@ASSET:assets/images/game/runnerAtlas.6421e857.png@@';

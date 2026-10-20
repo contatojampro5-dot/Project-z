@@ -179,3 +179,9 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Cuspidor (Moletom, Garçonete): a animação de cuspir dispara junto com o projétil e vira para o alvo.
 - Peças do corpo agora existem para as 9 variações (`pecas.webp`).
 - Todas as folhas do jogo recomprimidas (4,6 → 3,2 MB). Jogo: 11,2 MB.
+
+## Atlas A5.3 · Tanque, Invocador e Notívago
+- Tanque (Pedreiro, Segurança): célula maior (88×92), pisada pesada e "Esmagar" no contato.
+- Invocador (Profeta, Andarilho): a animação "Invocar" toca no instante em que ele chama a horda.
+- Notívago (Sombrio, Cinzento): cada estado da IA tem animação própria — espreitar, preparar o salto, saltar, garra, recuperar, fugir da luz e queimar na lanterna (com brilho de brasa).
+- Peças do corpo para as 15 variações. Jogo: 13,9 MB (otimização de peso na etapa 5).

@@ -79,6 +79,7 @@
     "src/scripts/game/36-combat_Pistol.js",
     "src/scripts/game/37-input_DualStickInput.js",
     "src/scripts/game/38-core_CombatScene.js",
+    "src/scripts/game/38e-core_MidnightSprites.js",
     "src/scripts/game/38a-rendering_LightMap.js",
     "src/scripts/game/38c-core_RhythmPerf.js",
     "src/scripts/game/38d-core_Survivors.js",

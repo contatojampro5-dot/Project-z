@@ -24,6 +24,17 @@ const PZ_SPRITES=Object.freeze({
   spitter:{cell:{w:64,h:72,ground:60,cx:32},variants:['infCuspidorMoletom','infCuspidorGarconete'],
     anims:{idle:{row:0,frames:6},walk:{row:6,frames:8},attack:{row:14,frames:8,fps:12},hit:{row:22,frames:4},death:{row:26,frames:9,fps:10},crawl:{row:35,frames:8}},
     corpseLife:8,partsBase:7},
+  // ATLAS A5.3 · Tanque com célula maior (88×92), pés no mesmo ponto do sprite antigo
+  tank:{cell:{w:88,h:92,ground:80,cx:44},foot:30,variants:['infTanquePedreiro','infTanqueSeguranca'],
+    anims:{idle:{row:0,frames:6},walk:{row:6,frames:8},attack:{row:14,frames:8},hit:{row:22,frames:4},death:{row:26,frames:9,fps:10},crawl:{row:35,frames:8}},
+    corpseLife:10,partsBase:9},
+  summoner:{cell:{w:64,h:72,ground:60,cx:32},variants:['infInvocadorProfeta','infInvocadorAndarilho'],
+    anims:{idle:{row:0,frames:8},walk:{row:8,frames:8},attack:{row:16,frames:8,fps:9},hit:{row:24,frames:4},death:{row:28,frames:9,fps:10},crawl:{row:37,frames:8}},
+    corpseLife:8,partsBase:11},
+  midnight:{cell:{w:64,h:72,ground:60,cx:32},foot:26,variants:['infNotivagoSombrio','infNotivagoCinzento'],
+    anims:{idle:{row:0,frames:6},walk:{row:6,frames:8},attack:{row:14,frames:8},hit:{row:22,frames:4},death:{row:26,frames:9,fps:10},
+      claw:{row:35,frames:6},flee:{row:41,frames:8},burn:{row:49,frames:8},crawl:{row:6,frames:8}},
+    corpseLife:7,partsBase:13},
 });
 const PZ_CORPSES={list:[],skip:0,max:40};
 const pzDir8=h=>((Math.round((h||0)/(Math.PI/4))%8)+8)%8;
@@ -45,7 +56,7 @@ function pzSheetFor(spec,v,mut,assets){
 function pzBlit(ctx,img,spec,anim,frame,dir,x,y,alpha=1,anims){
   const c=spec.cell,a=(anims||spec.anims)[anim]||spec.anims[anim];const row=a.row+Math.min(a.frames-1,Math.max(0,frame));
   if(alpha<1)ctx.globalAlpha=alpha;
-  ctx.drawImage(img,dir*c.w,row*c.h,c.w,c.h,Math.round(x-c.cx),Math.round(y+24-c.ground),c.w,c.h);
+  ctx.drawImage(img,dir*c.w,row*c.h,c.w,c.h,Math.round(x-c.cx),Math.round(y+(spec.foot||24)-c.ground),c.w,c.h);
   if(alpha<1)ctx.globalAlpha=1;
 }
 
@@ -64,6 +75,7 @@ Enemy.prototype.draw=function(ctx,assets){
   if(this.crawling){anim='crawl';frame=Math.floor(this.stride/TAU*spec.anims.crawl.frames)%spec.anims.crawl.frames;}
   else if(this.flinch>0||this.hitStun>0){anim='hit';const k=this.flinch>0?1-this.flinch/.15:.6;frame=Math.floor(k*spec.anims.hit.frames);}
   else if(this.kind==='bomber'&&this.fuse>=0){anim='attack';frame=Math.floor((1-this.fuse/.85)*spec.anims.attack.frames);}// inflar = pavio
+  else if(this.kind==='summoner'&&this._castT!=null&&performance.now()-this._castT<900){anim='attack';frame=Math.floor((performance.now()-this._castT)/1000*spec.anims.attack.fps);}
   else if(this.kind==='spitter'&&this._spitT!=null&&performance.now()-this._spitT<700){anim='attack';frame=Math.floor((performance.now()-this._spitT)/1000*spec.anims.attack.fps);}
   else if(this.animation==='attack'){anim='attack';frame=Math.floor(this.stride*(this.kind==='runner'?.5:1.1))%spec.anims.attack.frames;}
   else{frame=Math.floor(this.stride/TAU*spec.anims.walk.frames)%spec.anims.walk.frames;}
@@ -163,9 +175,14 @@ CombatEffects.prototype.drawOver=function(ctx){
 // O cuspe sai na hora em que a animação começa: marca o instante e a direção do disparo.
 const _pzEnemyUpdate=Enemy.prototype.update;
 Enemy.prototype.update=function(dt,player,others,context){
+  if(this.kind==='summoner'&&context&&context.summon&&!context.__pzWrapped){
+    const self=this,orig=context.summon;const ctx2=Object.create(context);ctx2.__pzWrapped=true;
+    ctx2.summon=function(...a){self._castT=performance.now();return orig.apply(context,a);};
+    return _pzEnemyUpdate.call(this,dt,player,others,ctx2);}
   if(this.kind==='spitter'&&context&&context.shoot&&!context.__pzWrapped){
     const self=this,orig=context.shoot;const ctx2=Object.create(context);ctx2.__pzWrapped=true;
     ctx2.shoot=function(x,y,dx,dy,...rest){if(x===self.x&&y===self.y){self._spitT=performance.now();self._spitA=Math.atan2(dy,dx);}return orig.call(context,x,y,dx,dy,...rest);};
     return _pzEnemyUpdate.call(this,dt,player,others,ctx2);}
   return _pzEnemyUpdate.call(this,dt,player,others,context);
 };
+
