@@ -157,3 +157,6 @@ Novo módulo `src/scripts/game/38d-core_Survivors.js`, com as tabelas `SURVIVOR_
 - O corpo cai com a animação de morte e fica no chão ~9 s antes de sumir.
 - Os outros tipos continuam com o desenho antigo até as próximas etapas.
 - Módulo: `src/scripts/game/34b-entities_InfectedSprites.js` (tabela `PZ_SPRITES` recebe os próximos tipos).
+
+## Jogar online
+https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois de cada envio)
