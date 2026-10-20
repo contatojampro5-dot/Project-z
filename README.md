@@ -150,3 +150,10 @@ Novo módulo `src/scripts/game/38d-core_Survivors.js`, com as tabelas `SURVIVOR_
 - `laboratorio/estudo-infectado.html` — estudo dos sprites novos (Atlas A5), ainda não aplicado.
 - `laboratorio/folhas/` — folhas de sprite WebP por tipo + `infectados.json`.
 - `laboratorio/src/` — motor de pintura e página do laboratório (`python3 laboratorio/src/build.py`).
+
+## Atlas A5.1 · Infectado comum no jogo
+- As folhas novas do Infectado comum (Operário, Executivo, Paciente) substituem o sprite antigo.
+- Animações ligadas ao estado do jogo: andar, atacar, levar tiro, rastejar (sem pernas) e morrer.
+- O corpo cai com a animação de morte e fica no chão ~9 s antes de sumir.
+- Os outros tipos continuam com o desenho antigo até as próximas etapas.
+- Módulo: `src/scripts/game/34b-entities_InfectedSprites.js` (tabela `PZ_SPRITES` recebe os próximos tipos).

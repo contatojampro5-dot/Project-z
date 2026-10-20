@@ -16,6 +16,10 @@ const ASSETS = {
 // G.3.1.8: retratos e atlases de 8 direções / 4 frames para zumbis.
 ASSETS.zombie = '@@ASSET:assets/images/game/zombie.fc11de90.png@@';
 ASSETS.zombieAtlas = '@@ASSET:assets/images/game/zombieAtlas.095fe4e2.png@@';
+// ATLAS A5 · folhas do Infectado comum (3 variações, 8 direções, 6 animações)
+ASSETS.infComumOperario = '@@ASSET:assets/images/game/infectados/comum-operario.webp@@';
+ASSETS.infComumExecutivo = '@@ASSET:assets/images/game/infectados/comum-executivo.webp@@';
+ASSETS.infComumPaciente = '@@ASSET:assets/images/game/infectados/comum-paciente.webp@@';
 ASSETS.runner = '@@ASSET:assets/images/game/runner.49c6e247.png@@';
 ASSETS.runnerAtlas = '@@ASSET:assets/images/game/runnerAtlas.6421e857.png@@';
 ASSETS.bomber = '@@ASSET:assets/images/game/bomber.aa7adbe5.png@@';
