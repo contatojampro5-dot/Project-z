@@ -160,3 +160,9 @@ Novo módulo `src/scripts/game/38d-core_Survivors.js`, com as tabelas `SURVIVOR_
 
 ## Jogar online
 https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois de cada envio)
+
+## Atlas A5.1b · Peças do corpo em volume
+- Cabeça, braço e perna arrancados agora são peças pintadas em volume (mesmo motor dos sprites), girando em 3D no ar (12 quadros) com coto de carne e osso.
+- Tiro forte: braços e pernas voam; a cabeça só sai em explosão (o corpo inteiro se desfaz e não fica cadáver inteiro).
+- Membro perdido com o zumbi vivo apenas se solta e cai perto dele.
+- Folha: `assets/images/game/infectados/comum-pecas.webp` (34 KB).

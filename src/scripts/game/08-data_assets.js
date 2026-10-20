@@ -20,6 +20,7 @@ ASSETS.zombieAtlas = '@@ASSET:assets/images/game/zombieAtlas.095fe4e2.png@@';
 ASSETS.infComumOperario = '@@ASSET:assets/images/game/infectados/comum-operario.webp@@';
 ASSETS.infComumExecutivo = '@@ASSET:assets/images/game/infectados/comum-executivo.webp@@';
 ASSETS.infComumPaciente = '@@ASSET:assets/images/game/infectados/comum-paciente.webp@@';
+ASSETS.infComumPecas = '@@ASSET:assets/images/game/infectados/comum-pecas.webp@@'; // cabeça, braço e perna girando em 12 quadros
 ASSETS.runner = '@@ASSET:assets/images/game/runner.49c6e247.png@@';
 ASSETS.runnerAtlas = '@@ASSET:assets/images/game/runnerAtlas.6421e857.png@@';
 ASSETS.bomber = '@@ASSET:assets/images/game/bomber.aa7adbe5.png@@';

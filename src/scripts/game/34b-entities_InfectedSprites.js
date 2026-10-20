@@ -79,3 +79,52 @@ CombatEffects.prototype.drawUnder=function(ctx){
 };
 // Partida nova: limpa os corpos da anterior.
 function pzResetCorpses(){PZ_CORPSES.list.length=0;PZ_CORPSES.skip=0;}
+
+// ---------- Peças do corpo (cabeça, braço, perna) em volume ----------
+// Folha 'infComumPecas': linha = variação*3 + peça (0 cabeça, 1 braço, 2 perna), 12 quadros de giro em 3D, célula 48.
+const PZ_PARTS={cell:48,frames:12,row:{head:0,arm:1,leg:2}};
+function pzPartVariant(enemy){
+  if(enemy&&enemy._sv!=null)return enemy._sv;
+  return enemy?pzHash(Math.round(enemy.x),Math.round(enemy.y))%3:0;
+}
+function pzTagNewParts(fx,from,enemy,mode){
+  const v=pzPartVariant(enemy);
+  for(let i=from;i<fx.severedParts.length;i++){const p=fx.severedParts[i];if(p._pz)continue;
+    p._pz=1;p.v=v;p.yaw=Math.atan2(p.vy,p.vx)+(Math.random()-.5)*.8;p.tumble=Math.random()*6.283;
+    if(mode==='fall'){// membro que só se solta do corpo: cai perto, quica pouco
+      p.vx*=.32;p.vy*=.32;p.vz=40+Math.random()*30;p.z=Math.max(p.z,10);p.spin*=.45;}
+  }
+}
+const _pzEmitSevered=CombatEffects.prototype.emitSevered;
+CombatEffects.prototype.emitSevered=function(enemy,dx=1,dy=0,damage=0,force=false){
+  const from=this.severedParts.length;
+  const blownApart=!!force&&(Number(damage)||0)>=48;
+  _pzEmitSevered.call(this,enemy,dx,dy,damage,force);
+  if(!blownApart){// tiro comum: não arranca a cabeça de um corpo que cai inteiro
+    for(let i=this.severedParts.length-1;i>=from;i--)if(this.severedParts[i].part==='head')this.severedParts.splice(i,1);}
+  else if(enemy&&PZ_SPRITES[enemy.kind]){// explosão: o corpo inteiro se desfaz, sem cadáver inteiro no chão
+    const L=PZ_CORPSES.list;for(let i=L.length-1;i>=0;i--){const c=L[i];if(Math.hypot(c.x-enemy.x,c.y-enemy.y)<6&&c.t<.2){L.splice(i,1);break;}}}
+  pzTagNewParts(this,Math.min(from,this.severedParts.length),enemy,'fly');
+};
+const _pzEmitAmputated=CombatEffects.prototype.emitAmputatedLeg;
+CombatEffects.prototype.emitAmputatedLeg=function(enemy,dx=1,dy=0,part='leg'){
+  const from=this.severedParts.length;_pzEmitAmputated.call(this,enemy,dx,dy,part);pzTagNewParts(this,from,enemy,'fall');
+};
+const _pzFxDrawOver=CombatEffects.prototype.drawOver;
+CombatEffects.prototype.drawOver=function(ctx){
+  const assets=window.__PZ_ASSETS__,img=assets&&assets.get('infComumPecas');
+  if(!img||!img.width)return _pzFxDrawOver.call(this,ctx);
+  const parts=this.severedParts;this.severedParts=[];
+  try{_pzFxDrawOver.call(this,ctx);}finally{this.severedParts=parts;}
+  const C=PZ_PARTS.cell,N=PZ_PARTS.frames,TAU=Math.PI*2;
+  for(const p of parts){
+    const row=(p.v||0)*3+(PZ_PARTS.row[p.part]??1);
+    // o giro em 3D acompanha o ângulo que a física já acumula no ar; no chão a peça para no último quadro
+    const ang=(p.angle||0)+(p.tumble||0);const f=((Math.floor(((ang%TAU)+TAU)%TAU/TAU*N))%N+N)%N;
+    const a=Math.min(1,p.life/.55),h=Math.max(0,p.z||0);
+    ctx.save();ctx.globalAlpha=a*Math.max(.25,.45-h/120);ctx.fillStyle='#000';
+    ctx.beginPath();ctx.ellipse(p.x,p.y+3,9*(1-Math.min(.5,h/80)),3.4*(1-Math.min(.5,h/80)),0,0,TAU);ctx.fill();
+    ctx.globalAlpha=a;ctx.translate(Math.round(p.x),Math.round(p.y-h));ctx.rotate((p.yaw||0)*.35);
+    ctx.drawImage(img,f*C,row*C,C,C,-C/2,-C/2,C,C);ctx.restore();
+  }
+};
