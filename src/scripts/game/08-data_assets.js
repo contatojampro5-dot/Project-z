@@ -28,7 +28,14 @@ ASSETS.infComumExecutivoSemR = '@@ASSET:assets/images/game/infectados/comum-exec
 ASSETS.infComumPacienteSemL = '@@ASSET:assets/images/game/infectados/comum-paciente-semL.webp@@';
 ASSETS.infComumPacienteSemR = '@@ASSET:assets/images/game/infectados/comum-paciente-semR.webp@@';
 ASSETS.infComumSemPernas = '@@ASSET:assets/images/game/infectados/comum-sem-pernas.webp@@';
-ASSETS.infComumPecas = '@@ASSET:assets/images/game/infectados/comum-pecas.webp@@'; // cabeça, braço e perna girando em 12 quadros
+// ATLAS A5.2 · Corredor, Explosivo e Cuspidor
+ASSETS.infCorredorAtleta = '@@ASSET:assets/images/game/infectados/corredor-atleta.webp@@';
+ASSETS.infCorredorCiclista = '@@ASSET:assets/images/game/infectados/corredor-ciclista.webp@@';
+ASSETS.infExplosivoInchado = '@@ASSET:assets/images/game/infectados/explosivo-inchado.webp@@';
+ASSETS.infExplosivoMecanico = '@@ASSET:assets/images/game/infectados/explosivo-mecanico.webp@@';
+ASSETS.infCuspidorMoletom = '@@ASSET:assets/images/game/infectados/cuspidor-moletom.webp@@';
+ASSETS.infCuspidorGarconete = '@@ASSET:assets/images/game/infectados/cuspidor-garconete.webp@@';
+ASSETS.infPecas = '@@ASSET:assets/images/game/infectados/pecas.webp@@'; // cabeça, braço e perna girando em 12 quadros
 ASSETS.runner = '@@ASSET:assets/images/game/runner.49c6e247.png@@';
 ASSETS.runnerAtlas = '@@ASSET:assets/images/game/runnerAtlas.6421e857.png@@';
 ASSETS.bomber = '@@ASSET:assets/images/game/bomber.aa7adbe5.png@@';

@@ -12,7 +12,18 @@ const PZ_SPRITES=Object.freeze({
     armless:{L:['infComumOperarioSemL','infComumExecutivoSemL','infComumPacienteSemL'],R:['infComumOperarioSemR','infComumExecutivoSemR','infComumPacienteSemR'],
       anims:{walk:{row:0,frames:8},attack:{row:8,frames:7},hit:{row:15,frames:4},death:{row:19,frames:9,fps:10}}},
     legless:{key:'infComumSemPernas',rowsPer:8},
+    partsBase:0,
   },
+  // ATLAS A5.2 · mesma célula; linhas próprias de cada tipo (folhas exportadas pelo laboratório)
+  runner:{cell:{w:64,h:72,ground:60,cx:32},variants:['infCorredorAtleta','infCorredorCiclista'],
+    anims:{idle:{row:0,frames:6},walk:{row:6,frames:8},attack:{row:14,frames:7},hit:{row:21,frames:4},death:{row:25,frames:9,fps:10},crawl:{row:34,frames:8}},
+    corpseLife:8,partsBase:3},
+  bomber:{cell:{w:64,h:72,ground:60,cx:32},variants:['infExplosivoInchado','infExplosivoMecanico'],
+    anims:{idle:{row:0,frames:6},walk:{row:6,frames:8},attack:{row:14,frames:8},hit:{row:22,frames:4},death:{row:26,frames:9,fps:10},crawl:{row:35,frames:8}},
+    corpseLife:8,partsBase:5},
+  spitter:{cell:{w:64,h:72,ground:60,cx:32},variants:['infCuspidorMoletom','infCuspidorGarconete'],
+    anims:{idle:{row:0,frames:6},walk:{row:6,frames:8},attack:{row:14,frames:8,fps:12},hit:{row:22,frames:4},death:{row:26,frames:9,fps:10},crawl:{row:35,frames:8}},
+    corpseLife:8,partsBase:7},
 });
 const PZ_CORPSES={list:[],skip:0,max:40};
 const pzDir8=h=>((Math.round((h||0)/(Math.PI/4))%8)+8)%8;
@@ -29,7 +40,7 @@ function pzMutation(enemy){const L=enemy.lostLimbs;if(!L||!L.size)return null;
   if(L.has('leftLeg')&&L.has('rightLeg'))return'legless';
   if(L.has('rightArm'))return'R';if(L.has('leftArm'))return'L';return null;}
 function pzSheetFor(spec,v,mut,assets){
-  if(mut==='L'||mut==='R'){const img=assets.get(spec.armless[mut][v]);if(img&&img.width)return{img,anims:spec.armless.anims};}
+  if((mut==='L'||mut==='R')&&spec.armless){const img=assets.get(spec.armless[mut][v]);if(img&&img.width)return{img,anims:spec.armless.anims};}
   return null;}
 function pzBlit(ctx,img,spec,anim,frame,dir,x,y,alpha=1,anims){
   const c=spec.cell,a=(anims||spec.anims)[anim]||spec.anims[anim];const row=a.row+Math.min(a.frames-1,Math.max(0,frame));
@@ -46,15 +57,17 @@ Enemy.prototype.draw=function(ctx,assets){
   const{spec,img}=S;const TAU=Math.PI*2;
   let anim='walk',frame=0;
   const mut=pzMutation(this);
-  if(this.crawling&&mut==='legless'){const li=assets.get(spec.legless.key);
+  if(this.crawling&&mut==='legless'&&spec.legless){const li=assets.get(spec.legless.key);
     if(li&&li.width){const f=Math.floor(this.stride/TAU*8)%8;const row=this._sv*spec.legless.rowsPer+f;const c=spec.cell;const dir=pzDir8(this.heading);
       ctx.save();if(this.flinch>0)ctx.filter='brightness(1.7)';ctx.drawImage(li,dir*c.w,row*c.h,c.w,c.h,Math.round(this.x-c.cx),Math.round(this.y+24-c.ground),c.w,c.h);ctx.filter='none';ctx.restore();return;}}
   const alt=pzSheetFor(spec,this._sv,mut,assets);
   if(this.crawling){anim='crawl';frame=Math.floor(this.stride/TAU*spec.anims.crawl.frames)%spec.anims.crawl.frames;}
   else if(this.flinch>0||this.hitStun>0){anim='hit';const k=this.flinch>0?1-this.flinch/.15:.6;frame=Math.floor(k*spec.anims.hit.frames);}
-  else if(this.animation==='attack'){anim='attack';frame=Math.floor(this.stride*1.1)%spec.anims.attack.frames;}
+  else if(this.kind==='bomber'&&this.fuse>=0){anim='attack';frame=Math.floor((1-this.fuse/.85)*spec.anims.attack.frames);}// inflar = pavio
+  else if(this.kind==='spitter'&&this._spitT!=null&&performance.now()-this._spitT<700){anim='attack';frame=Math.floor((performance.now()-this._spitT)/1000*spec.anims.attack.fps);}
+  else if(this.animation==='attack'){anim='attack';frame=Math.floor(this.stride*(this.kind==='runner'?.5:1.1))%spec.anims.attack.frames;}
   else{frame=Math.floor(this.stride/TAU*spec.anims.walk.frames)%spec.anims.walk.frames;}
-  const dir=pzDir8(this.heading);
+  const dir=pzDir8(anim==='attack'&&this.kind==='spitter'&&this._spitA!=null?this._spitA:this.heading);
   ctx.save();
   if(this.flinch>0)ctx.filter='brightness(1.7)';
   // A folha já traz sombra, rosto, olhos e mãos; o recuo do tiro continua vindo do jogo.
@@ -101,8 +114,9 @@ function pzResetCorpses(){PZ_CORPSES.list.length=0;PZ_CORPSES.skip=0;}
 // Folha 'infComumPecas': linha = variação*3 + peça (0 cabeça, 1 braço, 2 perna), 12 quadros de giro em 3D, célula 48.
 const PZ_PARTS={cell:48,frames:12,row:{head:0,arm:1,leg:2}};
 function pzPartVariant(enemy){
-  if(enemy&&enemy._sv!=null)return enemy._sv;
-  return enemy?pzHash(Math.round(enemy.x),Math.round(enemy.y))%3:0;
+  const spec=enemy&&PZ_SPRITES[enemy.kind];if(!spec)return 0;
+  const v=enemy._sv!=null?enemy._sv:pzHash(Math.round(enemy.x),Math.round(enemy.y))%spec.variants.length;
+  return spec.partsBase+v;
 }
 function pzTagNewParts(fx,from,enemy,mode){
   const v=pzPartVariant(enemy);
@@ -129,7 +143,7 @@ CombatEffects.prototype.emitAmputatedLeg=function(enemy,dx=1,dy=0,part='leg'){
 };
 const _pzFxDrawOver=CombatEffects.prototype.drawOver;
 CombatEffects.prototype.drawOver=function(ctx){
-  const assets=window.__PZ_ASSETS__,img=assets&&assets.get('infComumPecas');
+  const assets=window.__PZ_ASSETS__,img=assets&&assets.get('infPecas');
   if(!img||!img.width)return _pzFxDrawOver.call(this,ctx);
   const parts=this.severedParts;this.severedParts=[];
   try{_pzFxDrawOver.call(this,ctx);}finally{this.severedParts=parts;}
@@ -144,4 +158,14 @@ CombatEffects.prototype.drawOver=function(ctx){
     ctx.globalAlpha=a;ctx.translate(Math.round(p.x),Math.round(p.y-h));ctx.rotate((p.yaw||0)*.35);
     ctx.drawImage(img,f*C,row*C,C,C,-C/2,-C/2,C,C);ctx.restore();
   }
+};
+
+// O cuspe sai na hora em que a animação começa: marca o instante e a direção do disparo.
+const _pzEnemyUpdate=Enemy.prototype.update;
+Enemy.prototype.update=function(dt,player,others,context){
+  if(this.kind==='spitter'&&context&&context.shoot&&!context.__pzWrapped){
+    const self=this,orig=context.shoot;const ctx2=Object.create(context);ctx2.__pzWrapped=true;
+    ctx2.shoot=function(x,y,dx,dy,...rest){if(x===self.x&&y===self.y){self._spitT=performance.now();self._spitA=Math.atan2(dy,dx);}return orig.call(context,x,y,dx,dy,...rest);};
+    return _pzEnemyUpdate.call(this,dt,player,others,ctx2);}
+  return _pzEnemyUpdate.call(this,dt,player,others,context);
 };

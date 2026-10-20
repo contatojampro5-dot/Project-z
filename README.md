@@ -172,3 +172,10 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Perdeu as duas pernas: rasteja sem as pernas, com os cotos nos joelhos.
 - O cadáver também cai sem o braço perdido.
 - 7 folhas novas (~1,35 MB). O jogo passou de 8,2 para 10 MB; a redução de peso fica para a etapa 5.
+
+## Atlas A5.2 · Corredor, Explosivo e Cuspidor
+- Corredor (Atleta, Ciclista): corrida inclinada e bote no contato.
+- Explosivo (Inchado, Mecânico): a animação "Inflar" acompanha o pavio de 0,85 s; explode sem deixar cadáver inteiro.
+- Cuspidor (Moletom, Garçonete): a animação de cuspir dispara junto com o projétil e vira para o alvo.
+- Peças do corpo agora existem para as 9 variações (`pecas.webp`).
+- Todas as folhas do jogo recomprimidas (4,6 → 3,2 MB). Jogo: 11,2 MB.
