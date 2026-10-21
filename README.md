@@ -268,3 +268,7 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Postes de concreto com o dobro da altura; a fiação e a rede do trólebus passam bem acima da rua e ficam quase invisíveis perto do jogador.
 - Postes, orelhões, bancas, pontos de ônibus e placas de rua ficam transparentes quando o jogador passa atrás deles.
 - Personagens e infectados (inclusive os corpos caindo) desenhados 15% menores, para dar mais escala à cidade. A colisão e o alcance não mudaram.
+
+## Laboratório · Estudo do Antônio (não aplicado ainda)
+- Página `laboratorio/estudo-antonio.html`: o Antônio no mesmo motor dos infectados, versão estilizada (cores mais vivas, contorno escuro, cabeça e mãos maiores), baseado na arte dele (boné bordado, barba, camisa com manga dobrada, calça cargo, cinto com mosquetão, relógio, tênis).
+- 9 animações × 8 direções × 2 tipos de arma (curta e longa): parado, mirando, andar mirando, correr, atirar com recuo, recarregar, levar dano, morrer e a habilidade Acelerar. Seis expressões de rosto. Prévia no tamanho do jogo e folha de sprites.
