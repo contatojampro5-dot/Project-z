@@ -21,8 +21,8 @@ function pzSurvivorSetup(scene){
   if(ch.hp&&ch.hp!==100){const k=ch.hp/100;p.maxHp=Math.round(p.maxHp*k);p.hp=p.maxHp;p.shieldUnit=p.maxHp*.25;p.maxShield=p.shieldUnit*p.armorTier;p.shield=Math.min(p.shield,p.maxShield);}
   p.lastHurtAt=0;p.punchClock=SAN_PUNCH.interval;p.minesLeft=HANNA_MINE.perBatch;
   r.mines=[];r.punchFX=null;
-  // As falas atuais são do Antônio; os outros sobreviventes ficam em silêncio até terem as próprias (A6).
-  if(ch.id!=='antonio'&&r.dialogue){r.dialogue.request=()=>false;}
+  // Cada sobrevivente fala com o próprio catálogo (Antônio: original; Hadassa, Hanna e San: 38e).
+  if(ch.id!=='antonio'&&r.dialogue&&typeof pzSurvCatalog==='function'){const c=pzSurvCatalog(ch.id);if(c)r.dialogue.catalog=c;}
 }
 
 function pzSpecialCooldown(p){return SURVIVOR_KITS[p.charId||'antonio']?.cooldown??20;}

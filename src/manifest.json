@@ -93,6 +93,7 @@
     "src/scripts/game/38f-rendering_RealLight.js",
     "src/scripts/game/38c-core_RhythmPerf.js",
     "src/scripts/game/38d-core_Survivors.js",
+    "src/scripts/game/38e-core_SurvivorLines.js",
     "src/scripts/game/38b-world_WorldFX.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",
