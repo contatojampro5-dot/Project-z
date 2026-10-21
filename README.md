@@ -298,6 +298,7 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 ## R25e · Rostos da Hadassa, do San e da Hanna
 - As seis expressões (neutro, foco, raiva, medo, dor, grito) dos três entram no painel de vida e mudam com a partida, como as do Antônio. O escudo de liga real na camisa do San foi borrado (o jogo usa marcas fictícias).
 
-## R26 · ATLAS A13 — falas dos outros sobreviventes
+## R26 · ATLAS A13 — falas individuais sobreviventes
 - Hadassa (durona), Hanna (sarcástica) e San (brincalhão) agora falam, com as mesmas 80 situações do Antônio (`src/scripts/game/38e-core_SurvivorLines.js`).
 - A caixa de fala mostra o rosto de cada um, com a expressão certa.
+- R26b: falas reescritas por personagem (irmãs Hadassa e Hanna procurando uma à outra; San, atleta que questiona as medalhas).
