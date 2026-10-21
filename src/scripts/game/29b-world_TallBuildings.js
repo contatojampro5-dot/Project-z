@@ -67,6 +67,12 @@ function pzPaintFacade(ctx,b,ox,oy){
     if(!open)for(let l=gy+8;l<gy+gh-2;l+=3){ctx.fillStyle='rgba(20,22,26,.6)';ctx.fillRect(sx,l,sw,1);}
     if(rand()<.4){ctx.fillStyle='rgba(30,10,12,.7)';ctx.fillRect(sx+3,gy+gh*.4,sw-6,3);}// pichação
   }
+  // ATLAS A9: rua de São Paulo — pixo no alto, pichação política e cartazes no térreo
+  if(typeof pzSpray==='function'){
+    if(rand()<.55)pzPixo(ctx,ox+6+rand()*Math.max(1,w-90),oy+9,PZ_TAGS[Math.floor(rand()*PZ_TAGS.length)]+' '+PZ_TAGS[Math.floor(rand()*PZ_TAGS.length)],{size:9});
+    if(rand()<.6)pzSpray(ctx,ox+4+rand()*Math.max(1,w-110),gy+gh*.62,PZ_POLITICS[Math.floor(rand()*PZ_POLITICS.length)],{color:PZ_SPRAY_COLORS[Math.floor(rand()*PZ_SPRAY_COLORS.length)],size:7+rand()*3,rot:(rand()-.5)*.1,rand});
+    if(rand()<.6)pzPosterCluster(ctx,ox+rand()*Math.max(1,w-40),gy+3,34,gh-6,rand);
+  }
   ctx.fillStyle='#2b2c31';ctx.fillRect(ox-2,gy-1,w+4,5);ctx.fillStyle=glow;ctx.globalAlpha=.55;ctx.fillRect(ox+w*.18,gy,w*.3,2);ctx.globalAlpha=1;
   // quina direita na sombra e borda esquerda iluminada
   ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(ox+w-7,oy,7,H);

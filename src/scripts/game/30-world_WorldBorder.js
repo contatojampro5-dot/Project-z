@@ -3,6 +3,7 @@
 // não altera GAME.map, colisões, câmera, spawn nem movimentação.
 // Direita = praia com deck; topo = cidade com barricadas; esquerda/baixo = cidade em chamas.
 const WB_M=1280;
+const PZ_BEACH_AV=100; // ATLAS A9: largura da avenida beira-mar
 
 // CRONOS C2 — ambient-only barricade crowds, no Entity/Enemy objects.
 // Reuses the same normal-infected atlas; fixed seeded clusters, virtual anim ticks,
@@ -426,6 +427,14 @@ class WorldBorder{
       ctx.fillStyle='rgba(176,38,36,.75)';ctx.fillRect(u,yF+16,150,13);ctx.fillStyle='rgba(235,226,210,.85)';ctx.fillText('ZONA DE QUARENTENA',u+8,yF+26);
       ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(u+60,yF+16,30,13);
     }
+    // ATLAS A9: frases políticas, pixo e lambe-lambes por cima do concreto
+    for(let u=a+40;u<b-60;u+=150+Math.floor(rand()*170)){
+      const k=rand();
+      if(k<.5){const t=PZ_POLITICS[Math.floor(rand()*PZ_POLITICS.length)];
+        pzSpray(ctx,u,yF+22+rand()*16,t,{color:PZ_SPRAY_COLORS[Math.floor(rand()*PZ_SPRAY_COLORS.length)],size:9+rand()*6,rot:(rand()-.5)*.12,rand});}
+      else if(k<.78)pzPosterCluster(ctx,u,yF+5,40+rand()*30,faceH-12,rand);
+      else pzPixo(ctx,u,yF+16,PZ_TAGS[Math.floor(rand()*PZ_TAGS.length)]+' '+PZ_TAGS[Math.floor(rand()*PZ_TAGS.length)],{size:10});
+    }
     // sombra de contato no chão
     if(top){const g=ctx.createLinearGradient(0,yF+faceH,0,0);g.addColorStop(0,'rgba(0,0,0,.55)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(a,yF+faceH,b-a,-(yF+faceH));}
     else{const g=ctx.createLinearGradient(0,H,0,y0);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.5)');ctx.fillStyle=g;ctx.fillRect(a,H,b-a,y0-H);
@@ -546,7 +555,7 @@ class WorldBorder{
     this.fires.push({x:null,lx:len*.3,ly:-45,s:.7,p:rand()*9,heavy:true});
   }
   // ---------- praia (direita) ----------
-  shore(y){return 2800+420+70*Math.sin(y/260)+38*Math.sin(y/97+1.3)+22*Math.sin(y/41+.4);}
+  shore(y){return 2800+520+70*Math.sin(y/260)+38*Math.sin(y/97+1.3)+22*Math.sin(y/41+.4);}
   // ATLAS A9 · Deméter — praia realista: calçadão de pedra portuguesa em ondas, meio-fio de granito,
   // areia com grão, marcas de vento, linha de maré com algas, areia molhada, mar com degradê de
   // profundidade, cáusticas no raso, molhe de pedras, píer, barcos, quiosques, palmeiras de verdade.
@@ -557,7 +566,48 @@ class WorldBorder{
     for(let i=0;i<size*size;i++){const v=fn(rnd,i%size,Math.floor(i/size));d[i*4]=v[0];d[i*4+1]=v[1];d[i*4+2]=v[2];d[i*4+3]=v[3]??255;}
     x.putImageData(img,0,0);return this._tiles[key]=c;
   }
+  // ATLAS A9: avenida beira-mar entre a cidade e o calçadão (fora da área jogável, bloqueada pela barreira).
+  paintAvenue(ctx){
+    const W=this.W,H=this.H,M=this.M,Y0=-M,Y1=H+M,AV=PZ_BEACH_AV,rand=mulberry32(5150);
+    const a0=W+14,a1=W+AV-12,mid=(a0+a1)/2;
+    r(ctx,W,Y0,AV,Y1-Y0,'#47423f');                       // calçada estreita / sarjeta
+    r(ctx,a0,Y0,a1-a0,Y1-Y0,'#1d1f24');                    // asfalto
+    asphaltVariation(ctx,a0,Y0,a1-a0,Y1-Y0,9911);
+    r(ctx,a0-3,Y0,3,Y1-Y0,'#6a6562');r(ctx,a1,Y0,4,Y1-Y0,'#77726c');r(ctx,a1+4,Y0,2,Y1-Y0,'#2a2826'); // meio-fio
+    // faixa dupla amarela no meio e faixas de bordo brancas
+    r(ctx,mid-3,Y0,2,Y1-Y0,'#c9a43a');r(ctx,mid+1,Y0,2,Y1-Y0,'#c9a43a');
+    r(ctx,a0+4,Y0,1.5,Y1-Y0,'rgba(220,214,200,.55)');r(ctx,a1-5.5,Y0,1.5,Y1-Y0,'rgba(220,214,200,.55)');
+    // cruzamentos com as ruas que descem para a praia: pista contínua + faixas de pedestre
+    for(const [y0,y1] of [[401,754],[1777,2053]]){
+      r(ctx,W,y0+13,a0-W,y1-y0-26,'#1d1f24');
+      for(const yy of [y0-18,y1+4])for(let x=a0+3;x<a1-6;x+=9)r(ctx,x,yy,5,14,'rgba(214,208,196,.7)');
+      r(ctx,mid-3,y0,6,y1-y0,'#1d1f24');
+    }
+    // sujeira, manchas de óleo, bueiros, buracos
+    for(let i=0;i<260;i++){const y=Y0+rand()*(Y1-Y0),x=a0+rand()*(a1-a0);ctx.fillStyle=rand()<.5?'rgba(5,6,8,.3)':'rgba(120,110,96,.12)';ctx.beginPath();ctx.ellipse(x,y,3+rand()*9,2+rand()*4,rand()*3,0,Math.PI*2);ctx.fill();}
+    for(let y=Y0+90;y<Y1;y+=380){r(ctx,a1-14,y,10,6,'#121316');for(let k=0;k<10;k+=2)r(ctx,a1-14+k,y+1,1,4,'#2e3034');}
+    for(let i=0;i<40;i++)crack(ctx,a0+rand()*(a1-a0),Y0+rand()*(Y1-Y0),8+rand()*18,'#0d0f12');
+    // carros abandonados e batidos na avenida
+    const kinds=['sedan','hatch','pickup','van'],paints=['white','slate','gray','navy','burgundy','yellow','teal','rust'];
+    for(let y=Y0+140;y<Y1-80;y+=150+rand()*230){
+      if((y>380&&y<770)||(y>1760&&y<2070))continue;
+      const lane=rand()<.5?a0+20:a1-20,ang=(lane<mid?Math.PI:0)+(rand()-.5)*(rand()<.25?1.6:.25);
+      civilianCar(ctx,lane,y,{kind:kinds[Math.floor(rand()*4)],angle:ang,paint:paints[Math.floor(rand()*paints.length)]});
+      if(rand()<.2){ctx.fillStyle='rgba(8,8,10,.5)';ctx.beginPath();ctx.ellipse(lane,y,30,40,0,0,Math.PI*2);ctx.fill();}
+    }
+    // ônibus atravessado perto de um cruzamento
+    ctx.save();ctx.translate(mid,1180);ctx.rotate(.5);r(ctx,-16,-58,40,124,'rgba(0,0,0,.35)');r(ctx,-20,-62,40,124,'#c9c2b0');r(ctx,-20,-62,40,10,'#2f6f9a');for(let k=-46;k<54;k+=14)r(ctx,-18,k,36,8,'#20262c');r(ctx,-20,30,40,30,'rgba(20,16,12,.55)');ctx.restore();
+  }
   paintBeach(ctx){
+    this.paintAvenue(ctx);
+    const AV=PZ_BEACH_AV,S0=this.shore;
+    // o resto da praia é pintado deslocado para depois da avenida
+    ctx.save();ctx.translate(AV,0);this.shore=y=>S0.call(this,y)-AV;
+    try{this.paintBeachBody(ctx);}finally{this.shore=S0;ctx.restore();}
+    this.jerseyLine(ctx,this.W+2,-70,this.H+70,mulberry32(4242));
+    for(const l of this.lamps)if(l.__beach){l.x+=AV;delete l.__beach;}
+  }
+  paintBeachBody(ctx){
     const W=this.W,H=this.H,M=this.M,Y0=-M,Y1=H+M;
     const rand=mulberry32(7777);
     const X=W,PROM=112;
@@ -624,10 +674,9 @@ class WorldBorder{
     for(let y=Y0;y<Y1;y+=30){const t=.9+rand()*.2;ctx.fillStyle=`rgb(${Math.round(150*t)},${Math.round(146*t)},${Math.round(138*t)})`;ctx.fillRect(X+PROM-4,y,8,29);ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(X+PROM-4,y,2,29);}
     ctx.fillStyle='rgba(60,46,30,.35)';ctx.fillRect(X+PROM+4,Y0,5,Y1-Y0);
     // ---------- barreira da orla na divisa do mapa ----------
-    this.jerseyLine(ctx,X+2,-70,H+70,rand);
     // ---------- objetos ----------
     // postes do calçadão (acendem à noite)
-    for(let y=Y0+120;y<Y1-60;y+=260){streetlightPole(ctx,X+92,y);this.lamps.push({x:X+92,y,flicker:rand()<.2?5+rand()*3:0,phase:rand()*6});}
+    for(let y=Y0+120;y<Y1-60;y+=260){streetlightPole(ctx,X+8,y);this.lamps.push({__beach:1,x:X+8,y,flicker:rand()<.2?5+rand()*3:0,phase:rand()*6});}
     // bancos de concreto e lixeiras
     for(let y=Y0+250;y<Y1;y+=520){r(ctx,X+70,y+3,16,40,'rgba(0,0,0,.25)');r(ctx,X+66,y,14,40,'#a7a196');r(ctx,X+66,y,14,3,'#c9c3b8');r(ctx,X+68,y+4,2,32,'#8c8679');
       r(ctx,X+40,y+70,9,9,'#2f5d43');r(ctx,X+40,y+70,9,2,'#4c8a65');}

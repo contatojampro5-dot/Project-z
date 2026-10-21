@@ -1,0 +1,71 @@
+/* ATLAS A9 · Atena — celular de verdade (barra do navegador ocupando a tela).
+   Tudo precisa caber em ~330px de altura deitado e ~660px em pé, sem rolar a página. */
+
+/* a página nunca rola: a etiqueta de versão ficava ABAIXO do jogo e empurrava tudo */
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+:root{padding-top:0!important;padding-bottom:0!important}
+#app{height:100dvh!important;min-height:0!important}
+#cronos-c4-version{position:fixed;left:max(6px,env(safe-area-inset-left));bottom:max(3px,env(safe-area-inset-bottom));z-index:9999;pointer-events:none;
+  font:500 7px/1.2 ui-monospace,monospace;letter-spacing:.09em;color:rgba(206,222,222,.35);user-select:none}
+.app[data-scene="field"] ~ #cronos-c4-version{display:none}
+
+/* ---------- deitado e baixo (celular com barra do navegador) ---------- */
+@media (orientation:landscape) and (max-height:430px){
+  /* coluna de botões da direita: mais compacta e começando mais alto */
+  .q54-bag-button,.auto-fire-button,.grenade-button,.q53-toggle{height:40px!important;min-height:0!important}
+  .q54-bag-button{top:calc(env(safe-area-inset-top,0px) + 40px)!important}
+  .auto-fire-button{top:calc(env(safe-area-inset-top,0px) + 84px)!important}
+  .grenade-button{top:calc(env(safe-area-inset-top,0px) + 128px)!important}
+  .q53-consumables{top:calc(env(safe-area-inset-top,0px) + 172px)!important;bottom:auto!important}
+  .q53-toggle small{display:none!important}
+  /* as duas escolhas de consumível ficam lado a lado, à esquerda do botão */
+  .q53-choices{position:absolute!important;right:calc(100% + 5px)!important;top:0!important;display:flex!important;flex-direction:row!important;gap:4px!important;width:auto!important}
+  .q53-choices>button{width:46px!important;height:40px!important;min-height:0!important;padding:0!important;font-size:12px!important}
+  .hud-health{transform:scale(.86);transform-origin:top left}
+  .stick-label{display:none!important}
+  /* evolução: cabe numa tela só */
+  .upgrade-overlay{place-items:center!important;padding:6px!important}
+  .upgrade-panel{max-height:calc(100dvh - 12px)!important;padding:8px 12px!important;overflow:auto}
+  .upgrade-header .modal-kicker{font-size:8px!important}
+  .upgrade-kicker{font-size:9px!important;margin:0!important}
+  .upgrade-header h2{font-size:20px!important;margin:2px 0 4px!important;line-height:1.05!important}
+  .upgrade-header p,.upgrade-help{display:none!important}
+  .upgrade-grid{gap:6px!important}
+  .upgrade-option{min-height:0!important;padding:7px 9px!important;gap:3px!important}
+  .upgrade-option-icon{height:30px!important;min-height:0!important;font-size:15px!important}
+  .upgrade-option-icon svg{max-height:26px}
+  .upgrade-option-name{font-size:15px!important;line-height:1.05!important}
+  .upgrade-option-desc{font-size:9px!important;line-height:1.3!important}
+  .upgrade-option-level{font-size:8px!important}
+  /* morte e pausa: cartão baixo, números numa fileira */
+  .pause-overlay{padding:6px!important;place-items:center!important}
+  .pause-card{max-height:calc(100dvh - 12px)!important;overflow:auto;padding:10px 16px!important}
+  .pause-card h2{font-size:26px!important;margin:2px 0 4px!important}
+  .pause-card p{font-size:10px!important;margin:0 0 6px!important;line-height:1.35!important}
+  .game-over-card .gameover-stats{grid-template-columns:repeat(4,minmax(0,1fr))!important;margin:0 0 8px!important;gap:5px!important}
+  .gameover-stats>div{padding:5px 8px!important;gap:2px!important}
+  .gameover-stats strong{font-size:20px!important}
+  .pause-card .primary-cta{min-height:38px!important}
+  .pause-card .text-button{padding:6px!important}
+}
+
+/* ---------- em pé ---------- */
+@media (orientation:portrait) and (max-height:760px){
+  .upgrade-panel{max-height:calc(100dvh - 12px)!important}
+  .upgrade-option{min-height:0!important}
+  .game-over-card .gameover-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;margin-bottom:10px!important}
+}
+
+/* aviso de "instalar como app" (o único jeito de ter tela cheia no iPhone) */
+.pz-install-hint{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;background:rgba(4,4,6,.72);padding:14px}
+.pz-install-hint>div{max-width:420px;max-height:calc(100dvh - 28px);overflow:auto;background:#141214;border:1px solid #b24b508a;border-radius:14px 4px 14px 4px;padding:14px 16px;color:#f0eceb;font:500 12px/1.45 ui-monospace,monospace}
+.pz-install-hint b{color:#e76b72;letter-spacing:.06em}
+.pz-install-hint ol{margin:8px 0 10px;padding-left:20px}
+.pz-install-hint li{margin:3px 0}
+.pz-install-hint button{width:100%;min-height:38px;border:0;border-radius:8px;background:#c9414c;color:#fff;font:700 12px ui-monospace,monospace;letter-spacing:.08em}
+
+/* em pé: o controle da esquerda ficava meio para fora da tela */
+@media (orientation:portrait){
+  .app[data-scene="field"] .combat-sticks .stick-zone.stick-move{left:max(18px,env(safe-area-inset-left,0px))!important;right:auto!important;translate:none!important;transform:none!important}
+  .app[data-scene="field"] .combat-sticks .stick-zone.stick-aim{right:max(18px,env(safe-area-inset-right,0px))!important;left:auto!important;translate:none!important;transform:none!important}
+}

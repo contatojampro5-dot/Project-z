@@ -10,7 +10,7 @@
 // do poste com chuva atravessando, halos na neblina, lanternas traseiras dos carros.
 
 const PZ_LUX=Object.freeze({
-  moon:[14,22,44],                 // cor do luar (o que sobra da cena sem nenhuma luz)
+  moon:[20,28,52],                 // cor do luar (o que sobra da cena sem nenhuma luz)
   sodium:[255,146,58],led:[205,222,255],tungsten:[255,182,104],fluo:[206,232,255],tv:[120,160,255],
   fire:[255,118,42],flash:[228,238,255],xenon:[222,232,255],halogen:[255,216,150],tail:[255,24,18],muzzle:[255,196,120],
 });
@@ -198,7 +198,7 @@ PzLightMap.prototype.drawLux=function(ctx,viewport,run,camera,world){
   ctx.save();ctx.imageSmoothingEnabled=true;ctx.globalCompositeOperation='multiply';
   ctx.drawImage(this.L,0,0,w,h);
   // exposição: superfícies escuras (asfalto) sob luz forte ficam claras como numa foto noturna
-  ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.26*smoothstep(.1,.8,env.dark);
+  ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.34*smoothstep(.1,.8,env.dark);
   ctx.drawImage(this.L,0,0,w,h);
   ctx.restore();
 };

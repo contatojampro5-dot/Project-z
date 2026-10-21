@@ -162,10 +162,7 @@ class FullscreenController {
       return;
     }
     const request=host.requestFullscreen||host.webkitRequestFullscreen;
-    if(!request) {
-      this.notify('Neste iPhone, abra pelo Safari e use Compartilhar → Adicionar à Tela de Início. Depois abra o jogo pelo ícone.');
-      return;
-    }
+    if(!request) {pzShowInstallHint();return;}
     try {
       // Must be invoked directly during the button's user gesture.
       await request.call(host);
@@ -173,7 +170,7 @@ class FullscreenController {
       // A orientação vertical ou horizontal é escolhida pelo jogador (Cronos Parte 3).
       this.sync();
     } catch(error) {
-      this.notify('Tela cheia bloqueada pelo navegador. No iPhone, use Safari → Compartilhar → Adicionar à Tela de Início.');
+      pzShowInstallHint();
     }
   }
   dispose(){
@@ -883,3 +880,18 @@ PhysicalGamepad.prototype.tick=function(){
  this.frame=requestAnimationFrame(this.tick);
 };
 
+
+// ATLAS A9: no iPhone nenhum navegador deixa uma página entrar em tela cheia. O jeito é instalar o jogo
+// na Tela de Início: aberto pelo ícone, ele roda sem barra de endereço e sem barras do navegador.
+function pzShowInstallHint(){
+  if(document.querySelector('.pz-install-hint'))return;
+  const standalone=window.navigator.standalone||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches;
+  const chrome=/CriOS/i.test(navigator.userAgent);
+  const el=document.createElement('div');el.className='pz-install-hint';el.setAttribute('role','dialog');
+  el.innerHTML=standalone?`<div><b>TELA CHEIA</b><p>O jogo já está aberto como app, sem barras do navegador. Se ainda aparecer a barra de cima, é a barra do iPhone (hora e bateria).</p><button type="button">ENTENDI</button></div>`
+  :`<div><b>TELA CHEIA NO IPHONE</b><p>O iPhone não deixa páginas da internet ocuparem a tela toda. Instale o jogo como app (leva 10 segundos):</p><ol>${chrome
+    ?'<li>Toque no ícone de <b>compartilhar</b> (quadrado com seta para cima) ao lado do endereço.</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li>'
+    :'<li>Toque em <b>Compartilhar</b> (quadrado com seta para cima) na barra do Safari.</li><li>Role e escolha <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li>'}<li>Abra o <b>PROJECT Z</b> pelo ícone novo: sem barra de endereço, tela inteira.</li></ol><button type="button">ENTENDI</button></div>`;
+  el.addEventListener('click',e=>{if(e.target===el||e.target.tagName==='BUTTON')el.remove();});
+  document.body.appendChild(el);
+}

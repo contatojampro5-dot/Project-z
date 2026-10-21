@@ -30,7 +30,8 @@
     "src/styles/28-c5-hud-compact.css",
     "src/styles/29-c6-post-and-rhythm.css",
     "src/styles/30-atlas-a1-perf.css",
-    "src/styles/31-atlas-a7-transitions.css"
+    "src/styles/31-atlas-a7-transitions.css",
+    "src/styles/32-atlas-a9-mobile-fit.css"
   ],
   "headScripts": [
     "src/scripts/01-embedded-music.js",
@@ -70,6 +71,7 @@
     "src/scripts/game/29-world_World.js",
     "src/scripts/game/29b-world_TallBuildings.js",
     "src/scripts/game/29c-world_StreetSigns.js",
+    "src/scripts/game/29d-world_StreetArt.js",
     "src/scripts/game/30-world_WorldBorder.js",
     "src/scripts/game/31-world_CollisionMap.js",
     "src/scripts/game/32-world_FlowField.js",

@@ -9,12 +9,12 @@ import base64, json, os, re, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MIME = {'mp3': 'audio/mpeg', 'wav': 'audio/wav', 'flac': 'audio/flac', 'webp': 'image/webp',
-        'png': 'image/png', 'jpg': 'image/jpeg', 'svg': 'image/svg+xml'}
+        'png': 'image/png', 'webmanifest': 'application/manifest+json', 'jpg': 'image/jpeg', 'svg': 'image/svg+xml'}
 
 def read(rel):
     return open(os.path.join(ROOT, rel), encoding='utf8').read()
 
-EXTERNAL = ('assets/images/game/infectados/', 'assets/audio/music/')
+EXTERNAL = ('assets/images/game/infectados/', 'assets/audio/music/', 'assets/pwa/')
 
 def inline_assets(text, web_dir=None):
     def rep(m):
@@ -24,6 +24,10 @@ def inline_assets(text, web_dir=None):
             dst = os.path.join(web_dir, rel)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             open(dst, 'wb').write(open(os.path.join(ROOT, rel), 'rb').read())
+            if rel.endswith('.webmanifest'):  # ícones do app instalável vão junto
+                for ic in json.load(open(os.path.join(ROOT, rel)))['icons']:
+                    src = os.path.join(os.path.dirname(rel), ic['src'])
+                    open(os.path.join(web_dir, src), 'wb').write(open(os.path.join(ROOT, src), 'rb').read())
             return rel
         raw = open(os.path.join(ROOT, rel), 'rb').read()
         return f'data:{MIME[rel.rsplit(".", 1)[1]]};base64,' + base64.b64encode(raw).decode()
