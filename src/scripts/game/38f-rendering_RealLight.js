@@ -230,9 +230,9 @@ PzLightMap.prototype.drawAfter=function(ctx,viewport,run,camera){
         if(quality!=='low'){
           const top=l.hy+2,bot=l.y,wTop=4,wBot=l.type==='flood'?70:46;
           const g=ctx.createLinearGradient(0,top,0,bot);g.addColorStop(0,`rgba(${C},${.16*a*air})`);g.addColorStop(1,`rgba(${C},0)`);
-          ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(l.hx-wTop,top);ctx.lineTo(l.hx+wTop,top);ctx.lineTo(l.hx+wBot,bot);ctx.lineTo(l.hx-wBot,bot);ctx.closePath();ctx.fill();
+          ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(l.hx-wTop,top);ctx.lineTo(l.hx+wTop,top);ctx.lineTo(l.x+wBot,bot);ctx.lineTo(l.x-wBot,bot);ctx.closePath();ctx.fill();
           if((env.wet||0)>.15&&!reduced){ctx.fillStyle=`rgba(${C},${.5*a})`;
-            for(let i=0;i<9;i++){const ph=(t*1.9+i*.311+l.x*.013)%1,yy=top+ph*(bot-top),spread=wTop+(wBot-wTop)*ph,xx=l.hx+(((i*73+Math.floor(t*1.9+i*.311))%97)/97-.5)*2*spread*.8;
+            for(let i=0;i<9;i++){const ph=(t*1.9+i*.311+l.x*.013)%1,yy=top+ph*(bot-top),spread=wTop+(wBot-wTop)*ph,xx=l.hx+(l.x-l.hx)*ph+(((i*73+Math.floor(t*1.9+i*.311))%97)/97-.5)*2*spread*.8;
               ctx.globalAlpha=(1-ph)*.7*(env.wet||0);ctx.fillRect(xx,yy,.8,5);}
             ctx.globalAlpha=1;}
         }

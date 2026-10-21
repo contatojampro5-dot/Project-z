@@ -236,3 +236,11 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Lanterna do jogador entra como luz levemente azulada com as mesmas sombras de antes.
 - Placas: nomes de rua não ficam mais pintados no chão (nem o nome do distrito). Esquinas dos 4 cruzamentos têm poste com as duas placas azuis paulistanas (bairro + CEP + nome). As placas de sentido viraram placas indicativas em dois postes na calçada. Todas refletem a lanterna e os faróis à noite.
 - Se o navegador falhar na luz nova, o jogo volta sozinho para a iluminação antiga.
+
+## R21b · Bordas do mapa: muro de quarentena e praia (ATLAS A9, parte 2)
+- Muros: a fileira de módulos (contêineres, cavaletes em X, caixotes) virou um muro contínuo de placas de concreto pré-moldado: topo, face com luz do céu e sujeira no pé, juntas, olhais de içamento com ferrugem escorrendo, manchas de chuva, limo, lascas, pichações, cartazes de desaparecidos, numeração em estêncil, faixas de alerta e a pintura "ZONA DE QUARENTENA". Concertina (arame laminado em espiral) com suportes em Y e farrapos presos.
+- Pilares com faixa zebrada nas bocas das avenidas (os bloqueios pesados continuam). Zumbis de fora ficam atrás do muro.
+- Torres de refletor treliçadas atrás do muro: à noite iluminam a faixa interna da zona com luz branca, com cone visível na chuva/neblina.
+- Praia: calçadão de pedra portuguesa em ondas, meio-fio de granito, areia com grão, marcas de vento, restinga, linha da maré com algas e conchas, areia molhada com brilho, pegadas e marcas de pneu. Mar com degradê de profundidade, ondulação, cáusticas no raso e cristas lá fora. Arrebentação animada: lâmina d'água subindo e descendo na areia e espuma rendada.
+- Palmeiras com tronco curvo anelado, folhas com folíolos, folhas secas, cocos e sombra; guarda-sóis sombreados com canga e cadeiras; chinelos, isopores e coisas largadas na fuga; quiosques com telhado de telha; molhe de pedras; píer com estacas e tábuas faltando; barcos com motor de popa (na água e encalhados); postos de salvamento.
+- Divisa da praia: barreiras de concreto tipo new jersey com concertina e placas "PRAIA FECHADA". Postes do calçadão acendem à noite.
