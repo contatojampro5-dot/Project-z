@@ -221,3 +221,8 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Correndo (Acelerar), passos mais rápidos, ondas maiores e mais gotas.
 - Som procedural de pé na água (chiado filtrado + "ploc" grave), sem arquivo novo.
 - Continuam as pegadas molhadas por alguns segundos depois de sair da poça.
+
+## R20 · Faróis dos carros (luz volumétrica)
+- Cerca de 1 em cada 3 carros abandonados ainda tem bateria: faróis acesos à noite e no anoitecer. Alguns piscam, alguns têm um farol quebrado.
+- Cada farol abre um cone na escuridão (ilumina o chão e quem estiver na frente) e desenha o feixe no ar: mais forte com neblina e chuva, com núcleo mais denso, brilho da lâmpada e gotas/poeira acesas dentro do feixe.
+- Carro destruído apaga os faróis. Só os carros perto da câmera são calculados.
