@@ -166,7 +166,7 @@ function pzSPSeed(){
 }
 function pzSPCanvas(p){
   if(p.cv)return p.cv;
-  const RES=3,W=p.type==='banca'?40:p.type==='ponto'?50:28,H=p.type==='poste'?66:p.type==='banca'?36:p.type==='ponto'?40:34;
+  const RES=3,W=p.type==='banca'?40:p.type==='ponto'?50:28,H=p.type==='poste'?132:p.type==='banca'?36:p.type==='ponto'?40:34;
   const c=document.createElement('canvas');c.width=W*RES;c.height=H*RES;const x=c.getContext('2d');x.scale(RES,RES);
   const ax=W/2,base=H-3,rand=mulberry32(Math.round(p.seed*1e6));
   x.fillStyle='rgba(0,0,0,.3)';x.beginPath();x.ellipse(ax+4,base,W*.32,3,0,0,Math.PI*2);x.fill();
@@ -217,19 +217,27 @@ function pzSPCanvas(p){
   }
   p.cv={canvas:c,W,H,ax,base};return p.cv;
 }
-function pzSPDrawables(camera){
+// A11: objeto alto na frente do jogador fica transparente (o jogador nunca some atrás de poste, orelhão ou placa).
+function pzOccludes(o,x,y,W,H,player){
+  let t=1;
+  if(player&&player.y<y-2&&player.y>y-H-6&&Math.abs(player.x-x)<W/2+10)t=.28;
+  o.__fa=(o.__fa??1)+(t-(o.__fa??1))*.25;return o.__fa;
+}
+function pzSPDrawables(camera,player){
   pzSPSeed();
-  const out=[],vw=camera.viewport.width/camera.zoom/2+60,vh=camera.viewport.height/camera.zoom/2+90;
+  const out=[],vw=camera.viewport.width/camera.zoom/2+60,vh=camera.viewport.height/camera.zoom/2+150;
   for(const p of PZ_SP.props){
     if(Math.abs(p.x-camera.x)>vw||Math.abs(p.y-camera.y)>vh)continue;
-    out.push({y:p.y,__tall:1,draw(ctx){const v=pzSPCanvas(p);ctx.drawImage(v.canvas,p.x-v.ax,p.y-v.base,v.W,v.H);}});
+    out.push({y:p.y,__tall:1,draw(ctx){const v=pzSPCanvas(p);const a=pzOccludes(p,p.x,p.y,v.W,v.H,player);if(a<.99)ctx.globalAlpha=a;ctx.drawImage(v.canvas,p.x-v.ax,p.y-v.base,v.W,v.H);ctx.globalAlpha=1;}});
   }
   return out;
 }
 // ---------- fios no ar ----------
-function pzSPDrawWires(ctx,camera){
+function pzSPDrawWires(ctx,camera,player){
   pzSPSeed();
-  const vw=camera.viewport.width/camera.zoom/2+140,vh=camera.viewport.height/camera.zoom/2+160;
+  const vw=camera.viewport.width/camera.zoom/2+140,vh=camera.viewport.height/camera.zoom/2+220,WH=118;
+  // perto do jogador os fios quase somem (não escondem personagem nem zumbi ao redor dele)
+  const near=(xa,ya,xb,yb)=>player&&player.x>Math.min(xa,xb)-60&&player.x<Math.max(xa,xb)+60&&player.y-30>Math.min(ya,yb)-70&&player.y-30<Math.max(ya,yb)+70;
   const x0=camera.x-vw,x1=camera.x+vw,y0=camera.y-vh,y1=camera.y+vh;
   ctx.save();ctx.lineCap='round';
   // fiação entre postes (alturas diferentes, barriga, alguns fios soltos)
@@ -237,7 +245,7 @@ function pzSPDrawWires(ctx,camera){
     for(let i=0;i<line.length-1;i++){
       const a=line[i],b=line[i+1];
       if(Math.max(a.x,b.x)<x0||Math.min(a.x,b.x)>x1||Math.max(a.y,b.y)<y0||Math.min(a.y,b.y)>y1)continue;
-      const ax=a.x,ay=a.y-54,bx=b.x,by=b.y-54;
+      const ax=a.x,ay=a.y-WH,bx=b.x,by=b.y-WH;ctx.globalAlpha=near(ax,ay,bx,by)?.14:.8;
       for(let k=0;k<5;k++){
         const off=k<3?-8+k*8:-5+(k-3)*10,dy=k<3?0:6;
         const sag=6+k*2.2+((a.seed*7+k)%3);
@@ -246,18 +254,22 @@ function pzSPDrawWires(ctx,camera){
         const ex=bx+(Math.abs(bx-ax)>Math.abs(by-ay)?0:off),ey=by+dy+(Math.abs(bx-ax)>Math.abs(by-ay)?off*.3:0);
         ctx.beginPath();ctx.moveTo(hx,hy);ctx.quadraticCurveTo((hx+ex)/2,(hy+ey)/2+sag,ex,ey);ctx.stroke();
       }
-      if(a.gato){ctx.strokeStyle='rgba(14,15,17,.8)';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(ax,ay+8);ctx.quadraticCurveTo(ax+(a.seed-.5)*40,ay+30,ax+(a.seed-.5)*70,ay+40);ctx.stroke();}
+      if(a.gato&&ctx.globalAlpha>.5){ctx.strokeStyle='rgba(14,15,17,.8)';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(ax,ay+8);ctx.quadraticCurveTo(ax+(a.seed-.5)*40,ay+30,ax+(a.seed-.5)*70,ay+40);ctx.stroke();}
     }
   }
+  ctx.globalAlpha=1;
   // rede aérea do trólebus sobre a Av. Rangel Pestana (dois pares de fios + cabos transversais)
   if(x1>398&&x0<748){
     ctx.strokeStyle='rgba(18,19,21,.9)';ctx.lineWidth=1;
     const ya=Math.max(0,y0),yb=Math.min(2800,y1);
-    ctx.beginPath();for(const fx of [500,508,640,648]){ctx.moveTo(fx,ya);ctx.lineTo(fx,yb);}ctx.stroke();
+    for(const fx of [500,508,640,648]){ctx.globalAlpha=player&&Math.abs(player.x-fx)<46?.14:.8;ctx.beginPath();ctx.moveTo(fx,ya);ctx.lineTo(fx,yb);ctx.stroke();}
     ctx.strokeStyle='rgba(30,30,32,.7)';ctx.lineWidth=.8;ctx.beginPath();
-    for(let y=Math.ceil(ya/118)*118;y<yb;y+=118){if(pzInCross(573,y,10))continue;ctx.moveTo(392,y-48);ctx.quadraticCurveTo(573,y-40,754,y-48);}
     ctx.stroke();
-    ctx.fillStyle='#3a3c40';for(let y=Math.ceil(ya/118)*118;y<yb;y+=118){if(pzInCross(573,y,10))continue;for(const fx of [504,644])ctx.fillRect(fx-5,y-45,10,2);}
+    ctx.fillStyle='#3a3c40';
+    for(let y=Math.ceil(ya/118)*118;y<yb;y+=118){if(pzInCross(573,y,10))continue;
+      ctx.globalAlpha=near(392,y-WH,754,y-WH)?.14:.75;ctx.beginPath();ctx.moveTo(392,y-WH);ctx.quadraticCurveTo(573,y-WH+8,754,y-WH);ctx.stroke();
+      for(const fx of [504,644])ctx.fillRect(fx-5,y-WH+3,10,2);}
+    ctx.globalAlpha=1;
   }
   ctx.restore();
 }

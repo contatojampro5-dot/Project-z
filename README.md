@@ -263,3 +263,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Em pé: postes de concreto com cruzeta, transformador, rolos de fio e "gatos"; orelhões laranja e azuis; bancas de jornal; papeleiras verdes; pontos de ônibus. No ar: emaranhado de fios entre os postes e a rede do trólebus sobre a Rangel Pestana.
 - Prédios: fachadas de tijolo aparente (galpões industriais), de pastilhas ou de concreto; letreiros de comércio (ATACADO, LOJA 1,99, FARMÁCIA, PADARIA, CONFECÇÕES…); caixas d'água azuis, caixa de concreto, antenas e chaminés com fuligem nos telhados.
 - Noite: a maioria dos postes agora é LED branco (como São Paulo hoje); alguns de sódio laranja sobreviveram.
+
+## R23b · Fios mais altos, transparências e personagens menores
+- Postes de concreto com o dobro da altura; a fiação e a rede do trólebus passam bem acima da rua e ficam quase invisíveis perto do jogador.
+- Postes, orelhões, bancas, pontos de ônibus e placas de rua ficam transparentes quando o jogador passa atrás deles.
+- Personagens e infectados (inclusive os corpos caindo) desenhados 15% menores, para dar mais escala à cidade. A colisão e o alcance não mudaram.

@@ -1,4 +1,5 @@
 // -- src/entities/InfectedSprites.js --
+const PZ_ENTITY_SCALE=.85; // A11: tamanho visual de personagens e infectados (colisão não muda)
 // ATLAS A5 · etapa 1 · Afrodite + Ares + Hefesto
 // Liga as folhas do laboratório ao jogo. Cada folha: 8 colunas (direção 0=leste, 2=sul, 4=oeste, 6=norte),
 // uma linha por quadro, célula 64×72 com o chão na linha 60. Tipos sem folha continuam com o desenho antigo.
@@ -117,7 +118,8 @@ CombatEffects.prototype.drawUnder=function(ctx){
   const assets=window.__PZ_ASSETS__;if(!assets)return;
   for(const c of PZ_CORPSES.list){const spec=PZ_SPRITES[c.kind];const alt=c.mut?pzSheetFor(spec,c.v,c.mut,assets):null;const img=alt?alt.img:assets.get(spec.variants[c.v]);if(!img||!img.width)continue;
     const a=spec.anims.death;const f=Math.min(a.frames-1,Math.floor(c.t*(a.fps||10)));const fade=Math.min(1,(c.life-c.t)/1.2);
-    pzBlit(ctx,img,spec,'death',f,c.dir,c.x,c.y,fade,alt?alt.anims:null);}
+    ctx.save();ctx.translate(c.x,c.y+11);ctx.scale(PZ_ENTITY_SCALE,PZ_ENTITY_SCALE);ctx.translate(-c.x,-(c.y+11));
+    pzBlit(ctx,img,spec,'death',f,c.dir,c.x,c.y,fade,alt?alt.anims:null);ctx.restore();}
 };
 // Partida nova: limpa os corpos da anterior.
 function pzResetCorpses(){PZ_CORPSES.list.length=0;PZ_CORPSES.skip=0;}

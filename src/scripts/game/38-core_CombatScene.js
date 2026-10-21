@@ -1466,23 +1466,25 @@ class CombatScene {
     r.effects.drawOver(ctx);
     pzSurvivorDrawUnder(ctx,r);
     pzDrawTelegraphs(ctx,r); // C6 · Ares: avisos de ataque e fases do chefe
-    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport),...pzSPDrawables(g.camera)].sort((a,b)=>a.y-b.y);
+    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport,r.player),...pzSPDrawables(g.camera,r.player)].sort((a,b)=>a.y-b.y);
     for(const entity of drawables){
       // Skip entities entirely outside the current viewport with generous padding.
       const screen=g.camera.worldToScreen(entity.x,entity.y);
       if(entity.__tall){entity.draw(ctx);continue;}
       if(screen.x<-105||screen.y<-105||screen.x>viewport.width+105||screen.y>viewport.height+105)continue;
+      // A11: personagens e infectados 15% menores (só o desenho; a colisão não muda), escalados a partir dos pés.
+      ctx.save();const fy=entity.y+(entity.radius||12)*.9;ctx.translate(entity.x,fy);ctx.scale(PZ_ENTITY_SCALE,PZ_ENTITY_SCALE);ctx.translate(-entity.x,-fy);
       if(entity===r.player&&r.player._recoil>.05){
         // Recuo visual do sprite (não altera a posição real nem a câmera).
-        ctx.save();ctx.translate(-Math.cos(r.player.facing)*r.player._recoil,-Math.sin(r.player.facing)*r.player._recoil);
-        entity.draw(ctx,g.assets);ctx.restore();
-      }else entity.draw(ctx,g.assets);
+        ctx.translate(-Math.cos(r.player.facing)*r.player._recoil,-Math.sin(r.player.facing)*r.player._recoil);
+      }
+      entity.draw(ctx,g.assets);ctx.restore();
     }
     pzSurvivorDrawOver(ctx,r);
     pzDrawReloadAndSwap(ctx,r);
     r.gun.drawFlashes(ctx,r.q04Environment?.dark||0);
     if(diag.fx!==false)r.worldFX?.drawAir(ctx,g.camera);
-    pzSPDrawWires(ctx,g.camera); // A10: fiação e rede do trólebus
+    pzSPDrawWires(ctx,g.camera,r.player); // A10: fiação e rede do trólebus
     // Números de dano no espaço do mundo, desenhados acima dos personagens.
     // Mantidos inclusive no instante da morte, enquanto o inimigo ainda está no array.
     const now=performance.now();
