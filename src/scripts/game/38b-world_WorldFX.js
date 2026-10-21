@@ -11,7 +11,7 @@ const PZ_WIND={x:1,y:.2,strength:.5,update(t,wet=0){
 
 class WorldFX {
   constructor(){
-    this.shock=[];this.smoke=[];this.embers=[];this.scorch=[];this.holes=[];this.prints=[];this.splashes=[];
+    this.shock=[];this.smoke=[];this.embers=[];this.scorch=[];this.holes=[];this.prints=[];this.splashes=[];this.stomps=[];this.drops=[];this.puddleStep=0;
     this.papers=[];this.fireClock=0;this.puddleLevel=0;this.wetFeet=0;this.stepClock=0;this.stepSide=1;this.time=0;
     this.puddles=this.makePuddles();
   }
@@ -92,6 +92,24 @@ class WorldFX {
       this.prints.push({x:p.x+ox,y:p.y+10+oy,a:Math.atan2(p.y-(this.lastY??p.y),p.x-(this.lastX??p.x)),life:7,total:7,k:Math.min(1,this.wetFeet/2.2)});
       if(this.prints.length>60)this.prints.shift();
     }
+    // Pisando na poça: a cada passo, onda que abre a partir do pé, gotas que sobem e caem, e o som do pé na água.
+    this.puddleStep-=dt;
+    if(moving&&this.puddleLevel>.15&&this.inPuddle(p.x,p.y+8)&&this.puddleStep<=0){
+      const vx=(p.x-(this.lastX??p.x))/Math.max(dt,.001),vy=(p.y-(this.lastY??p.y))/Math.max(dt,.001),sp=Math.hypot(vx,vy);
+      const sprint=sp>150;this.puddleStep=sprint?.2:.27;this.stepSide*=-1;
+      const f=p.facing||0,fx=p.x+Math.cos(f+Math.PI/2)*4*this.stepSide,fy=p.y+9+Math.sin(f+Math.PI/2)*3*this.stepSide;
+      this.stomps.push({x:fx,y:fy,life:.7,total:.7,r:sprint?17:13});
+      this.stomps.push({x:fx,y:fy,life:.5,total:.5,r:sprint?9:7,delay:.08});
+      const n=sprint?11:7,dir=Math.atan2(vy,vx);
+      for(let i=0;i<n;i++){const a=dir+(Math.random()-.5)*2.6,v=25+Math.random()*(sprint?70:45);
+        this.drops.push({x:fx,y:fy,z:1,vx:Math.cos(a)*v+vx*.15,vy:Math.sin(a)*v*.6+vy*.15,vz:35+Math.random()*(sprint?70:45),life:1,size:.8+Math.random()*1.1});}
+      if(this.drops.length>120)this.drops.splice(0,this.drops.length-120);if(this.stomps.length>30)this.stomps.splice(0,this.stomps.length-30);
+      window.__projectZGame?.audio?.puddleStep?.(sprint);
+    }
+    for(const s2 of this.stomps){if(s2.delay>0)s2.delay-=dt;else s2.life-=dt;}
+    this.stomps=this.stomps.filter(s2=>s2.life>0);
+    for(const d of this.drops){d.x+=d.vx*dt;d.y+=d.vy*dt;d.z+=d.vz*dt;d.vz-=260*dt;if(d.z<=0){d.z=0;d.life=0;if(Math.random()<.5)this.stomps.push({x:d.x,y:d.y,life:.3,total:.3,r:3});}}
+    this.drops=this.drops.filter(d=>d.life>0);
     this.lastX=p.x;this.lastY=p.y;
     // Respingos de chuva no chão visível.
     if(env.wet>.12){
@@ -147,6 +165,10 @@ class WorldFX {
           ctx.strokeStyle=`rgba(210,222,235,${(1-ph)*.45*rain*L})`;ctx.beginPath();ctx.ellipse(ox,oy,rx2,rx2*.55,0,0,Math.PI*2);ctx.stroke();}}
         ctx.restore();
         ctx.restore();}}
+    for(const w of this.stomps){if(w.delay>0||!vis(w))continue;const k=1-w.life/w.total,L2=Math.max(.35,L);
+      ctx.strokeStyle=`rgba(205,220,235,${((1-k)*.55*L2).toFixed(3)})`;ctx.lineWidth=1.2-.6*k;
+      ctx.beginPath();ctx.ellipse(w.x,w.y,2+w.r*Math.pow(k,.6),(2+w.r*Math.pow(k,.6))*.48,0,0,Math.PI*2);ctx.stroke();
+      if(k<.25){ctx.fillStyle=`rgba(225,235,245,${((.25-k)*1.2*L2).toFixed(3)})`;ctx.beginPath();ctx.ellipse(w.x,w.y,w.r*.35,w.r*.18,0,0,Math.PI*2);ctx.fill();}}
     for(const s of this.scorch){if(!vis(s))continue;const k=Math.min(1,s.life/12);
       const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);g.addColorStop(0,`rgba(12,10,9,${.62*k})`);g.addColorStop(.6,`rgba(20,16,13,${.35*k})`);g.addColorStop(1,'rgba(20,16,13,0)');
       ctx.fillStyle=g;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();}
@@ -163,6 +185,9 @@ class WorldFX {
   drawAir(ctx,camera){
     const vw=camera.viewport.width/camera.zoom/2+80,vh=camera.viewport.height/camera.zoom/2+80;
     const vis=o=>Math.abs(o.x-camera.x)<vw&&Math.abs(o.y-camera.y)<vh;
+    // gotas levantadas pelo pé: sombra no chão + gota clara no ar
+    for(const d of this.drops){ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(d.x-d.size*.5,d.y,d.size,d.size*.5);
+      ctx.fillStyle='rgba(215,228,240,.85)';ctx.beginPath();ctx.ellipse(d.x,d.y-d.z,d.size*.7,d.size,0,0,Math.PI*2);ctx.fill();}
     for(const q of this.papers){ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.spin*.6);ctx.scale(1,Math.cos(q.spin));
       ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(-q.w/2+2,-q.h/2+3,q.w,q.h);ctx.fillStyle=q.c;ctx.fillRect(-q.w/2,-q.h/2,q.w,q.h);ctx.restore();}
     // C6: fumaça clara e difusa (sprite pré-renderizado), esticada levemente pelo vento.

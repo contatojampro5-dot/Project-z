@@ -217,6 +217,18 @@ class AudioSystem {
     if(data)this.lastPlayed.set(type,this.ctx.currentTime);
     this.tone(cfg[0],cfg[1],cfg[2],cfg[3],'fx');return true;
   }
+  // Pé na poça: chiado curto de água (ruído filtrado) + "ploc" grave. Sintetizado, sem arquivo.
+  puddleStep(sprint=false){
+    if(!this.ctx||!this.settings.soundEnabled||this.ctx.state!=='running')return;
+    const ctx=this.ctx,now=ctx.currentTime;if(now-(this._lastSplash||0)<.12)return;this._lastSplash=now;
+    if(!this._splashBuf){const len=Math.floor(ctx.sampleRate*.25);const b=ctx.createBuffer(1,len,ctx.sampleRate),dd=b.getChannelData(0);for(let i=0;i<len;i++)dd[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.2);this._splashBuf=b;}
+    const src=ctx.createBufferSource();src.buffer=this._splashBuf;src.playbackRate.value=.85+Math.random()*.35;
+    const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1400+Math.random()*900;bp.Q.value=.9;
+    const g=ctx.createGain();const vol=(sprint?.16:.11);g.gain.setValueAtTime(vol,now);g.gain.exponentialRampToValueAtTime(.001,now+.22);
+    src.connect(bp);bp.connect(g);g.connect(this.bus?.fx||ctx.destination);src.start(now);src.stop(now+.25);
+    const o=ctx.createOscillator(),og=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(190,now);o.frequency.exponentialRampToValueAtTime(85,now+.09);
+    og.gain.setValueAtTime(vol*.6,now);og.gain.exponentialRampToValueAtTime(.001,now+.1);o.connect(og);og.connect(this.bus?.fx||ctx.destination);o.start(now);o.stop(now+.11);
+  }
   // Low-cost procedural rain and wind, not per-zombie samples or external downloads.
   ensureWeatherAudio(){
     if(!this.ctx||this.weatherVoices||this.ctx.state!=='running')return;

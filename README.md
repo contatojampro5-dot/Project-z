@@ -215,3 +215,9 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Asfalto encharcado em volta, lâmina d'água escura e lisa, reflexo suave do céu, margem escura e um brilho especular fino.
 - Com chuva, gotas abrem anéis na água. Reflexos de postes, fogo e lanterna seguem o novo contorno.
 - Removidas as 5 "poças" retangulares pintadas no mapa central.
+
+## R19c · Pisando na poça
+- A cada passo do personagem dentro de uma poça: onda dupla abrindo a partir do pé, gotas que sobem e caem (com sombra) e anéis menores onde elas pousam.
+- Correndo (Acelerar), passos mais rápidos, ondas maiores e mais gotas.
+- Som procedural de pé na água (chiado filtrado + "ploc" grave), sem arquivo novo.
+- Continuam as pegadas molhadas por alguns segundos depois de sair da poça.
