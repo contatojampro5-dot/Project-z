@@ -723,10 +723,7 @@ class World {
     }
     // BLOCO 2: barricadas e caixas são desenhadas em tempo real pelo WorldDestruction.
     // O mesmo desenho original será preservado até cada peça ser destruída.
-    // pequenas poças refletindo néon
-    for(const [x,y,w,h] of [[525,330,29,14],[668,813,50,14],[512,900,28,10],[850,490,38,14],[243,522,35,12]]){
-      r(ctx,x,y,w,h,'#272c31');r(ctx,x+4,y+2,w-9,3,'#7b5153');r(ctx,x+7,y+6,w*.43,2,'#b38281');
-    }
+    // (as poças retangulares pintadas no chão saíram: as poças agora são todas dinâmicas, com forma orgânica)
     // Sujeira e fissuras nas ruas, determinísticas
     for(let i=0;i<115;i++) {
       const x=Math.floor(rand()*1152), y=Math.floor(rand()*1152);

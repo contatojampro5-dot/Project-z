@@ -209,3 +209,9 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Quando o JOGADOR está atrás, o prédio fica translúcido e mostra quem estiver lá (inclusive zumbis).
 - No chão fica a sombra do volume, projetada para o sudeste.
 - Módulo: `src/scripts/game/29b-world_TallBuildings.js`.
+
+## R19b · Poças d'água
+- Contorno orgânico (borda irregular com lóbulos) no lugar das elipses perfeitas.
+- Asfalto encharcado em volta, lâmina d'água escura e lisa, reflexo suave do céu, margem escura e um brilho especular fino.
+- Com chuva, gotas abrem anéis na água. Reflexos de postes, fogo e lanterna seguem o novo contorno.
+- Removidas as 5 "poças" retangulares pintadas no mapa central.
