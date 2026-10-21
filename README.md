@@ -251,3 +251,6 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Celular deitado (com a barra do navegador): coluna de botões da direita compacta, escolhas de consumível lado a lado, tela de evolução e de morte cabendo sem rolar. Em pé: controles não saem mais da tela. A página não rola mais (a etiqueta de versão ficava embaixo do jogo).
 - Tela cheia no iPhone: o jogo virou app instalável (manifesto, ícone, modo tela cheia). O botão de tela cheia no iPhone mostra o passo a passo de "Adicionar à Tela de Início" (Safari ou Chrome).
 - Noite um pouco mais clara (luar e exposição).
+
+## R22b · Mochila no celular deitado
+- A mochila cabia só pela metade com a barra do navegador. Agora, deitado: cabeçalho compacto, retrato menor, carga e acessórios em uma linha cada, espaços da mochila e rodapé visíveis sem cortar (e, se faltar espaço, o painel rola por dentro).

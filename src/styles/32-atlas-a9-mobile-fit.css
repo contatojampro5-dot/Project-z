@@ -69,3 +69,37 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
   .app[data-scene="field"] .combat-sticks .stick-zone.stick-move{left:max(18px,env(safe-area-inset-left,0px))!important;right:auto!important;translate:none!important;transform:none!important}
   .app[data-scene="field"] .combat-sticks .stick-zone.stick-aim{right:max(18px,env(safe-area-inset-right,0px))!important;left:auto!important;translate:none!important;transform:none!important}
 }
+
+/* mochila no celular deitado: tudo compacto e com rolagem dentro do painel */
+@media (orientation:landscape) and (max-height:430px){
+  .q54-backdrop{padding:6px max(8px,env(safe-area-inset-right)) 6px max(8px,env(safe-area-inset-left))!important;align-items:center!important}
+  .q54-panel{max-height:calc(100dvh - 12px)!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;top:auto!important;margin:0 auto!important}
+  .q54-panel>header{padding:7px 14px!important;min-height:0!important;align-items:center!important}
+  .q54-panel>header small{font-size:7px!important;letter-spacing:.2em!important}
+  .q54-panel>header h2{font-size:20px!important;line-height:1.1!important;margin:1px 0 0!important}
+  .q54-panel>header h2 *{font-size:11px!important}
+  .q54-panel>header p{display:none!important}
+  .q54-panel>header button{width:34px!important;height:34px!important;min-height:0!important}
+  .b3-inventory-grid{grid-template-columns:118px minmax(0,1fr)!important;gap:10px!important;padding:6px 14px!important}
+  .b3-portrait-area{padding:6px!important;min-height:0!important}
+  .b3-portrait-badge{font-size:7px!important;padding:2px 6px!important}
+  .q54-panel .b3-antoniocanvas{width:100%!important;height:62px!important;max-height:62px;object-fit:contain;margin:4px 0 2px!important}
+  .q54-panel .b3-portrait-area b{font-size:10px!important;margin:0!important}.q54-panel .b3-portrait-area small{display:none!important}
+  .q54-panel .b3-portrait-area{display:flex!important;flex-direction:column!important;gap:2px!important;height:auto!important;align-self:start!important}
+  .b3-section-title,.b3-equipped-title{font-size:9px!important;margin:0 0 4px!important}
+  .b3-overview{gap:6px!important;margin-bottom:6px!important}
+  .q54-panel .b3-overview>*{padding:5px 10px!important;min-height:0!important;border-radius:8px!important}
+  .q54-panel .b3-overview *{font-size:10px!important;line-height:1.2!important;margin:0!important;letter-spacing:.06em!important}
+  .b3-equipped-grid{gap:6px!important}
+  .q54-panel .b3-equipped-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .q54-panel .b3-equipped-grid>*{padding:4px 8px!important;min-height:0!important;height:auto!important}
+  .q54-panel .b3-equipped-grid *{font-size:9px!important;line-height:1.2!important}
+  .q54-panel .b3-section-title,.q54-panel .b3-equipped-title{font-size:8px!important;margin:0 0 4px!important;height:auto!important}
+  .q54-panel .b3-equipment{gap:4px!important;display:flex!important;flex-direction:column!important}
+  .b3-slots-head{padding:4px 14px!important;min-height:0!important}
+  .b3-slots-head *{font-size:8px!important}
+  .q54-slots{padding:0 14px 6px!important;gap:8px!important}
+  .q54-panel .q54-slot,.q54-panel .b3-slot-main{height:auto!important;min-height:52px!important}
+  .b3-slot-main{padding:6px!important}
+  .q54-panel>footer{padding:6px 14px!important;min-height:0!important;font-size:9px!important}
+}
