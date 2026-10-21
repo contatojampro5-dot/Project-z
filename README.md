@@ -272,3 +272,9 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 ## Laboratório · Estudo do Antônio (não aplicado ainda)
 - Página `laboratorio/estudo-antonio.html`: o Antônio no mesmo motor dos infectados, versão estilizada (cores mais vivas, contorno escuro, cabeça e mãos maiores), baseado na arte dele (boné bordado, barba, camisa com manga dobrada, calça cargo, cinto com mosquetão, relógio, tênis).
 - 9 animações × 8 direções × 2 tipos de arma (curta e longa): parado, mirando, andar mirando, correr, atirar com recuo, recarregar, levar dano, morrer e a habilidade Acelerar. Seis expressões de rosto. Prévia no tamanho do jogo e folha de sprites.
+
+## R24 · Rosto do Antônio reagindo ao jogo
+- Seis expressões feitas a partir da arte do Antônio (neutro, foco, raiva, medo, dor, grito).
+- Painel de vida: retrato que muda sozinho — foco ao atirar, raiva com 3+ infectados perto, medo com horda grande ou chefe perto, dor ao levar dano ou com pouca vida, grito ao usar Acelerar.
+- Caixa de fala: o rosto aparece ao lado da frase, com a expressão da situação (dor ao ser ferido, medo quando o chefe surge…).
+- Só para o Antônio por enquanto; os outros sobreviventes ganham quando tiverem as artes.
