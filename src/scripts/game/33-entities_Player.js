@@ -47,7 +47,7 @@ class Player {
   set shieldCells(n){this.setSupplyCount('shieldCell',Math.min(5,Math.max(0,n|0)));}
   setSupplyCount(type,n){const current=this.backpack.count(type);if(n>current)this.backpack.add(type,n-current);else if(n<current)this.backpack.remove(type,current-n);}
   get alive(){return this.hp>0;}
-  get speed(){return Math.min(260,COMBAT.player.speed*(1+.1*(this.progression?.levelOf('shoes')||0)))*(this.specialRemaining>0&&(this.charId||'antonio')==='antonio'?1.4:1)*(this.speedMul||1);}
+  get speed(){return Math.min(208,COMBAT.player.speed*(1+.1*(this.progression?.levelOf('shoes')||0)))*(this.specialRemaining>0&&(this.charId||'antonio')==='antonio'?1.4:1)*(this.speedMul||1);}
   addVest(){this.maxHp+=10;this.hp=Math.min(this.maxHp,this.hp+10);this.shieldUnit=this.maxHp*.25;this.maxShield=this.shieldUnit*this.armorTier;}
   heal(amount){
     if(!this.alive||!Number.isFinite(amount)||amount<=0)return 0;

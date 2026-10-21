@@ -288,3 +288,6 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 
 ## R25b · Botão da habilidade embaixo da vida
 - O botão da habilidade (Acelerar, Sobrevida, Punhos, Mina) fica logo abaixo do painel de vida, alinhado à direita dele (em pé, abaixo da barra de munição).
+
+## R25c · Sobreviventes 20% mais lentos
+- Velocidade base de todos os sobreviventes de 165 para 132 (−20%); o limite com tênis subiu proporcionalmente de 260 para 208. As diferenças entre personagens, o Acelerar (+40%) e os tênis continuam valendo por cima.
