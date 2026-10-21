@@ -1,11 +1,7 @@
 // -- src/ui/AntonioFaces.js --
-// ATLAS A11 · Afrodite — rosto do Antônio reagindo ao jogo (arte do usuário, 6 expressões).
+// ATLAS A11/A12 · Afrodite — rosto dos sobreviventes reagindo ao jogo (arte do usuário, 6 expressões).
 // Painel de vida: retrato pequeno que muda com a situação. Caixa de fala: o rosto ao lado da frase.
-const PZ_FACES={
-  neutro:'@@ASSET:assets/images/game/rostos/antonio-neutro.webp@@',foco:'@@ASSET:assets/images/game/rostos/antonio-foco.webp@@',
-  raiva:'@@ASSET:assets/images/game/rostos/antonio-raiva.webp@@',medo:'@@ASSET:assets/images/game/rostos/antonio-medo.webp@@',
-  dor:'@@ASSET:assets/images/game/rostos/antonio-dor.webp@@',grito:'@@ASSET:assets/images/game/rostos/antonio-grito.webp@@',
-};
+const PZ_FACES={antonio:{neutro:'@@ASSET:assets/images/game/rostos/antonio-neutro.webp@@',foco:'@@ASSET:assets/images/game/rostos/antonio-foco.webp@@',raiva:'@@ASSET:assets/images/game/rostos/antonio-raiva.webp@@',medo:'@@ASSET:assets/images/game/rostos/antonio-medo.webp@@',dor:'@@ASSET:assets/images/game/rostos/antonio-dor.webp@@',grito:'@@ASSET:assets/images/game/rostos/antonio-grito.webp@@'},hadassa:{neutro:'@@ASSET:assets/images/game/rostos/hadassa-neutro.webp@@',foco:'@@ASSET:assets/images/game/rostos/hadassa-foco.webp@@',raiva:'@@ASSET:assets/images/game/rostos/hadassa-raiva.webp@@',medo:'@@ASSET:assets/images/game/rostos/hadassa-medo.webp@@',dor:'@@ASSET:assets/images/game/rostos/hadassa-dor.webp@@',grito:'@@ASSET:assets/images/game/rostos/hadassa-grito.webp@@'},san:{neutro:'@@ASSET:assets/images/game/rostos/san-neutro.webp@@',foco:'@@ASSET:assets/images/game/rostos/san-foco.webp@@',raiva:'@@ASSET:assets/images/game/rostos/san-raiva.webp@@',medo:'@@ASSET:assets/images/game/rostos/san-medo.webp@@',dor:'@@ASSET:assets/images/game/rostos/san-dor.webp@@',grito:'@@ASSET:assets/images/game/rostos/san-grito.webp@@'},hanna:{neutro:'@@ASSET:assets/images/game/rostos/hanna-neutro.webp@@',foco:'@@ASSET:assets/images/game/rostos/hanna-foco.webp@@',raiva:'@@ASSET:assets/images/game/rostos/hanna-raiva.webp@@',medo:'@@ASSET:assets/images/game/rostos/hanna-medo.webp@@',dor:'@@ASSET:assets/images/game/rostos/hanna-dor.webp@@',grito:'@@ASSET:assets/images/game/rostos/hanna-grito.webp@@'}};
 // falas com expressão própria (id da fala → rosto)
 const PZ_LINE_FACE={3:'dor',45:'dor',51:'medo',37:'raiva',40:'foco'};
 const PZ_FACE_STATE={hp:null,hurtT:0,lastT:0,shoutT:0,wasSpecial:false};
@@ -23,21 +19,21 @@ function pzFaceFor(run){
   if((run.gun?.flashes||[]).length)return'foco';
   return'neutro';
 }
-function pzFaceImg(el,key){if(el.dataset.face===key)return;el.dataset.face=key;el.src=PZ_FACES[key];}
+function pzFaceImg(el,key,ch){const id=ch+'/'+key;if(el.dataset.face===id)return;el.dataset.face=id;el.src=(PZ_FACES[ch]||PZ_FACES.antonio)[key];}
 const _pzUpdateHUD=UIManager.prototype.updateHUD;
 UIManager.prototype.updateHUD=function(run){
   _pzUpdateHUD.call(this,run);
   if(!run||!this.root)return;
-  const isAntonio=(run.player.charId||'antonio')==='antonio';
+  const ch=run.player.charId||'antonio',isAntonio=!!PZ_FACES[ch];
   const panel=this.root.querySelector('.hud-health');
   if(panel){let img=panel.querySelector('.pz-hud-face');
     if(!img&&isAntonio){img=document.createElement('img');img.className='pz-hud-face';img.alt='';img.decoding='async';panel.prepend(img);panel.classList.add('has-face');}
-    if(img){img.hidden=!isAntonio;if(isAntonio){const k=pzFaceFor(run);pzFaceImg(img,k);img.dataset.mood=k;}}}
+    if(img){img.hidden=!isAntonio;if(isAntonio){const k=pzFaceFor(run);pzFaceImg(img,k,ch);img.dataset.mood=k;}}}
   const cap=this.root.querySelector('[data-antonio-caption]');
   if(cap){let img=cap.querySelector('.pz-cap-face');
     if(!img){img=document.createElement('img');img.className='pz-cap-face';img.alt='';img.decoding='async';cap.prepend(img);}
     const line=run.dialogue?.active;img.hidden=!isAntonio||!line;
-    if(line&&isAntonio)pzFaceImg(img,PZ_LINE_FACE[line.id]||pzFaceFor(run));}
+    if(line&&isAntonio)pzFaceImg(img,PZ_LINE_FACE[line.id]||pzFaceFor(run),ch);}
 };
 // A12: botão da habilidade logo abaixo do painel de vida, alinhado à direita dele (pedido do jogador).
 const _pzUpdateHUD2=UIManager.prototype.updateHUD;
