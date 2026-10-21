@@ -226,3 +226,13 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 - Cerca de 1 em cada 3 carros abandonados ainda tem bateria: faróis acesos à noite e no anoitecer. Alguns piscam, alguns têm um farol quebrado.
 - Cada farol abre um cone na escuridão (ilumina o chão e quem estiver na frente) e desenha o feixe no ar: mais forte com neblina e chuva, com núcleo mais denso, brilho da lâmpada e gotas/poeira acesas dentro do feixe.
 - Carro destruído apaga os faróis. Só os carros perto da câmera são calculados.
+
+## R21 · Luz real (ATLAS A9, parte 1) e placas de rua
+- Noite refeita como mapa de luz multiplicado sobre a cena: luar azul + soma de luzes coloridas com queda física (inverso do quadrado suavizado), mais um ganho de exposição para o asfalto sob luz forte.
+- Postes: luminária "cabeça de cobra" com braço sobre a pista; mistura de sódio (laranja) e LED (branco-frio). A luz cai no chão abaixo da luminária e projeta sombras de prédios e carros (calculadas uma vez por poste). Cone de luz no ar, chuva atravessando o cone, lâmpada com bloom e halo na neblina; lâmpadas velhas falham com apagões curtos.
+- Prédios: janelas acesas emitem luz própria (incandescente, fluorescente ou TV azulada, algumas com cortina/persiana), lojas abertas iluminam a calçada e as janelas baixas jogam luz na rua.
+- Letreiros, fogo, tiros e explosões entram na mesma luz colorida. Postes das bordas do mapa também acendem.
+- Faróis: pegada de luz no chão (xenônio branco ou halógeno amarelado), feixe no ar só quando há chuva/neblina, e lanternas traseiras vermelhas.
+- Lanterna do jogador entra como luz levemente azulada com as mesmas sombras de antes.
+- Placas: nomes de rua não ficam mais pintados no chão (nem o nome do distrito). Esquinas dos 4 cruzamentos têm poste com as duas placas azuis paulistanas (bairro + CEP + nome). As placas de sentido viraram placas indicativas em dois postes na calçada. Todas refletem a lanterna e os faróis à noite.
+- Se o navegador falhar na luz nova, o jogo volta sozinho para a iluminação antiga.

@@ -230,15 +230,42 @@ function urbanGrime(ctx,{x,y,w,h,seed=87,intensity=1}){
   ctx.restore();
 }
 // Metal lamp support: each light in lampLights is attached to a physical post.
+// ATLAS A9 · Hefesto — poste de verdade: base de concreto, haste cônica, braço curvo e luminária "cabeça de cobra"
+// sobre a pista. A luz (38f) sai da luminária e cai no chão logo abaixo dela.
+// Ruas (asfalto + meio-fio) usadas por postes e placas para saber de que lado fica a pista.
+const PZ_ROADS=Object.freeze([
+  {x:0,y:401,w:2800,h:353,v:0},{x:0,y:1777,w:2800,h:276,v:0},
+  {x:398,y:0,w:350,h:2800,v:1},{x:1847,y:0,w:208,h:2800,v:1},
+]);
+function pzOnRoad(x,y,pad=0){return PZ_ROADS.some(r=>x>r.x-pad&&x<r.x+r.w+pad&&y>r.y-pad&&y<r.y+r.h+pad);}
+function pzLampDir(x,y){
+  let best=null,bd=1e9;
+  for(const r of PZ_ROADS){if(!r.v||y<r.y||y>r.y+r.h)continue;const d=x<r.x?r.x-x:x>r.x+r.w?x-(r.x+r.w):0;if(d<bd){bd=d;best=r;}}
+  if(best&&bd<90)return x<best.x+best.w/2?1:-1;
+  return (Math.round(x*7+y*3)&1)?1:-1;
+}
+function pzLampHead(x,y){const d=pzLampDir(x,y);return {x:x+d*15,y:y-31,gx:x+d*15,gy:y+14,dir:d};}
 function streetlightPole(ctx,x,y){
+ const d=pzLampDir(x,y);
  ctx.save();
- ctx.fillStyle='rgba(0,0,0,.26)';ctx.fillRect(x+3,y+4,6,22);
- ctx.fillStyle='#292b30';ctx.fillRect(x-2,y-11,5,27);
- ctx.fillStyle='#757574';ctx.fillRect(x-2,y-12,2,22);
- ctx.fillStyle='#171c21';ctx.fillRect(x-7,y-15,15,7);
- ctx.fillStyle='#8c8580';ctx.fillRect(x-6,y-15,13,2);
- ctx.fillStyle='#d3c8ae';ctx.fillRect(x-5,y-11,11,2);
- ctx.fillStyle='#33383a';ctx.fillRect(x-5,y+13,11,4);
+ // sombra no chão (luz da lua/sol vindo do noroeste)
+ ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.moveTo(x-1,y+15);ctx.lineTo(x+22,y+24);ctx.lineTo(x+24,y+21);ctx.lineTo(x+2,y+12);ctx.closePath();ctx.fill();
+ // base de concreto
+ ctx.fillStyle='#4a4846';ctx.fillRect(x-4,y+11,9,5);ctx.fillStyle='#6d6a66';ctx.fillRect(x-4,y+11,9,1);ctx.fillStyle='#2a2928';ctx.fillRect(x-4,y+15,9,1);
+ // haste cônica com luz lateral
+ ctx.fillStyle='#2b2e33';ctx.beginPath();ctx.moveTo(x-2.2,y+12);ctx.lineTo(x+2.6,y+12);ctx.lineTo(x+1.4,y-30);ctx.lineTo(x-1,y-30);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#6f7378';ctx.fillRect(x-1.6,y-28,1,39);
+ ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x+1,y-26,1,37);
+ ctx.fillStyle='#8a5a3a';ctx.globalAlpha=.35;ctx.fillRect(x-2,y+4,4,6);ctx.globalAlpha=1; // ferrugem no pé
+ ctx.fillStyle='#c9c3b4';ctx.fillRect(x-2,y-6,4,2);ctx.fillStyle='#2e3a46';ctx.fillRect(x-2,y-4,4,3); // plaqueta de numeração
+ // braço curvo
+ ctx.strokeStyle='#2b2e33';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y-29);ctx.quadraticCurveTo(x+d*2,y-35,x+d*13,y-33);ctx.stroke();
+ ctx.strokeStyle='#666a70';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(x,y-30);ctx.quadraticCurveTo(x+d*2,y-36,x+d*12,y-34);ctx.stroke();
+ // luminária
+ const hx=x+d*15;
+ ctx.fillStyle='#1d2024';ctx.beginPath();ctx.ellipse(hx,y-32,6,2.6,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#4c5157';ctx.beginPath();ctx.ellipse(hx-d*.5,y-33,5,1.5,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#e9dcc0';ctx.fillRect(hx-3.5,y-31,7,1.4);
  ctx.restore();
 }
 function emergencyLamp(ctx,x,y,orientation=0){
@@ -266,7 +293,8 @@ function roadDecals(ctx,x,y,w,h,{vertical=false,seed=43}={}){
   ctx.restore();
 }
 function roadStencil(ctx,x,y,text,angle=0){
-  // C4 · Deméter: pintura de solo gasta e discreta, para a rua ser lida em 1 segundo.
+  // ATLAS A9: nomes pintados no chão foram retirados — as ruas agora têm placas em poste (29c-world_StreetSigns.js).
+  return;
   ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.globalAlpha=.2;
   ctx.fillStyle='#ded7cc';ctx.font='bold 14px monospace';
   ctx.fillText(text,0,0);ctx.fillRect(0,4,Math.min(140,text.length*8),1);

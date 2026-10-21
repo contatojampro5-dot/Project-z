@@ -27,7 +27,9 @@ building=function(ctx,x,y,w,h,options={}){
 };
 
 // Fachada de frente: janelas por andar, faixas entre andares, térreo com portas de enrolar e letreiro.
+const PZ_WIN=Object.freeze({tungsten:[255,190,112],fluo:[214,236,255],tv:[132,168,255]});
 function pzPaintFacade(ctx,b,ox,oy){
+  b.lit=[];b.doors=[];
   const{w,H,options}=b,rand=mulberry32(Math.round(b.x*13+b.y*7+w));const glow=options.glow||'#e04b4d';
   const g=ctx.createLinearGradient(0,oy,0,oy+H);g.addColorStop(0,'#3a383d');g.addColorStop(.55,'#2c2c31');g.addColorStop(1,'#1c1d22');
   ctx.fillStyle=g;ctx.fillRect(ox,oy,w,H);
@@ -40,7 +42,15 @@ function pzPaintFacade(ctx,b,ox,oy){
     for(let wx=ox+9;wx<ox+w-bay+4;wx+=bay){
       const ww=bay-8,wh=fh-11,wy=fy+5;const lit=rand()<.13,broken=rand()<.12,dark=rand()<.5;
       ctx.fillStyle='#101216';ctx.fillRect(wx-1,wy-1,ww+2,wh+2);
-      ctx.fillStyle=lit?'rgba(255,190,110,.72)':broken?'#07080a':dark?'#161a20':'#222a33';ctx.fillRect(wx,wy,ww,wh);
+      let lc=null;
+      if(lit){const k=rand();lc=k<.62?PZ_WIN.tungsten:k<.9?PZ_WIN.fluo:PZ_WIN.tv;
+        // vidro aceso: mais claro no centro, cortina/persiana em parte da janela
+        const g=ctx.createLinearGradient(0,wy,0,wy+wh);g.addColorStop(0,`rgb(${lc.map(v=>Math.round(v*.78)).join(',')})`);g.addColorStop(.5,`rgb(${lc.join(',')})`);g.addColorStop(1,`rgb(${lc.map(v=>Math.round(v*.7)).join(',')})`);
+        ctx.fillStyle=g;ctx.fillRect(wx,wy,ww,wh);
+        if(rand()<.5){ctx.fillStyle='rgba(60,40,30,.55)';ctx.fillRect(wx,wy,ww*(.25+rand()*.35),wh);}
+        if(rand()<.4){ctx.fillStyle='rgba(30,22,20,.6)';for(let l=wy+2;l<wy+wh;l+=3)ctx.fillRect(wx,l,ww,1);}
+        b.lit.push({x:wx-ox,y:wy-oy,w:ww,h:wh,rgb:lc,floor:f});
+      }else{ctx.fillStyle=broken?'#07080a':dark?'#161a20':'#222a33';ctx.fillRect(wx,wy,ww,wh);}
       if(!lit&&!broken){ctx.fillStyle='rgba(170,190,210,.13)';ctx.fillRect(wx+1,wy+1,ww*.4,wh-2);}// reflexo
       if(broken){ctx.strokeStyle='rgba(160,170,180,.35)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(wx,wy);ctx.lineTo(wx+ww*.6,wy+wh*.7);ctx.lineTo(wx+ww,wy+wh*.3);ctx.stroke();}
       ctx.fillStyle='rgba(150,146,148,.5)';ctx.fillRect(wx-1,wy+wh+1,ww+2,1);// peitoril
@@ -52,7 +62,8 @@ function pzPaintFacade(ctx,b,ox,oy){
   ctx.fillStyle='#151619';ctx.fillRect(ox,gy,w,gh);
   for(let sx=ox+8;sx<ox+w-30;sx+=Math.max(34,w/4)){
     const sw=Math.min(28,w/5);const open=rand()<.25;
-    ctx.fillStyle=open?'rgba(255,200,130,.4)':'#5a5d62';ctx.fillRect(sx,gy+6,sw,gh-7);
+    ctx.fillStyle=open?'rgb(214,170,112)':'#5a5d62';ctx.fillRect(sx,gy+6,sw,gh-7);
+    if(open){ctx.fillStyle='rgba(40,28,20,.6)';ctx.fillRect(sx+3,gy+gh*.45,sw-6,gh*.5);b.doors.push({x:sx-ox,y:gy+6-oy,w:sw,h:gh-7});}
     if(!open)for(let l=gy+8;l<gy+gh-2;l+=3){ctx.fillStyle='rgba(20,22,26,.6)';ctx.fillRect(sx,l,sw,1);}
     if(rand()<.4){ctx.fillStyle='rgba(30,10,12,.7)';ctx.fillRect(sx+3,gy+gh*.4,sw-6,3);}// pichação
   }
@@ -71,7 +82,24 @@ function pzTallCache(b){
   pzPaintFacade(x,b,pad,pad+b.h);
   // beiral: sombra do telhado sobre o topo da parede
   const eg=x.createLinearGradient(0,pad+b.h,0,pad+b.h+10);eg.addColorStop(0,'rgba(0,0,0,.55)');eg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=eg;x.fillRect(pad,pad+b.h,b.w,10);
-  b.cache={canvas:c,pad};return b.cache;
+  b.cache={canvas:c,pad};
+  // ATLAS A9: máscara de luz própria (janelas e lojas acesas) e o brilho que ela faz no ar; luz que cai na calçada.
+  if(b.lit.length||b.doors.length){
+    const e=document.createElement('canvas');e.width=cw;e.height=ch;const ex=e.getContext('2d');ex.scale(res,res);
+    const gl=document.createElement('canvas');gl.width=Math.ceil(cw/2);gl.height=Math.ceil(ch/2);const gx=gl.getContext('2d');gx.scale(res/2,res/2);
+    const fy=pad+b.h;
+    for(const q of b.lit){ex.fillStyle=`rgb(${q.rgb.map(v=>Math.min(255,v+40)).join(',')})`;ex.fillRect(pad+q.x,fy+q.y,q.w,q.h);
+      const g=gx.createRadialGradient(pad+q.x+q.w/2,fy+q.y+q.h/2,1,pad+q.x+q.w/2,fy+q.y+q.h/2,q.w*1.3);g.addColorStop(0,`rgba(${q.rgb.join(',')},.5)`);g.addColorStop(1,`rgba(${q.rgb.join(',')},0)`);
+      gx.fillStyle=g;gx.fillRect(pad+q.x-q.w*1.3,fy+q.y-q.w*1.3+q.h/2,q.w*3.6,q.w*2.6+q.h);}
+    for(const q of b.doors){ex.fillStyle='rgb(255,214,160)';ex.fillRect(pad+q.x,fy+q.y,q.w,q.h);}
+    b.cache.emis=e;b.cache.glow=gl;
+  }
+  const spill=[];
+  for(const q of b.doors)spill.push({x:q.x+q.w/2,y:16,R:62,rgb:[255,200,140],p:.9});
+  const low=b.lit.filter(q=>q.floor>=Math.max(0,Math.round(b.H/PZ_TALL.floor)-3));
+  for(const q of low.slice(0,4))spill.push({x:q.x+q.w/2,y:22,R:54,rgb:q.rgb,p:.42});
+  b.cache.spill=spill;
+  return b.cache;
 }
 
 // Lista de prédios visíveis neste quadro, como "desenháveis" ordenados pela base.

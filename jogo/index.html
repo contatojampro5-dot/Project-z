@@ -4483,15 +4483,42 @@ function urbanGrime(ctx,{x,y,w,h,seed=87,intensity=1}){
   ctx.restore();
 }
 // Metal lamp support: each light in lampLights is attached to a physical post.
+// ATLAS A9 · Hefesto — poste de verdade: base de concreto, haste cônica, braço curvo e luminária "cabeça de cobra"
+// sobre a pista. A luz (38f) sai da luminária e cai no chão logo abaixo dela.
+// Ruas (asfalto + meio-fio) usadas por postes e placas para saber de que lado fica a pista.
+const PZ_ROADS=Object.freeze([
+  {x:0,y:401,w:2800,h:353,v:0},{x:0,y:1777,w:2800,h:276,v:0},
+  {x:398,y:0,w:350,h:2800,v:1},{x:1847,y:0,w:208,h:2800,v:1},
+]);
+function pzOnRoad(x,y,pad=0){return PZ_ROADS.some(r=>x>r.x-pad&&x<r.x+r.w+pad&&y>r.y-pad&&y<r.y+r.h+pad);}
+function pzLampDir(x,y){
+  let best=null,bd=1e9;
+  for(const r of PZ_ROADS){if(!r.v||y<r.y||y>r.y+r.h)continue;const d=x<r.x?r.x-x:x>r.x+r.w?x-(r.x+r.w):0;if(d<bd){bd=d;best=r;}}
+  if(best&&bd<90)return x<best.x+best.w/2?1:-1;
+  return (Math.round(x*7+y*3)&1)?1:-1;
+}
+function pzLampHead(x,y){const d=pzLampDir(x,y);return {x:x+d*15,y:y-31,gx:x+d*15,gy:y+14,dir:d};}
 function streetlightPole(ctx,x,y){
+ const d=pzLampDir(x,y);
  ctx.save();
- ctx.fillStyle='rgba(0,0,0,.26)';ctx.fillRect(x+3,y+4,6,22);
- ctx.fillStyle='#292b30';ctx.fillRect(x-2,y-11,5,27);
- ctx.fillStyle='#757574';ctx.fillRect(x-2,y-12,2,22);
- ctx.fillStyle='#171c21';ctx.fillRect(x-7,y-15,15,7);
- ctx.fillStyle='#8c8580';ctx.fillRect(x-6,y-15,13,2);
- ctx.fillStyle='#d3c8ae';ctx.fillRect(x-5,y-11,11,2);
- ctx.fillStyle='#33383a';ctx.fillRect(x-5,y+13,11,4);
+ // sombra no chão (luz da lua/sol vindo do noroeste)
+ ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.moveTo(x-1,y+15);ctx.lineTo(x+22,y+24);ctx.lineTo(x+24,y+21);ctx.lineTo(x+2,y+12);ctx.closePath();ctx.fill();
+ // base de concreto
+ ctx.fillStyle='#4a4846';ctx.fillRect(x-4,y+11,9,5);ctx.fillStyle='#6d6a66';ctx.fillRect(x-4,y+11,9,1);ctx.fillStyle='#2a2928';ctx.fillRect(x-4,y+15,9,1);
+ // haste cônica com luz lateral
+ ctx.fillStyle='#2b2e33';ctx.beginPath();ctx.moveTo(x-2.2,y+12);ctx.lineTo(x+2.6,y+12);ctx.lineTo(x+1.4,y-30);ctx.lineTo(x-1,y-30);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#6f7378';ctx.fillRect(x-1.6,y-28,1,39);
+ ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x+1,y-26,1,37);
+ ctx.fillStyle='#8a5a3a';ctx.globalAlpha=.35;ctx.fillRect(x-2,y+4,4,6);ctx.globalAlpha=1; // ferrugem no pé
+ ctx.fillStyle='#c9c3b4';ctx.fillRect(x-2,y-6,4,2);ctx.fillStyle='#2e3a46';ctx.fillRect(x-2,y-4,4,3); // plaqueta de numeração
+ // braço curvo
+ ctx.strokeStyle='#2b2e33';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y-29);ctx.quadraticCurveTo(x+d*2,y-35,x+d*13,y-33);ctx.stroke();
+ ctx.strokeStyle='#666a70';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(x,y-30);ctx.quadraticCurveTo(x+d*2,y-36,x+d*12,y-34);ctx.stroke();
+ // luminária
+ const hx=x+d*15;
+ ctx.fillStyle='#1d2024';ctx.beginPath();ctx.ellipse(hx,y-32,6,2.6,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#4c5157';ctx.beginPath();ctx.ellipse(hx-d*.5,y-33,5,1.5,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#e9dcc0';ctx.fillRect(hx-3.5,y-31,7,1.4);
  ctx.restore();
 }
 function emergencyLamp(ctx,x,y,orientation=0){
@@ -4519,7 +4546,8 @@ function roadDecals(ctx,x,y,w,h,{vertical=false,seed=43}={}){
   ctx.restore();
 }
 function roadStencil(ctx,x,y,text,angle=0){
-  // C4 · Deméter: pintura de solo gasta e discreta, para a rua ser lida em 1 segundo.
+  // ATLAS A9: nomes pintados no chão foram retirados — as ruas agora têm placas em poste (29c-world_StreetSigns.js).
+  return;
   ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.globalAlpha=.2;
   ctx.fillStyle='#ded7cc';ctx.font='bold 14px monospace';
   ctx.fillText(text,0,0);ctx.fillRect(0,4,Math.min(140,text.length*8),1);
@@ -4671,7 +4699,9 @@ building=function(ctx,x,y,w,h,options={}){
 };
 
 // Fachada de frente: janelas por andar, faixas entre andares, térreo com portas de enrolar e letreiro.
+const PZ_WIN=Object.freeze({tungsten:[255,190,112],fluo:[214,236,255],tv:[132,168,255]});
 function pzPaintFacade(ctx,b,ox,oy){
+  b.lit=[];b.doors=[];
   const{w,H,options}=b,rand=mulberry32(Math.round(b.x*13+b.y*7+w));const glow=options.glow||'#e04b4d';
   const g=ctx.createLinearGradient(0,oy,0,oy+H);g.addColorStop(0,'#3a383d');g.addColorStop(.55,'#2c2c31');g.addColorStop(1,'#1c1d22');
   ctx.fillStyle=g;ctx.fillRect(ox,oy,w,H);
@@ -4684,7 +4714,15 @@ function pzPaintFacade(ctx,b,ox,oy){
     for(let wx=ox+9;wx<ox+w-bay+4;wx+=bay){
       const ww=bay-8,wh=fh-11,wy=fy+5;const lit=rand()<.13,broken=rand()<.12,dark=rand()<.5;
       ctx.fillStyle='#101216';ctx.fillRect(wx-1,wy-1,ww+2,wh+2);
-      ctx.fillStyle=lit?'rgba(255,190,110,.72)':broken?'#07080a':dark?'#161a20':'#222a33';ctx.fillRect(wx,wy,ww,wh);
+      let lc=null;
+      if(lit){const k=rand();lc=k<.62?PZ_WIN.tungsten:k<.9?PZ_WIN.fluo:PZ_WIN.tv;
+        // vidro aceso: mais claro no centro, cortina/persiana em parte da janela
+        const g=ctx.createLinearGradient(0,wy,0,wy+wh);g.addColorStop(0,`rgb(${lc.map(v=>Math.round(v*.78)).join(',')})`);g.addColorStop(.5,`rgb(${lc.join(',')})`);g.addColorStop(1,`rgb(${lc.map(v=>Math.round(v*.7)).join(',')})`);
+        ctx.fillStyle=g;ctx.fillRect(wx,wy,ww,wh);
+        if(rand()<.5){ctx.fillStyle='rgba(60,40,30,.55)';ctx.fillRect(wx,wy,ww*(.25+rand()*.35),wh);}
+        if(rand()<.4){ctx.fillStyle='rgba(30,22,20,.6)';for(let l=wy+2;l<wy+wh;l+=3)ctx.fillRect(wx,l,ww,1);}
+        b.lit.push({x:wx-ox,y:wy-oy,w:ww,h:wh,rgb:lc,floor:f});
+      }else{ctx.fillStyle=broken?'#07080a':dark?'#161a20':'#222a33';ctx.fillRect(wx,wy,ww,wh);}
       if(!lit&&!broken){ctx.fillStyle='rgba(170,190,210,.13)';ctx.fillRect(wx+1,wy+1,ww*.4,wh-2);}// reflexo
       if(broken){ctx.strokeStyle='rgba(160,170,180,.35)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(wx,wy);ctx.lineTo(wx+ww*.6,wy+wh*.7);ctx.lineTo(wx+ww,wy+wh*.3);ctx.stroke();}
       ctx.fillStyle='rgba(150,146,148,.5)';ctx.fillRect(wx-1,wy+wh+1,ww+2,1);// peitoril
@@ -4696,7 +4734,8 @@ function pzPaintFacade(ctx,b,ox,oy){
   ctx.fillStyle='#151619';ctx.fillRect(ox,gy,w,gh);
   for(let sx=ox+8;sx<ox+w-30;sx+=Math.max(34,w/4)){
     const sw=Math.min(28,w/5);const open=rand()<.25;
-    ctx.fillStyle=open?'rgba(255,200,130,.4)':'#5a5d62';ctx.fillRect(sx,gy+6,sw,gh-7);
+    ctx.fillStyle=open?'rgb(214,170,112)':'#5a5d62';ctx.fillRect(sx,gy+6,sw,gh-7);
+    if(open){ctx.fillStyle='rgba(40,28,20,.6)';ctx.fillRect(sx+3,gy+gh*.45,sw-6,gh*.5);b.doors.push({x:sx-ox,y:gy+6-oy,w:sw,h:gh-7});}
     if(!open)for(let l=gy+8;l<gy+gh-2;l+=3){ctx.fillStyle='rgba(20,22,26,.6)';ctx.fillRect(sx,l,sw,1);}
     if(rand()<.4){ctx.fillStyle='rgba(30,10,12,.7)';ctx.fillRect(sx+3,gy+gh*.4,sw-6,3);}// pichação
   }
@@ -4715,7 +4754,24 @@ function pzTallCache(b){
   pzPaintFacade(x,b,pad,pad+b.h);
   // beiral: sombra do telhado sobre o topo da parede
   const eg=x.createLinearGradient(0,pad+b.h,0,pad+b.h+10);eg.addColorStop(0,'rgba(0,0,0,.55)');eg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=eg;x.fillRect(pad,pad+b.h,b.w,10);
-  b.cache={canvas:c,pad};return b.cache;
+  b.cache={canvas:c,pad};
+  // ATLAS A9: máscara de luz própria (janelas e lojas acesas) e o brilho que ela faz no ar; luz que cai na calçada.
+  if(b.lit.length||b.doors.length){
+    const e=document.createElement('canvas');e.width=cw;e.height=ch;const ex=e.getContext('2d');ex.scale(res,res);
+    const gl=document.createElement('canvas');gl.width=Math.ceil(cw/2);gl.height=Math.ceil(ch/2);const gx=gl.getContext('2d');gx.scale(res/2,res/2);
+    const fy=pad+b.h;
+    for(const q of b.lit){ex.fillStyle=`rgb(${q.rgb.map(v=>Math.min(255,v+40)).join(',')})`;ex.fillRect(pad+q.x,fy+q.y,q.w,q.h);
+      const g=gx.createRadialGradient(pad+q.x+q.w/2,fy+q.y+q.h/2,1,pad+q.x+q.w/2,fy+q.y+q.h/2,q.w*1.3);g.addColorStop(0,`rgba(${q.rgb.join(',')},.5)`);g.addColorStop(1,`rgba(${q.rgb.join(',')},0)`);
+      gx.fillStyle=g;gx.fillRect(pad+q.x-q.w*1.3,fy+q.y-q.w*1.3+q.h/2,q.w*3.6,q.w*2.6+q.h);}
+    for(const q of b.doors){ex.fillStyle='rgb(255,214,160)';ex.fillRect(pad+q.x,fy+q.y,q.w,q.h);}
+    b.cache.emis=e;b.cache.glow=gl;
+  }
+  const spill=[];
+  for(const q of b.doors)spill.push({x:q.x+q.w/2,y:16,R:62,rgb:[255,200,140],p:.9});
+  const low=b.lit.filter(q=>q.floor>=Math.max(0,Math.round(b.H/PZ_TALL.floor)-3));
+  for(const q of low.slice(0,4))spill.push({x:q.x+q.w/2,y:22,R:54,rgb:q.rgb,p:.42});
+  b.cache.spill=spill;
+  return b.cache;
 }
 
 // Lista de prédios visíveis neste quadro, como "desenháveis" ordenados pela base.
@@ -4738,6 +4794,134 @@ function pzDrawTall(ctx,b){
   ctx.imageSmoothingEnabled=b.res<1;
   ctx.drawImage(c.canvas,b.x-c.pad,b.y-b.H-c.pad,b.w+c.pad*2,b.h+b.H+c.pad*2);
   ctx.restore();
+}
+// -- src/world/StreetSigns.js --
+// ATLAS A9 · Deméter + Hefesto — os nomes das ruas saíram do chão e foram para placas em poste, como em São Paulo:
+// placa azul com borda branca, o nome da via em destaque e, em cima, a faixa com o bairro e o CEP.
+// Nas esquinas fica um poste com as duas placas (uma para cada rua do cruzamento). As placas de sentido
+// (antes deitadas no asfalto) viraram placas indicativas em dois postes, na calçada.
+// São desenhadas junto com os personagens, ordenadas pela base: quem passa atrás fica atrás do poste.
+const PZ_SIGNS={list:[],seen:new Set()};
+
+// Nomes por trecho de via (as quatro avenidas do mapa).
+const PZ_STREET_NAMES=Object.freeze({
+  h1:['R. DA MOOCA','R. HERMILO ALVES','R. BETÂNIA'],
+  h2:['R. AZEVEDO JÚNIOR','R. J. A. LOGAREIRO','R. MILÃO'],
+  v1:['AV. RANGEL PESTANA','R. VANDENKOOLK','R. CAETANO PINTO'],
+  v2:['R. SÃO PAULO','AV. DO ESTADO','R. DO GASÔMETRO'],
+});
+function pzBairro(x,y){return x<1152&&y<1152?'BRÁS':x>=1152&&y<1152?'BELÉM':x<1152?'MOOCA':'PARI';}
+function pzCep(x,y){const n=3000+Math.abs(Math.round(x*3+y*7))%900;return '0'+n+'-'+String(Math.abs(Math.round(x+y))%900+100);}
+function pzSignBlocked(x,y){
+  if(typeof OBSTACLES==='undefined')return false;
+  return OBSTACLES.some(o=>x>o.x-6&&x<o.x+o.w+6&&y>o.y-4&&y<o.y+o.h+10);
+}
+function pzAddSign(s){
+  const key=`${s.type}:${Math.round(s.x/8)}:${Math.round(s.y/8)}`;if(PZ_SIGNS.seen.has(key))return;
+  if(pzSignBlocked(s.x,s.y))return;
+  PZ_SIGNS.seen.add(key);PZ_SIGNS.list.push(s);
+}
+// Placas de esquina nos quatro cruzamentos.
+function pzSeedStreetSigns(){
+  if(PZ_SIGNS.seeded)return;PZ_SIGNS.seeded=true;
+  const H=[{y0:401,y1:754,n:PZ_STREET_NAMES.h1},{y0:1777,y1:2053,n:PZ_STREET_NAMES.h2}];
+  const V=[{x0:398,x1:748,n:PZ_STREET_NAMES.v1},{x0:1847,x1:2055,n:PZ_STREET_NAMES.v2}];
+  for(let vi=0;vi<2;vi++)for(let hi=0;hi<2;hi++){
+    const v=V[vi],h=H[hi];
+    const hW=h.n[vi],hE=h.n[vi+1],vN=v.n[hi],vS=v.n[hi+1];
+    const corners=[[v.x0-16,h.y0-14,hW,vN],[v.x1+16,h.y1+22,hE,vS],[v.x1+16,h.y0-14,hE,vN],[v.x0-16,h.y1+22,hW,vS]];
+    for(const [x,y,a,b] of corners.slice(0,(vi+hi)%2?4:3))pzAddSign({type:'street',x,y,plates:[a,b],bairro:pzBairro(x,y),cep:pzCep(x,y)});
+  }
+}
+// Mesma assinatura da placa antiga: agora vira placa indicativa em pé, fora do asfalto.
+paulistaSign=function(ctx,x,y,main,sub='',angle=0){
+  let px=x+(Math.abs(angle)>.1?14:48),py=y+(Math.abs(angle)>.1?40:16);
+  for(const r of PZ_ROADS){
+    if(px>r.x-10&&px<r.x+r.w+10&&py>r.y-10&&py<r.y+r.h+10){
+      if(r.v){px=px<r.x+r.w/2?r.x-22:r.x+r.w+22;}else{py=py<r.y+r.h/2?r.y-16:r.y+r.h+28;}
+    }
+  }
+  pzAddSign({type:'dir',x:px,y:py,main,sub});
+};
+
+function pzFitText(c,text,maxW,size,weight='bold'){
+  let s=size;c.font=`${weight} ${s}px "Arial Narrow",Arial,sans-serif`;
+  while(c.measureText(text).width>maxW&&s>4){s-=.5;c.font=`${weight} ${s}px "Arial Narrow",Arial,sans-serif`;}
+}
+// Placa azul paulistana (em coordenadas locais, canto superior esquerdo em 0,0).
+function pzPlate(c,w,h,name,top){
+  c.fillStyle='rgba(0,0,0,.35)';c.fillRect(1.5,1.5,w,h);
+  c.fillStyle='#e9edf2';c.fillRect(0,0,w,h);
+  const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#2d63a8');g.addColorStop(1,'#1d4a85');
+  c.fillStyle=g;c.fillRect(.8,.8,w-1.6,h-1.6);
+  c.fillStyle='rgba(255,255,255,.85)';c.fillRect(.8,4.2,w-1.6,.4);
+  c.fillStyle='#e9edf2';c.textBaseline='middle';
+  pzFitText(c,top,w-4,2.6);c.textAlign='center';c.fillText(top,w/2,2.6);
+  pzFitText(c,name,w-4,5.6);c.fillText(name,w/2,4.6+(h-4.6)/2+.2);
+  // desgaste: sujeira e um amassado
+  c.fillStyle='rgba(20,16,12,.18)';c.fillRect(w*.62,h*.55,w*.3,h*.35);
+  c.fillStyle='rgba(255,255,255,.12)';c.fillRect(1,1,w-2,.6);
+  c.textAlign='start';c.textBaseline='alphabetic';
+}
+function pzPole(c,x,top,bottom){
+  c.fillStyle='rgba(0,0,0,.3)';c.fillRect(x+1,bottom-1,8,2.2);
+  c.fillStyle='#5b5f64';c.fillRect(x-1,top,2.2,bottom-top);
+  c.fillStyle='#a3a8ad';c.fillRect(x-1,top,.8,bottom-top);
+  c.fillStyle='#2e3236';c.fillRect(x+.8,top,.4,bottom-top);
+  c.fillStyle='#3a3c3f';c.fillRect(x-2,bottom-2,4.2,2);
+}
+// Pré-desenho em alta resolução (o texto fica nítido com o zoom do jogo).
+function pzSignCanvas(s){
+  if(s.cv)return s.cv;
+  const RES=3,W=s.type==='dir'?84:56,Hh=s.type==='dir'?52:56;const c=document.createElement('canvas');c.width=W*RES;c.height=Hh*RES;
+  const x=c.getContext('2d');x.scale(RES,RES);
+  const ax=W/2,base=Hh-3;
+  if(s.type==='street'){
+    pzPole(x,ax,4,base);
+    // abraçadeiras e as duas placas, a segunda um pouco mais baixa e deslocada (fica na outra face do poste)
+    x.fillStyle='#2b2d30';x.fillRect(ax-2,9,4.6,1.6);x.fillRect(ax-2,23,4.6,1.6);
+    x.save();x.translate(ax-24,4);pzPlate(x,46,13,s.plates[0],`${s.bairro} · CEP ${s.cep}`);x.restore();
+    x.save();x.translate(ax-21,18.5);pzPlate(x,42,13,s.plates[1],`${s.bairro} · CEP ${s.cep}`);x.restore();
+    x.fillStyle='rgba(0,0,0,.25)';x.fillRect(ax-1,17,2.2,1.5);
+  }else{
+    const pw=72,ph=22,px=(W-pw)/2;
+    pzPole(x,px+10,10,base);pzPole(x,px+pw-10,10,base);
+    x.save();x.translate(px,4);
+    x.fillStyle='rgba(0,0,0,.35)';x.fillRect(2,2,pw,ph);
+    x.fillStyle='#e9edf2';x.fillRect(0,0,pw,ph);
+    const g=x.createLinearGradient(0,0,0,ph);g.addColorStop(0,'#2d63a8');g.addColorStop(1,'#1b4580');x.fillStyle=g;x.fillRect(1,1,pw-2,ph-2);
+    // seta
+    x.fillStyle='#e9edf2';x.beginPath();x.moveTo(pw-5,ph/2);x.lineTo(pw-11,ph/2-5);x.lineTo(pw-11,ph/2-2);x.lineTo(pw-17,ph/2-2);x.lineTo(pw-17,ph/2+2);x.lineTo(pw-11,ph/2+2);x.lineTo(pw-11,ph/2+5);x.closePath();x.fill();
+    x.textBaseline='middle';pzFitText(x,s.main,pw-24,6.4);x.fillText(s.main,4,ph*.36);
+    if(s.sub){x.fillStyle='#c9d6e6';pzFitText(x,s.sub,pw-24,4.6);x.fillText(s.sub,4,ph*.74);}
+    x.fillStyle='rgba(20,16,12,.2)';x.fillRect(pw*.15,ph*.6,pw*.3,ph*.3);
+    // adesivo/pichação por cima, comum nas placas da cidade
+    if((s.x+s.y)%3<1){x.fillStyle='rgba(200,40,50,.55)';x.fillRect(pw*.55,ph*.62,10,5);}
+    x.restore();
+  }
+  s.cv={canvas:c,W,H:Hh,ax,base};return s.cv;
+}
+function pzSignDrawables(camera,viewport){
+  pzSeedStreetSigns();
+  const out=[];const vw=camera.viewport.width/camera.zoom/2+60,vh=camera.viewport.height/camera.zoom/2+80;
+  for(const s of PZ_SIGNS.list){
+    if(Math.abs(s.x-camera.x)>vw||Math.abs(s.y-camera.y)>vh)continue;
+    out.push({y:s.y,__tall:1,draw(ctx){const v=pzSignCanvas(s);ctx.drawImage(v.canvas,s.x-v.ax,s.y-v.base,v.W,v.H);}});
+  }
+  return out;
+}
+// À noite as placas são refletivas: brilham quando a lanterna ou um farol bate nelas.
+function pzSignsGlint(ctx,p,flashOn,cars){
+  if(flashOn<.05&&!(cars&&cars.length))return;
+  const fl=PZ_LIGHT_CFG.flashlight;
+  for(const s of PZ_SIGNS.list){
+    const v=s.cv;if(!v)continue;
+    const cx=s.x,cy=s.y-36;let k=0;
+    if(flashOn>.05){const dx=cx-p.x,dy=cy-p.y,d=Math.hypot(dx,dy);if(d>8&&d<fl.range*1.1&&(dx*Math.cos(p.facing||0)+dy*Math.sin(p.facing||0))/d>fl.cos-.05)k=Math.max(k,(1-d/(fl.range*1.1))*flashOn);}
+    for(const c of cars||[]){const dx=cx-c.x,dy=cy-c.y,d=Math.hypot(dx,dy);if(d<230&&d>4&&(dx*Math.cos(c.face)+dy*Math.sin(c.face))/d>.9)k=Math.max(k,(1-d/230)*c.k);}
+    if(k<.03)continue;
+    ctx.globalAlpha=Math.min(.9,k*1.1);ctx.drawImage(v.canvas,s.x-v.ax,s.y-v.base,v.W,v.H);ctx.globalAlpha=1;
+  }
 }
 // -- src/world/WorldBorder.js --
 // Acabamento visual AO REDOR do mapa jogável (2800x2800). Somente decoração:
@@ -4845,6 +5029,7 @@ class WorldBorder{
     const W=GAME.map.width,H=GAME.map.height,M=WB_M;
     this.W=W;this.H=H;this.M=M;
     this.fires=[];
+    this.lamps=[];this.floods=[]; // ATLAS A9: luzes reais das bordas (postes e refletores)
     this.buildingRects=[]; // CRONOS C4: only visual geometry for sun-facing edge + ground shadows.
     this.crowd=new ExternalBarricadeCrowd(W,H);
     this.roads=this.planRoads();
@@ -5051,7 +5236,7 @@ class WorldBorder{
       const x=X+rand()*Sw,y=Y+rand()*Sh;ctx.fillStyle='rgba(6,6,8,.22)';ctx.beginPath();ctx.ellipse(x,y,30+rand()*60,18+rand()*40,rand()*3,0,6.3);ctx.fill();
     }
     // postes
-    for(const [a,b,c,d] of V){for(let y=Math.max(c,Y)+90;y<Math.min(d,Y+Sh)-40;y+=300){if(rand()<.7){streetlightPole(ctx,a+9,y);}}}
+    for(const [a,b,c,d] of V){for(let y=Math.max(c,Y)+90;y<Math.min(d,Y+Sh)-40;y+=300){if(rand()<.7){streetlightPole(ctx,a+9,y);this.lamps.push({x:a+9,y,flicker:rand()<.25?5+rand()*3:0,phase:rand()*6});}}}
     this.paintBarricades(ctx,side,rand);
   }
   ruin(ctx,x,y,w,h,rand,burn){
@@ -5621,7 +5806,7 @@ class World {
     ctx.fillStyle=zone.color;ctx.font='bold 24px monospace';
     const label={suburb:'SP / ZONA LESTE · QUARENTENA',industry:'SP / DISTRITO INDUSTRIAL',highway:'SP / RODOVIA INTERDITADA'}[zone.id];
     const mark=zone.id==='suburb'?[1500,775]:zone.id==='industry'?[75,2155]:[2220,2135];
-    ctx.fillText(label,...mark);
+    // ATLAS A9: nome do distrito não é mais pintado no chão (o HUD já anuncia a zona).
     for(const lamp of this.lampLights)if(lamp.x>=zone.x&&lamp.x<zone.x+zone.w&&lamp.y>=zone.y&&lamp.y<zone.y+zone.h)streetlightPole(ctx,lamp.x,lamp.y);
     ctx.restore();return {...zone,canvas};
   }
@@ -9125,7 +9310,7 @@ class CombatScene {
     r.effects.drawOver(ctx);
     pzSurvivorDrawUnder(ctx,r);
     pzDrawTelegraphs(ctx,r); // C6 · Ares: avisos de ataque e fases do chefe
-    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60)].sort((a,b)=>a.y-b.y);
+    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport)].sort((a,b)=>a.y-b.y);
     for(const entity of drawables){
       // Skip entities entirely outside the current viewport with generous padding.
       const screen=g.camera.worldToScreen(entity.x,entity.y);
@@ -9474,6 +9659,276 @@ class PzLightMap {
   }
 }
 const PZ_LIGHTMAP=new PzLightMap();
+// -- src/rendering/RealLight.js --
+// ATLAS A9 · Apolo — luz de verdade.
+// Antes a noite era uma camada escura "furada" pelas luzes: tudo ficava cinza-azulado e as luzes eram só buracos.
+// Agora a noite é um MAPA DE LUZ multiplicado sobre a cena, como num motor de jogo:
+//   cena × (luar azul + soma das luzes coloridas)
+// Cada luz tem cor e queda física (inverso do quadrado, suavizada): postes de sódio alaranjados, postes de LED
+// brancos-frios, janelas com lâmpada quente ou fluorescente, letreiros, fogo, faróis de xenônio ou halógenos,
+// lanterna levemente azulada. Postes projetam sombras dos prédios e carros (calculadas uma vez e guardadas).
+// Depois da multiplicação entram só os brilhos que a câmera vê no ar: lâmpada estourando (bloom), cone de luz
+// do poste com chuva atravessando, halos na neblina, lanternas traseiras dos carros.
+
+const PZ_LUX=Object.freeze({
+  moon:[14,22,44],                 // cor do luar (o que sobra da cena sem nenhuma luz)
+  sodium:[255,146,58],led:[205,222,255],tungsten:[255,182,104],fluo:[206,232,255],tv:[120,160,255],
+  fire:[255,118,42],flash:[228,238,255],xenon:[222,232,255],halogen:[255,216,150],tail:[255,24,18],muzzle:[255,196,120],
+});
+const PZ_LUX_CACHE=new Map();
+
+// Sprite de luz: queda física 1/(1+(d/r0)²) com janela suave até zero na borda.
+function pzLuxSprite(rgb,r0=.2,gain=1){
+  const key='s'+rgb.join(',')+':'+r0+':'+gain;let c=PZ_LUX_CACHE.get(key);if(c)return c;
+  const S=96;c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d'),img=x.createImageData(S,S),d=img.data;
+  const norm=gain;
+  for(let j=0;j<S;j++)for(let i=0;i<S;i++){
+    const dx=(i+.5)/S*2-1,dy=(j+.5)/S*2-1,r=Math.hypot(dx,dy);const k=(j*S+i)*4;
+    if(r>=1){d[k+3]=0;continue;}
+    const w=(1-r*r);const I=Math.min(1,norm/(1+(r/r0)*(r/r0))*w*w);
+    d[k]=rgb[0];d[k+1]=rgb[1];d[k+2]=rgb[2];d[k+3]=Math.round(I*255);
+  }
+  x.putImageData(img,0,0);PZ_LUX_CACHE.set(key,c);return c;
+}
+// Pegada do farol no chão (aponta para +x): cone com bordas macias, mais forte a ~25% do alcance.
+function pzBeamSprite(rgb){
+  const key='b'+rgb.join(',');let c=PZ_LUX_CACHE.get(key);if(c)return c;
+  const W=160,H=96;c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),img=x.createImageData(W,H),d=img.data;
+  for(let j=0;j<H;j++)for(let i=0;i<W;i++){
+    const u=(i+.5)/W,v=((j+.5)/H-.5)*2;const k=(j*W+i)*4;
+    const ang=Math.abs(Math.atan2(v*.6,u+.02));
+    const side=Math.max(0,Math.min(1,(.46-ang)/.22));
+    const along=Math.min(1,u/.12)*Math.pow(1-u,1.5)*1.25+Math.max(0,.35-u)*1.4;
+    const I=Math.min(1,side*side*(3-2*side)*along);
+    d[k]=rgb[0];d[k+1]=rgb[1];d[k+2]=rgb[2];d[k+3]=Math.round(I*255);
+  }
+  x.putImageData(img,0,0);PZ_LUX_CACHE.set(key,c);return c;
+}
+
+// Lista fixa de luzes do cenário (postes do mapa + postes e refletores das bordas + letreiros).
+function pzLuxStatic(world){
+  if(world.__lux)return world.__lux;
+  const out=[];
+  const lamp=(x,y,radius,flicker,phase,seedTag)=>{
+    const h=pzLampHead(x,y),rnd=mulberry32(Math.round(x*17+y*29+(seedTag||0)));
+    const kind=rnd()<.32?'led':'sodium';
+    out.push({type:'lamp',x:h.gx,y:h.gy,hx:h.x,hy:h.y,R:Math.max(120,(radius||84)*1.75),rgb:PZ_LUX[kind],kind,flicker:flicker||0,phase:phase||0,p:kind==='led'?1.05:1.15,shadow:true});
+  };
+  for(const l of world.lampLights||[])lamp(l.x,l.y,l.radius,l.flicker,l.phase);
+  for(const l of world.border?.lamps||[])lamp(l.x,l.y,84,l.flicker||0,l.phase||0,7);
+  for(const f of world.border?.floods||[])out.push({type:'flood',x:f.gx,y:f.gy,hx:f.x,hy:f.y,R:f.R||210,rgb:PZ_LUX.led,kind:'led',flicker:f.flicker||0,phase:f.phase||0,p:1.1,shadow:false});
+  for(const l of world.lights||[]){const rgb=pzLuxHex(l.color);out.push({type:'sign',x:l.x,y:l.y+18,R:(l.radius||140)*1.05,rgb,flicker:l.flicker||0,phase:l.phase||0,p:.75,shadow:false});}
+  world.__lux=out;return out;
+}
+function pzLuxHex(hex){const v=String(hex||'#ffffff').replace('#','');return [parseInt(v.slice(0,2),16),parseInt(v.slice(2,4),16),parseInt(v.slice(4,6),16)];}
+// Falha de lâmpada velha: quase sempre acesa, com apagões curtos e zumbido.
+function pzLuxFlicker(l,t){
+  if(!l.flicker)return 1;
+  const a=Math.sin(t*l.flicker*.37+l.phase)+Math.sin(t*l.flicker*.91+l.phase*2.3)*.6;
+  if(a>1.25)return .06;
+  return .9+.1*Math.sin(t*60+l.phase);
+}
+// Poste com sombras: luz desenhada uma vez num canvas próprio, com os obstáculos recortando sombras.
+function pzLuxBake(l){
+  if(l.bake!==undefined)return l.bake;
+  const res=.5,R=l.R,S=Math.ceil(R*2*res);const c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
+  x.drawImage(pzLuxSprite(l.rgb,.45,2.2),0,0,S,S);
+  if(l.shadow&&typeof nearbyObstacles==='function'){
+    x.save();x.scale(res,res);x.translate(R-l.x,R-l.y);x.globalCompositeOperation='destination-out';
+    try{x.filter='blur(1.5px)';}catch(e){}
+    for(const o of nearbyObstacles(l.x-R,l.y-R,l.x+R,l.y+R)){
+      if(o.barrel)continue;
+      if(l.x>o.x-2&&l.x<o.x+o.w+2&&l.y>o.y-2&&l.y<o.y+o.h+2)continue;
+      const big=o.w*o.h>5200,pts=[[o.x,o.y],[o.x+o.w,o.y],[o.x+o.w,o.y+o.h],[o.x,o.y+o.h]];
+      x.fillStyle=big?'rgba(0,0,0,.92)':'rgba(0,0,0,.7)';x.beginPath();
+      for(let i=0;i<4;i++){
+        const a=pts[i],b=pts[(i+1)%4],nx=b[1]-a[1],ny=a[0]-b[0],mx=(a[0]+b[0])/2-l.x,my=(a[1]+b[1])/2-l.y;
+        if(nx*mx+ny*my<=0)continue;
+        const da=Math.hypot(a[0]-l.x,a[1]-l.y)||1,db=Math.hypot(b[0]-l.x,b[1]-l.y)||1;
+        const La=big?R*2:Math.min(80,da*.45),Lb=big?R*2:Math.min(80,db*.45);
+        x.moveTo(a[0],a[1]);x.lineTo(b[0],b[1]);x.lineTo(b[0]+(b[0]-l.x)/db*Lb,b[1]+(b[1]-l.y)/db*Lb);x.lineTo(a[0]+(a[0]-l.x)/da*La,a[1]+(a[1]-l.y)/da*La);x.closePath();
+      }
+      x.fill();
+    }
+    x.restore();
+  }
+  l.bake=c;return c;
+}
+
+// Faróis e lanternas traseiras dos carros abandonados que ainda têm bateria.
+PzLightMap.prototype.carLights=function(run,camera){
+  const out=[],objs=run.destructibles?.objects||[];const t=this.time;
+  const vw=camera.viewport.width/camera.zoom/2+260,vh=camera.viewport.height/camera.zoom/2+260;
+  for(const o of objs){
+    if(o.visual?.kind!=='civilian'||!o.alive||o.exploded)continue;const v=o.visual.v;
+    if(Math.abs(v.x-camera.x)>vw||Math.abs(v.y-camera.y)>vh)continue;
+    const r=mulberry32(Math.round(v.x*13+v.y*7));if(r()>.36)continue;
+    const flicker=r()<.3,brokenSide=r()<.35?(r()<.5?-1:1):0,xen=r()<.45;
+    let k=1;if(flicker){const f=Math.sin(t*17+v.x)+Math.sin(t*5.3+v.y*.1);k=f>1.4?.12:(.85+.15*Math.sin(t*40+v.x));}
+    const w=v.kind==='van'?47:v.kind==='pickup'?43:v.kind==='hatch'?36:37,h=v.kind==='van'?89:v.kind==='pickup'?82:v.kind==='hatch'?60:70;
+    const a=v.angle,ca=Math.cos(a),sa=Math.sin(a),face=Math.atan2(-ca,sa);
+    const P=(lx,ly)=>({x:v.x+lx*ca-ly*sa,y:v.y+lx*sa+ly*ca});
+    for(const side of[-1,1]){
+      if(side!==brokenSide){const q=P(side*(w/2-7),-h/2+1);out.push({x:q.x,y:q.y,face:face+side*.04,k,rgb:xen?PZ_LUX.xenon:PZ_LUX.halogen,head:1});}
+      const q2=P(side*(w/2-6),h/2-2);out.push({x:q2.x,y:q2.y,face:face+Math.PI,k:k*.9,rgb:PZ_LUX.tail,head:0});
+    }
+  }
+  return out;
+};
+PzLightMap.prototype.headlights=function(run,camera){return (this.carLights(run,camera)).filter(c=>c.head).map(c=>({x:c.x,y:c.y,face:c.face,k:c.k,warm:c.rgb===PZ_LUX.halogen}));};
+
+const _pzLuxOldDraw=PzLightMap.prototype.draw;
+PzLightMap.prototype.draw=function(ctx,viewport,run,camera,world){
+  if(window.__PZ_OLD_LIGHT)return _pzLuxOldDraw.call(this,ctx,viewport,run,camera,world);
+  try{return this.drawLux(ctx,viewport,run,camera,world);}
+  catch(e){console.warn('[PROJECT Z] luz nova falhou, voltando à antiga',e);window.__PZ_OLD_LIGHT=1;return _pzLuxOldDraw.call(this,ctx,viewport,run,camera,world);}
+};
+PzLightMap.prototype.drawLux=function(ctx,viewport,run,camera,world){
+  const now=performance.now()/1000;this.time+=Math.min(.1,Math.max(0,now-(this.last||now)));this.last=now;
+  const env=Q04_ENVIRONMENT.get(run.elapsed||0,true);
+  const quality=this.quality(),w=viewport.width,h=viewport.height,t=this.time;
+  this.env=env;this.flashOn=0;this.vis=null;
+  if(window.__PZ_DIAG&&!window.__PZ_DIAG.light)return;
+  if(quality==='high'||(quality!=='low'&&Math.max(env.fog||0,env.dark*.55)>.28))this.drawFog(ctx,viewport,camera,env);
+  const A=PZ_LIGHT_CFG.nightDarkness*smoothstep(.05,.95,env.dark);
+  this.cars=[];
+  if(A<.02)return;
+  const scale=quality==='high'?.6:quality==='low'?.35:.5;
+  this.ensure(w,h,scale);
+  const L=this.lc,p=run.player,M=PZ_LUX.moon;
+  // 1) luar: o que a cena recebe sem nenhuma luz
+  L.setTransform(1,0,0,1,0,0);L.globalCompositeOperation='source-over';L.globalAlpha=1;
+  const amb=M.map(c=>Math.round(255*(1-A)+c*A));
+  L.fillStyle=`rgb(${amb[0]},${amb[1]},${amb[2]})`;L.fillRect(0,0,this.L.width,this.L.height);
+  this.apply(L,camera,scale);
+  L.globalCompositeOperation='lighter';
+  const s=smoothstep(.05,.7,env.dark);
+  const vw=camera.viewport.width/camera.zoom/2,vh=camera.viewport.height/camera.zoom/2;
+  const inView=(x,y,R)=>Math.abs(x-camera.x)<vw+R&&Math.abs(y-camera.y)<vh+R;
+  const put=(spr,x,y,R,a)=>{if(a<=.003)return;L.globalAlpha=Math.min(1,a);L.drawImage(spr,x-R,y-R,R*2,R*2);};
+  // 2) luzes fixas (postes com sombras assadas, refletores, letreiros)
+  const vis=[];
+  for(const l of pzLuxStatic(world)){
+    if(!inView(l.x,l.y,l.R))continue;
+    const k=pzLuxFlicker(l,t);vis.push({l,k});
+    if(l.type==='lamp')put(pzLuxBake(l),l.x,l.y,l.R,l.p*k*s);
+    else if(l.type==='flood'){put(pzLuxSprite(l.rgb,.45,1.6),l.x,l.y,l.R,l.p*k*s);}
+    else{const pulse=.9+.1*Math.sin(t*2.8+l.phase);put(pzLuxSprite(l.rgb,.16),l.x,l.y,l.R,l.p*k*pulse*s);}
+  }
+  this.vis=vis;
+  // 3) prédios: janelas acesas brilham e jogam luz na calçada
+  this.tall=[];
+  for(const b of PZ_TALL.list){
+    if(!inView(b.x+b.w/2,b.y-b.H/2,b.w/2+b.H+40))continue;
+    const c=pzTallCache(b);this.tall.push(b);
+    if(c.emis){L.globalAlpha=Math.min(1,(.55+.45*b.alpha)*s);L.drawImage(c.emis,b.x-c.pad,b.y-b.H-c.pad,b.w+c.pad*2,b.h+b.H+c.pad*2);}
+    for(const q of c.spill||[])put(pzLuxSprite(q.rgb,.35,1.3),b.x+q.x,b.y+b.h+q.y,q.R,q.p*s);
+  }
+  // 4) fogo, tiros, explosões
+  for(const f of world.fireLights||[]){if(!inView(f.x,f.y,200))continue;const fl=.82+Math.sin(t*13+f.x)*.1+Math.sin(t*23+f.y)*.08;put(pzLuxSprite(PZ_LUX.fire,.3,1.4),f.x,f.y,(f.radius||90)*1.6*fl,1.05*fl*s);}
+  const extFires=world.border?.fires;if(extFires)for(const f of extFires){if(f.x==null||!inView(f.x,f.y,150))continue;const fl=.8+Math.sin(t*11+f.p)*.12;put(pzLuxSprite(PZ_LUX.fire,.2),f.x,f.y,110*(f.s||1)*fl,.9*fl*s);}
+  for(const f of run.gun?.flashes||[]){const k=Math.max(0,f.life/f.maxLife);put(pzLuxSprite(PZ_LUX.muzzle,.18),f.x,f.y,weaponFeel(f.weapon).light*1.9,1.1*k);}
+  for(const b of run.barrels?.blasts||[])put(pzLuxSprite(PZ_LUX.fire,.25),b.x,b.y,300,Math.min(1,b.life*2.4)*1.3);
+  for(const b of run.grenades?.blasts||[])put(pzLuxSprite(PZ_LUX.muzzle,.25),b.x,b.y,280,Math.min(1,b.life*2.4)*1.3);
+  for(const q of run.worldFX?.shock||[])put(pzLuxSprite(PZ_LUX.muzzle,.25),q.x,q.y,q.r*2.4,Math.min(1,q.life/q.total*1.6));
+  // 5) faróis (pegada no chão) e lanternas traseiras
+  const cars=this.carLights(run,camera);this.cars=cars.filter(c=>c.head).map(c=>({x:c.x,y:c.y,face:c.face,k:c.k,warm:c.rgb===PZ_LUX.halogen}));this.carAll=cars;
+  for(const c of cars){
+    if(c.head){const spr=pzBeamSprite(c.rgb);L.save();L.translate(c.x,c.y);L.rotate(c.face);L.globalAlpha=Math.min(1,1.15*c.k*s);L.drawImage(spr,-8,-62,250,124);L.restore();
+      put(pzLuxSprite(c.rgb,.2),c.x,c.y,30,.8*c.k*s);}
+    else put(pzLuxSprite(c.rgb,.18),c.x+Math.cos(c.face)*6,c.y+Math.sin(c.face)*6,34,.55*c.k*s);
+  }
+  // 6) jogador: um pouco de luz própria (reflexo do equipamento) e a lanterna com sombras
+  put(pzLuxSprite(PZ_LUX.flash,.3),p.x,p.y,PZ_LIGHT_CFG.personal.radius*1.25,.42);
+  const fl=PZ_LIGHT_CFG.flashlight,flashOn=smoothstep(.25,.75,env.dark)*(p.alive!==false?1:0);
+  this.flashOn=flashOn;
+  if(flashOn>.01){
+    const T=this.tc,half=Math.acos(fl.cos),face=p.facing||0;
+    T.setTransform(1,0,0,1,0,0);T.globalCompositeOperation='source-over';T.globalAlpha=1;T.clearRect(0,0,this.T.width,this.T.height);
+    this.apply(T,camera,scale);
+    const C=PZ_LUX.flash,g=T.createRadialGradient(p.x,p.y,6,p.x,p.y,fl.range);
+    g.addColorStop(0,`rgba(${C},${fl.power*flashOn})`);g.addColorStop(.18,`rgba(${C},${.95*flashOn})`);g.addColorStop(.6,`rgba(${C},${.55*flashOn})`);g.addColorStop(1,`rgba(${C},0)`);
+    T.fillStyle=g;
+    for(const [kk,a] of [[1.2,.3],[1,.5],[.75,.85],[.4,1]]){T.globalAlpha=a;T.beginPath();T.moveTo(p.x,p.y);T.arc(p.x,p.y,fl.range,face-half*kk,face+half*kk);T.closePath();T.fill();}
+    T.globalAlpha=1;
+    if(quality!=='low'){T.globalCompositeOperation='destination-out';this.castShadows(T,p.x,p.y,fl.range,run.enemies,quality);}
+    L.setTransform(1,0,0,1,0,0);L.globalAlpha=1;L.drawImage(this.T,0,0);
+  }
+  L.globalAlpha=1;L.globalCompositeOperation='source-over';
+  // 7) a cena é multiplicada pelo mapa de luz
+  ctx.save();ctx.imageSmoothingEnabled=true;ctx.globalCompositeOperation='multiply';
+  ctx.drawImage(this.L,0,0,w,h);
+  // exposição: superfícies escuras (asfalto) sob luz forte ficam claras como numa foto noturna
+  ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.26*smoothstep(.1,.8,env.dark);
+  ctx.drawImage(this.L,0,0,w,h);
+  ctx.restore();
+};
+
+// Depois da multiplicação: o que se vê no ar.
+const _pzLuxOldAfter=PzLightMap.prototype.drawAfter;
+PzLightMap.prototype.drawAfter=function(ctx,viewport,run,camera){
+  if(window.__PZ_OLD_LIGHT)return _pzLuxOldAfter.call(this,ctx,viewport,run,camera);
+  const env=this.env||Q04_ENVIRONMENT.get(run.elapsed||0,true),quality=this.quality(),p=run.player;
+  const reduced=window.__projectZGame?.save?.settings?.reducedMotion;
+  if(window.__PZ_DIAG&&!window.__PZ_DIAG.light){PZ_POST.update(env,quality,reduced);return;}
+  const s=smoothstep(.12,.7,env.dark),t=this.time;
+  ctx.save();camera.apply(ctx);
+  if(s>.01){
+    const air=Math.min(1.6,.6+(env.fog||0)*.8+(env.wet||0)*.5); // quanto o ar espalha a luz
+    ctx.globalCompositeOperation='lighter';
+    // lanterna: leve véu no ar + poeira/chuva no feixe
+    if(this.flashOn>.01){
+      const fl=PZ_LIGHT_CFG.flashlight,half=Math.acos(fl.cos),face=p.facing||0;
+      const g=ctx.createRadialGradient(p.x,p.y,4,p.x,p.y,fl.range);
+      g.addColorStop(0,`rgba(200,214,240,${.10*this.flashOn*air})`);g.addColorStop(.5,`rgba(170,190,230,${.035*this.flashOn*air})`);g.addColorStop(1,'rgba(170,190,230,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.arc(p.x,p.y,fl.range,face-half*.85,face+half*.85);ctx.closePath();ctx.fill();
+      if(quality!=='low')this.drawDust(ctx,p,face,half,fl.range,reduced);
+    }
+    // postes: cone de luz descendo da luminária, chuva atravessando e a lâmpada estourando
+    for(const {l,k} of this.vis||[]){
+      if(l.type==='sign')continue;const a=k*s,C=l.rgb.join(',');
+      if(l.hx!=null){
+        if(quality!=='low'){
+          const top=l.hy+2,bot=l.y,wTop=4,wBot=l.type==='flood'?70:46;
+          const g=ctx.createLinearGradient(0,top,0,bot);g.addColorStop(0,`rgba(${C},${.16*a*air})`);g.addColorStop(1,`rgba(${C},0)`);
+          ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(l.hx-wTop,top);ctx.lineTo(l.hx+wTop,top);ctx.lineTo(l.hx+wBot,bot);ctx.lineTo(l.hx-wBot,bot);ctx.closePath();ctx.fill();
+          if((env.wet||0)>.15&&!reduced){ctx.fillStyle=`rgba(${C},${.5*a})`;
+            for(let i=0;i<9;i++){const ph=(t*1.9+i*.311+l.x*.013)%1,yy=top+ph*(bot-top),spread=wTop+(wBot-wTop)*ph,xx=l.hx+(((i*73+Math.floor(t*1.9+i*.311))%97)/97-.5)*2*spread*.8;
+              ctx.globalAlpha=(1-ph)*.7*(env.wet||0);ctx.fillRect(xx,yy,.8,5);}
+            ctx.globalAlpha=1;}
+        }
+        ctx.drawImage(pzLuxSprite(l.rgb,.12),l.hx-26,l.hy-26,52,52);ctx.globalAlpha=1;
+        const hg=ctx.createRadialGradient(l.hx,l.hy,0,l.hx,l.hy,7);hg.addColorStop(0,`rgba(255,255,248,${.95*a})`);hg.addColorStop(1,`rgba(${C},0)`);
+        ctx.fillStyle=hg;ctx.fillRect(l.hx-7,l.hy-7,14,14);
+        ctx.globalAlpha=Math.min(1,.16*a*air);ctx.drawImage(pzLuxSprite(l.rgb,.3),l.hx-70,l.hy-70,140,140);ctx.globalAlpha=1;
+      }
+    }
+    // faróis: feixe que só aparece onde há chuva/neblina, mais o brilho das lâmpadas e lanternas traseiras
+    for(const c of this.carAll||[]){
+      const C=c.rgb.join(','),a=c.k*s;
+      if(c.head){
+        const vol=.45*air*a,g=ctx.createRadialGradient(c.x,c.y,2,c.x,c.y,210);g.addColorStop(0,`rgba(${C},${.16*vol})`);g.addColorStop(.4,`rgba(${C},${.06*vol})`);g.addColorStop(1,`rgba(${C},0)`);
+        ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.arc(c.x,c.y,210,c.face-.3,c.face+.3);ctx.closePath();ctx.fill();
+        ctx.globalAlpha=Math.min(1,.9*a);ctx.drawImage(pzLuxSprite(c.rgb,.1),c.x-16,c.y-16,32,32);
+        ctx.globalAlpha=Math.min(1,.1*a*air);ctx.drawImage(pzLuxSprite(c.rgb,.3),c.x-50,c.y-50,100,100);ctx.globalAlpha=1;
+        if(quality!=='low'&&!reduced){ctx.fillStyle=`rgb(${C})`;
+          for(let i=0;i<12;i++){const ph=(t*.6+i*.137+c.x*.01)%1,d=20+((i*53)%170),off=(((i*37)%100)/100-.5)*.5;
+            const x=c.x+Math.cos(c.face+off)*d+Math.sin(t*2+i)*3,y=c.y+Math.sin(c.face+off)*d+ph*14-7;ctx.globalAlpha=(1-d/200)*.45*a*air*.6;ctx.fillRect(x,y,1.1,1.1+((env.wet||0)>.2?3:0));}
+          ctx.globalAlpha=1;}
+      }else{ctx.globalAlpha=Math.min(1,.8*a);ctx.drawImage(pzLuxSprite(c.rgb,.12),c.x-9,c.y-9,18,18);ctx.globalAlpha=1;}
+    }
+    if(typeof pzSignsGlint==='function')pzSignsGlint(ctx,p,this.flashOn,this.cars);
+    // janelas acesas: um leve brilho em volta (a luz "vaza" na câmera)
+    if(quality!=='low')for(const b of this.tall||[]){const c=b.cache;if(!c?.glow)continue;ctx.globalAlpha=.55*s*b.alpha;ctx.drawImage(c.glow,b.x-c.pad,b.y-b.H-c.pad,b.w+c.pad*2,b.h+b.H+c.pad*2);ctx.globalAlpha=1;}
+    ctx.globalCompositeOperation='source-over';
+  }
+  if(env.dark>.15)for(const f of run.gun?.flashes||[])drawMuzzleFlash(ctx,f);
+  ctx.restore();
+  PZ_POST.update(env,quality,reduced);
+};
+
+// O brilho colorido antigo (tela) foi substituído pela luz física acima.
+if(typeof Q04NightLights!=='undefined'){const _q=Q04NightLights.prototype.draw;Q04NightLights.prototype.draw=function(...a){if(window.__PZ_OLD_LIGHT)return _q.apply(this,a);};}
 // -- src/core/RhythmPerf.js --
 // CRONOS C6 · Hefesto + Ares + Atena — ritmo e desempenho.
 

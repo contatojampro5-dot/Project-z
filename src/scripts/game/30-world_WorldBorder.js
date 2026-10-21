@@ -104,6 +104,7 @@ class WorldBorder{
     const W=GAME.map.width,H=GAME.map.height,M=WB_M;
     this.W=W;this.H=H;this.M=M;
     this.fires=[];
+    this.lamps=[];this.floods=[]; // ATLAS A9: luzes reais das bordas (postes e refletores)
     this.buildingRects=[]; // CRONOS C4: only visual geometry for sun-facing edge + ground shadows.
     this.crowd=new ExternalBarricadeCrowd(W,H);
     this.roads=this.planRoads();
@@ -310,7 +311,7 @@ class WorldBorder{
       const x=X+rand()*Sw,y=Y+rand()*Sh;ctx.fillStyle='rgba(6,6,8,.22)';ctx.beginPath();ctx.ellipse(x,y,30+rand()*60,18+rand()*40,rand()*3,0,6.3);ctx.fill();
     }
     // postes
-    for(const [a,b,c,d] of V){for(let y=Math.max(c,Y)+90;y<Math.min(d,Y+Sh)-40;y+=300){if(rand()<.7){streetlightPole(ctx,a+9,y);}}}
+    for(const [a,b,c,d] of V){for(let y=Math.max(c,Y)+90;y<Math.min(d,Y+Sh)-40;y+=300){if(rand()<.7){streetlightPole(ctx,a+9,y);this.lamps.push({x:a+9,y,flicker:rand()<.25?5+rand()*3:0,phase:rand()*6});}}}
     this.paintBarricades(ctx,side,rand);
   }
   ruin(ctx,x,y,w,h,rand,burn){
@@ -880,7 +881,7 @@ class World {
     ctx.fillStyle=zone.color;ctx.font='bold 24px monospace';
     const label={suburb:'SP / ZONA LESTE · QUARENTENA',industry:'SP / DISTRITO INDUSTRIAL',highway:'SP / RODOVIA INTERDITADA'}[zone.id];
     const mark=zone.id==='suburb'?[1500,775]:zone.id==='industry'?[75,2155]:[2220,2135];
-    ctx.fillText(label,...mark);
+    // ATLAS A9: nome do distrito não é mais pintado no chão (o HUD já anuncia a zona).
     for(const lamp of this.lampLights)if(lamp.x>=zone.x&&lamp.x<zone.x+zone.w&&lamp.y>=zone.y&&lamp.y<zone.y+zone.h)streetlightPole(ctx,lamp.x,lamp.y);
     ctx.restore();return {...zone,canvas};
   }
