@@ -115,3 +115,5 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 .antonio-caption .antonio-name,.antonio-caption .antonio-words{grid-column:2}
 @media (orientation:landscape) and (max-height:430px){.app .combat-hud .hud-health.has-face{padding-left:52px!important}.pz-hud-face{width:40px;height:40px;left:6px}.antonio-caption .pz-cap-face{width:34px;height:34px}}
 @media (orientation:portrait){.app[data-scene="field"] .combat-hud .hud-health.has-face{padding-left:62px!important}.pz-hud-face{width:46px;height:46px;left:10px}}
+/* A12: habilidade embaixo do painel de vida, no lado direito dele */
+.app[data-scene="field"] .pz-skill-button.pz-skill-under-hp{position:absolute!important;top:var(--pz-sk-top)!important;left:var(--pz-sk-left)!important;right:auto!important;bottom:auto!important;transform:none!important;translate:none!important;margin:0!important;z-index:30}

@@ -285,3 +285,6 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - 9 animações × 8 direções para cada personagem e arma: parado, mirando, andar mirando, correr (andando sem atirar), atirar com recuo, recarregar (tira o carregador do cinto, encaixa e puxa o ferrolho), levar dano, morrer e a habilidade: Antônio bate no peito e arranca, Hadassa aplica a seringa na coxa com brilho verde, San solta jab–direto–gancho (também nos socos automáticos), Hanna agacha e crava a mina.
 - O clarão do tiro sai da boca da arma desenhada. Folhas carregadas só para o personagem e a arma em uso.
 - Laboratório: `laboratorio/estudo-sobreviventes.html` com os quatro, as seis armas, todas as animações e a prévia no tamanho do jogo.
+
+## R25b · Botão da habilidade embaixo da vida
+- O botão da habilidade (Acelerar, Sobrevida, Punhos, Mina) fica logo abaixo do painel de vida, alinhado à direita dele (em pé, abaixo da barra de munição).

@@ -39,3 +39,14 @@ UIManager.prototype.updateHUD=function(run){
     const line=run.dialogue?.active;img.hidden=!isAntonio||!line;
     if(line&&isAntonio)pzFaceImg(img,PZ_LINE_FACE[line.id]||pzFaceFor(run));}
 };
+// A12: botão da habilidade logo abaixo do painel de vida, alinhado à direita dele (pedido do jogador).
+const _pzUpdateHUD2=UIManager.prototype.updateHUD;
+UIManager.prototype.updateHUD=function(run){
+  _pzUpdateHUD2.call(this,run);
+  const btn=this.root?.querySelector('.pz-skill-button'),hp=this.root?.querySelector('.combat-hud .hud-health');
+  if(!btn||!hp)return;const r=hp.getBoundingClientRect();if(!r.width)return;
+  const app=document.getElementById('app').getBoundingClientRect();
+  let bottom=r.bottom;const stats=this.root.querySelector('.hud-combat-stats');if(stats){const q=stats.getBoundingClientRect();if(q.width&&q.top>=r.bottom-4&&q.top<r.bottom+30&&q.left<r.right&&q.right>r.left)bottom=q.bottom;}
+  const top=Math.round(bottom-app.top+8),left=Math.round(r.right-app.left-btn.offsetWidth);
+  if(btn.dataset.pos!==top+','+left){btn.dataset.pos=top+','+left;btn.classList.add('pz-skill-under-hp');btn.style.setProperty('--pz-sk-top',top+'px');btn.style.setProperty('--pz-sk-left',left+'px');}
+};
