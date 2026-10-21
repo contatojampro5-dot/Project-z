@@ -68,6 +68,7 @@
     "src/scripts/game/27-rendering_Ambience.js",
     "src/scripts/game/28-world_Districts.js",
     "src/scripts/game/29-world_World.js",
+    "src/scripts/game/29b-world_TallBuildings.js",
     "src/scripts/game/30-world_WorldBorder.js",
     "src/scripts/game/31-world_CollisionMap.js",
     "src/scripts/game/32-world_FlowField.js",

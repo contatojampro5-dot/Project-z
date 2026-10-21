@@ -20,8 +20,8 @@ function building(ctx, x, y, w, h, options = {}) {
   const { roof = '#303138', edge = '#666368', glow = '#e04b4d', title = '', variant = 'block', trim = '#8b8386' } = options;
   // Depth and broken parapet: every collision box remains unchanged.
   ctx.save();
-  r(ctx,x+17,y+24,w,h,'#080a0d');
-  r(ctx,x+10,y+14,w,h,'#0d1014');
+  if(!options.__shell){r(ctx,x+17,y+24,w,h,'#080a0d');
+  r(ctx,x+10,y+14,w,h,'#0d1014');}
   r(ctx,x-6,y-7,w+12,h+14,'#4c4647');
   r(ctx,x-3,y-4,w+6,h+8,'#1a1b1f');
   r(ctx,x,y,w,h,roof);
@@ -91,7 +91,7 @@ function building(ctx, x, y, w, h, options = {}) {
     r(ctx,x+16,y+h-10,Math.min(75,w-35),2,glow);
   }
   // ATLAS A7 · Deméter — fachada sul: dá altura ao prédio (parede vista de cima, levemente inclinada).
-  {const fh=Math.max(10,Math.min(18,h*.08)),rand=mulberry32(Math.round(x*7+y*13+w));
+  if(!options.__shell){const fh=Math.max(10,Math.min(18,h*.08)),rand=mulberry32(Math.round(x*7+y*13+w));
    const g=ctx.createLinearGradient(x,y+h,x,y+h+fh);g.addColorStop(0,'#2a2b30');g.addColorStop(1,'#141519');
    ctx.fillStyle=g;ctx.fillRect(x-3,y+h+4,w+6,fh);
    r(ctx,x-3,y+h+4,w+6,2,'#3d3c41');

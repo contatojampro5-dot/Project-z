@@ -201,3 +201,11 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 
 ## R18b · Correção dos chefes no iPhone
 - As folhas dos chefes (1200×8250 px) passavam do limite de decodificação de imagem do Safari no iPhone; o jogo caía no desenho antigo. Agora cada animação é uma imagem separada (no máx. 1280×2040 px).
+
+## Atlas A8 · Prédios de 3 a 5 andares
+- A base (colisão) não muda; a fachada sobe 84–138 px e o telhado fica por cima da rua de trás.
+- Fachada com andares, janelas (algumas acesas ou quebradas), ar-condicionado, térreo com portas de enrolar e marquise.
+- O prédio é desenhado junto com os personagens, ordenado pela base: quem passa atrás some atrás dele.
+- Quando o JOGADOR está atrás, o prédio fica translúcido e mostra quem estiver lá (inclusive zumbis).
+- No chão fica a sombra do volume, projetada para o sudeste.
+- Módulo: `src/scripts/game/29b-world_TallBuildings.js`.
