@@ -15,7 +15,7 @@ const pzCharOf=run=>run?.player?.charId||'antonio';
 // Chamado ao iniciar a partida: aplica vida e velocidade da ficha e prepara a habilidade.
 function pzSurvivorSetup(scene){
   const r=scene.run,g=scene.game;if(!r)return;
-  const id=g.save.settings.selectedCharacter||'antonio';
+  const id=g.save.settings.selectedCharacter||'antonio';if(typeof pzSurvPreload==='function')pzSurvPreload(id);
   const ch=CRONOS_CHARACTERS.find(c=>c.id===id)||CRONOS_CHARACTERS[0];
   const p=r.player;p.charId=ch.id;p.charTint=ch.tint;p.speedMul=(ch.speed||100)/100;
   if(ch.hp&&ch.hp!==100){const k=ch.hp/100;p.maxHp=Math.round(p.maxHp*k);p.hp=p.maxHp;p.shieldUnit=p.maxHp*.25;p.maxShield=p.shieldUnit*p.armorTier;p.shield=Math.min(p.shield,p.maxShield);}

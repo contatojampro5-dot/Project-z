@@ -278,3 +278,10 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Painel de vida: retrato que muda sozinho — foco ao atirar, raiva com 3+ infectados perto, medo com horda grande ou chefe perto, dor ao levar dano ou com pouca vida, grito ao usar Acelerar.
 - Caixa de fala: o rosto aparece ao lado da frase, com a expressão da situação (dor ao ser ferido, medo quando o chefe surge…).
 - Só para o Antônio por enquanto; os outros sobreviventes ganham quando tiverem as artes.
+
+## R25 · Sobreviventes novos com as armas na mão (ATLAS A12)
+- Antônio, Hadassa, San e Hanna refeitos no motor do laboratório, versão estilizada, a partir das artes de cada um: boné, barba e camisa de trabalho (Antônio); trança, lenço, jaqueta com arnês, cinto de explosivos caseiros, rádio, joelheiras e coturnos (Hadassa); camisa 13 de futebol americano, faixas nas mãos, corrente e moletom (San); cabelo ruivo curto, sardas, moletom com capuz, mochila com saco de dormir, jeans rasgado e coturnos (Hanna).
+- As seis armas do jogo modeladas em 3D e seguradas de verdade (cabo na mão direita, guarda-mão ou apoio na esquerda, coronha no ombro nas armas longas): pistola, revólver RM44, SM9 Vespa, fuzil R98, espingarda E12 de dois canos e a .50 com luneta e bipé.
+- 9 animações × 8 direções para cada personagem e arma: parado, mirando, andar mirando, correr (andando sem atirar), atirar com recuo, recarregar (tira o carregador do cinto, encaixa e puxa o ferrolho), levar dano, morrer e a habilidade: Antônio bate no peito e arranca, Hadassa aplica a seringa na coxa com brilho verde, San solta jab–direto–gancho (também nos socos automáticos), Hanna agacha e crava a mina.
+- O clarão do tiro sai da boca da arma desenhada. Folhas carregadas só para o personagem e a arma em uso.
+- Laboratório: `laboratorio/estudo-sobreviventes.html` com os quatro, as seis armas, todas as animações e a prévia no tamanho do jogo.

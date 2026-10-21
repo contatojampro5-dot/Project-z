@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Estudo · Sobreviventes</title>
+<style>
+:root{color-scheme:dark;--bg:#0d0b0c;--panel:#151214;--line:#2c2427;--ink:#ece5e0;--muted:#958a85;--coral:#d16a61;--amber:#e2b07a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{padding:0 max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left))}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
+header{padding:18px 0 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.label{font:500 11px ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(34px,7vw,64px)/.95 "Arial Narrow",system-ui;letter-spacing:.02em;margin:6px 0;text-transform:uppercase}
+h1 em{font-style:normal;color:var(--coral)}
+h2{font:700 24px "Arial Narrow",system-ui;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px}
+p{margin:0;color:#cbc2bd;max-width:70ch}
+.chip{font:500 11px ui-monospace,monospace;letter-spacing:.14em;padding:6px 10px;border:1px solid #e2b07a88;color:var(--amber)}
+.bench{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px}
+@media(max-width:820px){.bench{grid-template-columns:1fr}}
+.stage{background:radial-gradient(circle at 50% 40%,#2a2a2e,#121214 70%);border:1px solid var(--line);aspect-ratio:1/1;position:relative;overflow:hidden}
+.stage canvas{width:100%;height:100%;display:block;image-rendering:auto}
+.stage .hud{position:absolute;left:12px;bottom:10px;font:500 11px ui-monospace,monospace;color:var(--muted);letter-spacing:.1em}
+.desk{background:var(--panel);border:1px solid var(--line);padding:14px;display:grid;gap:14px;align-content:start}
+.grp{display:grid;gap:6px}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+button{font:600 13px system-ui;color:var(--ink);background:#1d181a;border:1px solid var(--line);padding:9px 11px;cursor:pointer;min-height:40px}
+button[aria-pressed="true"]{border-color:var(--coral);background:#3a1d1f}
+button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.dirs{display:grid;grid-template-columns:repeat(3,48px);gap:4px}
+.dirs button{padding:0;min-height:44px}
+.row{background:var(--panel);border:1px solid var(--line);padding:12px;overflow-x:auto}
+.faces{display:flex;gap:10px}
+.faces figure{margin:0;text-align:center;flex:0 0 auto}
+.faces canvas{width:150px;height:170px;background:#1b1a1d;display:block}
+.faces figcaption{font:500 11px ui-monospace,monospace;letter-spacing:.12em;color:var(--muted);margin-top:4px;text-transform:uppercase}
+.game{background:#2b2a28;position:relative}
+.game canvas{display:block;width:100%;max-width:960px;image-rendering:pixelated}
+.note{font-size:13px;color:var(--muted)}
+.sheet canvas{display:block;image-rendering:pixelated;background:#1b1a1d}
+.loading{color:var(--amber);font:500 12px ui-monospace,monospace}
+</style></head><body><div class="wrap">
+<header><div><div class="label">PROJECT Z · Laboratório · estudo de personagem</div><h1>Sobreviventes <em>em jogo</em></h1></div><span class="chip">ESTUDO · AINDA NÃO APLICADO</span></header>
+<p>Os quatro sobreviventes no mesmo motor dos infectados, versão estilizada (cores mais vivas, contorno escuro, cabeça e mãos um pouco maiores), cada um a partir da sua arte e com as seis armas do jogo nas mãos. As mãos seguram a arma de verdade: cabo na direita, guarda-mão ou apoio na esquerda.</p>
+
+<section class="bench">
+  <div class="stage"><canvas id="stage" width="900" height="900"></canvas><div class="hud" id="hud"></div></div>
+  <div class="desk">
+    <div class="grp"><span class="label">Personagem</span><div class="btns" id="chars"></div></div>
+    <div class="grp"><span class="label">Animação</span><div class="btns" id="anims"></div></div>
+    <div class="grp"><span class="label">Arma</span><div class="btns" id="weapons"></div></div>
+    <div class="grp"><span class="label">Direção</span><div class="dirs" id="dirs"></div></div>
+    <div class="grp"><span class="label">Acabamento</span><div class="btns" id="looks"></div></div>
+    <p class="note">Nove animações em 8 direções: parado, mirando, andar mirando, correr, atirar (com recuo e clarão), recarregar (tira o carregador do cinto e encaixa), levar dano, morrer e a habilidade de cada um: Antônio acelera, Hadassa aplica a seringa da Sobrevida, San solta a sequência de socos, Hanna agacha e arma a mina.</p>
+  </div>
+</section>
+
+<section class="grp"><h2>No tamanho do jogo</h2><p>Os quatro andando mirando, no tamanho real da tela, ao lado de um infectado comum (à direita), e ampliados 2× embaixo. Mostra a arma escolhida acima.</p>
+<div class="row game"><canvas id="game" width="960" height="420"></canvas></div><span class="loading" id="gload"></span></section>
+
+<section class="grp sheet"><h2>Folha de sprites</h2><p>A animação escolhida, em 8 direções, como vai para o jogo.</p><div class="row"><canvas id="sheet"></canvas></div></section>
+</div>
+<script>/*@@ENGINE@@*/</script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const CHARS=[['antonio','Antônio'],['hadassa','Hadassa'],['san','San'],['hanna','Hanna']];
+const WEAP=[['pistol','Pistola'],['revolver','Revólver RM44'],['smg','SM9 Vespa'],['rifle','R98 Fuzil'],['shotgun','E12 Espingarda'],['sniper','.50 Precisão']];
+const SPECIAL={antonio:'Acelerar',hadassa:'Sobrevida (seringa)',san:'Punhos de Ferro',hanna:'Mina'};
+const st={char:'antonio',weapon:'pistol',anim:'walk',dir:1,look:'estilizado'};
+const vk=()=>st.char+'_'+st.weapon;
+const ANIM_NAMES={idle:'Parado',aim:'Mirando',walk:'Andar mirando',run:'Correr',shoot:'Atirar',reload:'Recarregar',hit:'Levar dano',death:'Morrer',special:'Habilidade'};
+const ORDER=['idle','aim','walk','run','shoot','reload','hit','death','special'];
+const DIRN=['Leste','Sudeste','Sul','Sudoeste','Oeste','Noroeste','Norte','Nordeste'];
+const TPL={};const tpl=(v,k)=>TPL[v+k]||(TPL[v+k]=ZE.buildTemplate(ZE.VARIANTS[v],...({stage:[.8,{face:.24,hand:.28}],game:[1.15,{}]})[k]));
+function stylize(c){const x=c.getContext('2d'),W=c.width,H=c.height,img=x.getImageData(0,0,W,H),d=img.data;
+  for(let i=0;i<d.length;i+=4){if(!d[i+3])continue;let r=d[i],g=d[i+1],b=d[i+2];const l=(r+g+b)/3;
+    r=l+(r-l)*1.3;g=l+(g-l)*1.3;b=l+(b-l)*1.3;r=(r-128)*1.1+134;g=(g-128)*1.1+134;b=(b-128)*1.1+134;
+    d[i]=Math.max(0,Math.min(255,r));d[i+1]=Math.max(0,Math.min(255,g));d[i+2]=Math.max(0,Math.min(255,b));d[i+3]=d[i+3]>90?255:0;}
+  x.putImageData(img,0,0);}
+const CACHE=new Map();
+function frameCanvas(v,anim,f,dir,mode){
+  const key=[v,anim,f,dir,mode,st.look].join('|');if(CACHE.has(key))return CACHE.get(key);
+  const V=ZE.VARIANTS[v],A=ZE.animsOf(V)[anim],u=A.loop?f/A.frames:f/(A.frames-1),P=ZE.pose(anim,u,V);
+  const c=document.createElement('canvas');
+  if(mode==='stage'){c.width=c.height=450;const x=c.getContext('2d');ZE.render(x,tpl(v,'stage'),P,{scale:2.7,x:225,y:380,facing:dir*Math.PI/4,ao:1,fill:.45,outlineMax:2.4,glow:true});if(st.look==='estilizado')stylize(c);}
+  else{const b=document.createElement('canvas');b.width=150;b.height=150;ZE.render(b.getContext('2d'),tpl(v,'game'),P,{scale:1,x:75,y:126,facing:dir*Math.PI/4,fill:.45,outlineMax:1.6,glow:true});
+    c.width=75;c.height=75;const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(b,0,0,75,75);if(st.look==='estilizado')stylize(c);}
+  CACHE.set(key,c);return c;
+}
+const sc=$('stage'),sx=sc.getContext('2d');let last=0,frame=0,acc=0,hold=0;
+function drawStage(now){
+  const V=ZE.VARIANTS[vk()],A=ZE.animsOf(V)[st.anim];acc+=Math.min(.1,(now-last)/1000);last=now;
+  if(acc>1/A.fps){acc=0;if(!A.loop&&frame===A.frames-1){hold++;if(hold>6){frame=0;hold=0;}}else frame=A.loop?(frame+1)%A.frames:frame+1;}
+  const c=frameCanvas(vk(),st.anim,frame,st.dir,'stage');
+  sx.clearRect(0,0,900,900);sx.imageSmoothingEnabled=true;sx.drawImage(c,0,0,900,900);
+  $('hud').textContent=CHARS.find(c=>c[0]===st.char)[1]+' · '+WEAP.find(w=>w[0]===st.weapon)[1]+' · '+(st.anim==='special'?SPECIAL[st.char]:ANIM_NAMES[st.anim])+' · '+DIRN[st.dir]+' · '+(frame+1)+'/'+A.frames;
+  requestAnimationFrame(drawStage);
+}
+function buttons(el,items,cur,on){el.innerHTML='';for(const[k,l]of items){const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(cur()===k));b.onclick=()=>{on(k);[...el.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));};el.appendChild(b);}}
+const refresh=()=>{frame=0;hold=0;drawSheet();drawGame();};
+buttons($('chars'),CHARS,()=>st.char,k=>{st.char=k;refresh();});
+buttons($('anims'),ORDER.map(k=>[k,ANIM_NAMES[k]]),()=>st.anim,k=>{st.anim=k;frame=0;hold=0;drawSheet();});
+buttons($('weapons'),WEAP,()=>st.weapon,k=>{st.weapon=k;refresh();});
+buttons($('looks'),[['estilizado','Estilizado (jogo)'],['pintado','Pintado (sem filtro)']],()=>st.look,k=>{st.look=k;refresh();});
+{const el=$('dirs');const map=[5,6,7,4,-1,0,3,2,1];for(const d of map){const b=document.createElement('button');b.type='button';
+  if(d<0){b.textContent='•';b.disabled=true;}else{b.textContent=['→','↘','↓','↙','←','↖','↑','↗'][d];b.title=DIRN[d];b.setAttribute('aria-pressed',String(d===st.dir));
+  b.onclick=()=>{st.dir=d;[...el.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));};}el.appendChild(b);}}
+let zImg=null;{const im=new Image();im.onload=()=>{zImg=im;drawGame();};im.src='../jogo/assets/images/game/infectados/comum-operario.webp';}
+function drawGame(){const c=$('game'),x=c.getContext('2d');x.fillStyle='#2b2a28';x.fillRect(0,0,c.width,c.height);
+  const r=mulb(7);for(let i=0;i<700;i++){x.fillStyle=r()<.5?'#262523':'#302f2c';x.fillRect(r()*960,r()*420,3,2);}
+  const tok=Symbol();drawGame.tok=tok;let i=0;
+  const step=()=>{if(drawGame.tok!==tok)return;if(i>=4){$('gload').textContent='';
+      if(zImg){x.imageSmoothingEnabled=false;x.drawImage(zImg,2*64,0,64,72,840,28,64,72);x.drawImage(zImg,2*64,0,64,72,820,210,128,144);}return;}
+    $('gload').textContent='desenhando '+CHARS[i][1]+'…';const key=CHARS[i][0]+'_'+st.weapon;
+    x.imageSmoothingEnabled=false;
+    for(let d=0;d<8;d+=4){}
+    const f=frameCanvas(key,'walk',2,2,'game');x.drawImage(f,40+i*90,25+0,75,75);
+    const f2=frameCanvas(key,'walk',2,1,'game');x.drawImage(f2,30+i*190,190,150,150);
+    i++;setTimeout(step,10);};step();}
+function mulb(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function drawSheet(){const c=$('sheet'),V=ZE.VARIANTS[vk()],A=ZE.animsOf(V)[st.anim];c.width=75*A.frames;c.height=75*8;c.style.width=(75*A.frames*1.5)+'px';
+  const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);let d=0,f=0;const tok=Symbol();drawSheet.tok=tok;const key=vk(),anim=st.anim;
+  const step=()=>{if(drawSheet.tok!==tok||d>=8)return;x.drawImage(frameCanvas(key,anim,f,d,'game'),f*75,d*75);f++;if(f>=A.frames){f=0;d++;}setTimeout(step,0);};step();}
+requestAnimationFrame(t=>{last=t;drawStage(t);});drawGame();drawSheet();
+</script></body></html>
