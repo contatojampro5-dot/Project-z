@@ -43,8 +43,18 @@ ASSETS.infInvocadorAndarilho = '@@ASSET:assets/images/game/infectados/invocador-
 ASSETS.infNotivagoSombrio = '@@ASSET:assets/images/game/infectados/notivago-sombrio.webp@@';
 ASSETS.infNotivagoCinzento = '@@ASSET:assets/images/game/infectados/notivago-cinzento.webp@@';
 // ATLAS A5.4 · chefes
-ASSETS.infChefeColosso = '@@ASSET:assets/images/game/infectados/chefe-colosso.webp@@';
-ASSETS.infChefeColmeia = '@@ASSET:assets/images/game/infectados/chefe-colmeia.webp@@';
+// uma imagem por animação: folhas inteiras dos chefes passavam do limite de decodificação de imagem do Safari no iPhone
+ASSETS.infChefeColosso_idle = '@@ASSET:assets/images/game/infectados/chefe-colosso-idle.webp@@';
+ASSETS.infChefeColosso_walk = '@@ASSET:assets/images/game/infectados/chefe-colosso-walk.webp@@';
+ASSETS.infChefeColosso_attack = '@@ASSET:assets/images/game/infectados/chefe-colosso-attack.webp@@';
+ASSETS.infChefeColosso_death = '@@ASSET:assets/images/game/infectados/chefe-colosso-death.webp@@';
+ASSETS.infChefeColosso_telegraph = '@@ASSET:assets/images/game/infectados/chefe-colosso-telegraph.webp@@';
+ASSETS.infChefeColosso_slam = '@@ASSET:assets/images/game/infectados/chefe-colosso-slam.webp@@';
+ASSETS.infChefeColmeia_idle = '@@ASSET:assets/images/game/infectados/chefe-colmeia-idle.webp@@';
+ASSETS.infChefeColmeia_walk = '@@ASSET:assets/images/game/infectados/chefe-colmeia-walk.webp@@';
+ASSETS.infChefeColmeia_attack = '@@ASSET:assets/images/game/infectados/chefe-colmeia-attack.webp@@';
+ASSETS.infChefeColmeia_death = '@@ASSET:assets/images/game/infectados/chefe-colmeia-death.webp@@';
+ASSETS.infChefeColmeia_telegraph = '@@ASSET:assets/images/game/infectados/chefe-colmeia-telegraph.webp@@';
 ASSETS.infPecas = '@@ASSET:assets/images/game/infectados/pecas.webp@@'; // cabeça, braço e perna girando em 12 quadros
 ASSETS.runner = '@@ASSET:assets/images/game/runner.49c6e247.png@@';
 ASSETS.runnerAtlas = '@@ASSET:assets/images/game/runnerAtlas.6421e857.png@@';

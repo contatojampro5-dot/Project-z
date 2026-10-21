@@ -198,3 +198,6 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
   - `python3 build.py --web jogo` → **versão do link** (GitHub Pages): `jogo/index.html` com 3,6 MB; sprites e músicas em `jogo/assets/`, baixados em paralelo e guardados no cache (a segunda visita abre quase na hora).
   - `python3 build.py` → `dist/index.html`, arquivo único de 13 MB que joga offline.
 - FPS com 60 inimigos misturados (navegador de teste, sem GPU): 22,7 antes dos sprites novos → 23,6 agora. Os sprites novos não custaram desempenho.
+
+## R18b · Correção dos chefes no iPhone
+- As folhas dos chefes (1200×8250 px) passavam do limite de decodificação de imagem do Safari no iPhone; o jogo caía no desenho antigo. Agora cada animação é uma imagem separada (no máx. 1280×2040 px).

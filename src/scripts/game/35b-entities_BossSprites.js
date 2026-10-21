@@ -3,23 +3,24 @@
 // Estados do chefe → animações: chase=avançar, telegraph=preparar (acompanha o aviso do jogo),
 // dash=investida (Colosso), golpe de contato=esmagar (Colosso), fim do aviso=liberar enxame (Colmeia).
 const PZ_BOSS_SPRITES=Object.freeze({
-  colossus:{key:'infChefeColosso',cell:{w:150,h:165,ground:149,cx:75},foot:44,
-    anims:{idle:{row:0,frames:8},walk:{row:8,frames:8},attack:{row:16,frames:6,fps:12},death:{row:22,frames:12,fps:9},telegraph:{row:34,frames:8},slam:{row:42,frames:8,fps:10}}},
-  hive:{key:'infChefeColmeia',cell:{w:160,h:170,ground:150,cx:80},foot:44,
-    anims:{idle:{row:0,frames:8},walk:{row:8,frames:8},attack:{row:16,frames:8,fps:10},death:{row:24,frames:12,fps:9},telegraph:{row:36,frames:8}}},
+  colossus:{key:'infChefeColosso_',cell:{w:150,h:165,ground:149,cx:75},foot:44,
+    anims:{idle:{row:0,frames:8},walk:{row:0,frames:8},attack:{row:0,frames:6,fps:12},death:{row:0,frames:12,fps:9},telegraph:{row:0,frames:8},slam:{row:0,frames:8,fps:10}}},
+  hive:{key:'infChefeColmeia_',cell:{w:160,h:170,ground:150,cx:80},foot:44,
+    anims:{idle:{row:0,frames:8},walk:{row:0,frames:8},attack:{row:0,frames:8,fps:10},death:{row:0,frames:12,fps:9},telegraph:{row:0,frames:8}}},
 });
 const PZ_BOSS_FX={dead:[]};
 
-function pzBossBlit(ctx,img,spec,anim,frame,dir,x,y,alpha=1){
+function pzBossBlit(ctx,assets,spec,anim,frame,dir,x,y,alpha=1){
+  const img=assets.get(spec.key+anim);if(!img||!img.width)return false;
   const c=spec.cell,a=spec.anims[anim];const row=a.row+Math.min(a.frames-1,Math.max(0,frame|0));
   if(alpha<1)ctx.globalAlpha=alpha;
   ctx.drawImage(img,dir*c.w,row*c.h,c.w,c.h,Math.round(x-c.cx),Math.round(y+spec.foot-c.ground),c.w,c.h);
-  if(alpha<1)ctx.globalAlpha=1;
+  if(alpha<1)ctx.globalAlpha=1;return true;
 }
 
 const _pzBossDraw=Boss.prototype.draw;
 Boss.prototype.draw=function(ctx,assets){
-  const spec=PZ_BOSS_SPRITES[this.kind],img=spec&&assets&&assets.get(spec.key);
+  const spec=PZ_BOSS_SPRITES[this.kind],img=spec&&assets&&assets.get(spec.key+'walk');
   if(!img||!img.width)return _pzBossDraw.call(this,ctx,assets);
   const now=performance.now(),TAU=Math.PI*2;
   // transições de estado viram "gatilhos" de animação
@@ -46,7 +47,7 @@ Boss.prototype.draw=function(ctx,assets){
   ctx.save();
   if(this.flinch>0)ctx.filter='brightness(1.6)';
   if(this.state==='dash'){ctx.shadowColor='#ffbd7d';ctx.shadowBlur=22;}
-  pzBossBlit(ctx,img,spec,anim,frame,dir,this.x,this.y);
+  if(!pzBossBlit(ctx,assets,spec,anim,frame,dir,this.x,this.y))pzBossBlit(ctx,assets,spec,'walk',0,dir,this.x,this.y);
   ctx.restore();
   if(this.slamPulse>0){ctx.save();ctx.strokeStyle='#d0a3fc';ctx.lineWidth=3;ctx.globalAlpha=this.slamPulse/.45;ctx.beginPath();ctx.arc(this.x,this.y,110*(1-this.slamPulse/.45),0,TAU);ctx.stroke();ctx.restore();}
 };
@@ -69,7 +70,7 @@ CombatEffects.prototype.update=function(dt){_pzFxUpdateB.call(this,dt);const L=P
 const _pzFxDrawUnderB=CombatEffects.prototype.drawUnder;
 CombatEffects.prototype.drawUnder=function(ctx){
   _pzFxDrawUnderB.call(this,ctx);const assets=window.__PZ_ASSETS__;if(!assets)return;
-  for(const d of PZ_BOSS_FX.dead){const spec=PZ_BOSS_SPRITES[d.kind],img=assets.get(spec.key);if(!img||!img.width)continue;
-    const a=spec.anims.death;pzBossBlit(ctx,img,spec,'death',Math.floor(d.t*(a.fps||9)),d.dir,d.x,d.y,Math.min(1,(d.life-d.t)/2));}
+  for(const d of PZ_BOSS_FX.dead){const spec=PZ_BOSS_SPRITES[d.kind];
+    const a=spec.anims.death;pzBossBlit(ctx,assets,spec,'death',Math.floor(d.t*(a.fps||9)),d.dir,d.x,d.y,Math.min(1,(d.life-d.t)/2));}
 };
 function pzResetBossFx(){PZ_BOSS_FX.dead.length=0;}
