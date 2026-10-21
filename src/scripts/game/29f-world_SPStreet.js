@@ -30,7 +30,7 @@ function pzPisoPaulista(){
   if(PZ_SP_TILES.piso)return PZ_SP_TILES.piso;
   // módulo de Mirthes Bernardes: peças preta, branca e meia-cara (diagonal) formando o "mapa"
   const S=4,c=document.createElement('canvas');c.width=c.height=S*4;const x=c.getContext('2d');
-  const W='#a9a49a',B='#2e2e30';
+  const W="#9e998f",B="#3a3a3c";
   const cell=(i,j,t,rot)=>{const px=i*S,py=j*S;x.fillStyle=t==='b'?B:W;x.fillRect(px,py,S,S);
     if(t==='d'){x.fillStyle=B;x.beginPath();const p=[[px,py],[px+S,py],[px+S,py+S],[px,py+S]];const a=p[rot%4],b=p[(rot+1)%4],d=p[(rot+3)%4];x.moveTo(...a);x.lineTo(...b);x.lineTo(...d);x.closePath();x.fill();}};
   const grid=[['w','d0','d1','w'],['d3','b','b','d1'],['d3','b','b','d2'],['w','d3','d2','w']];
@@ -42,10 +42,12 @@ function pzPisoPaulista(){
 }
 function pzConcreto(){
   if(PZ_SP_TILES.conc)return PZ_SP_TILES.conc;
+  // placas de concreto 24×24 (calçada comum de bairro), mais claras que o asfalto
   const c=document.createElement('canvas');c.width=c.height=48;const x=c.getContext('2d'),rnd=mulberry32(77);
-  x.fillStyle='#5f5d5a';x.fillRect(0,0,48,48);
-  for(let i=0;i<220;i++){x.fillStyle=rnd()<.5?'rgba(0,0,0,.08)':'rgba(255,255,255,.05)';x.fillRect(rnd()*48,rnd()*48,1+rnd()*2,1);}
-  x.fillStyle='rgba(20,20,22,.45)';x.fillRect(0,23,48,1);x.fillRect(23,0,1,48);
+  x.fillStyle='#86827a';x.fillRect(0,0,48,48);
+  for(let k=0;k<4;k++){x.fillStyle=['#8b877f','#7f7b74','#8e8a81','#837f77'][k];x.fillRect((k%2)*24+1,(k>>1)*24+1,22,22);}
+  for(let i=0;i<260;i++){x.fillStyle=rnd()<.5?'rgba(0,0,0,.09)':'rgba(255,255,255,.06)';x.fillRect(rnd()*48,rnd()*48,1+rnd()*2,1);}
+  x.fillStyle='rgba(30,28,26,.55)';x.fillRect(0,0,48,1);x.fillRect(0,24,48,1);x.fillRect(0,0,1,48);x.fillRect(24,0,1,48);
   return PZ_SP_TILES.conc=c;
 }
 
@@ -55,16 +57,39 @@ function pzSPGround(ctx,zone){
   const zx0=zone.x,zy0=zone.y,zx1=zone.x+zone.w,zy1=zone.y+zone.h;
   const inZone=(x,y)=>x>=zx0&&x<zx1&&y>=zy0&&y<zy1;
   ctx.save();
-  // calçadas
+  // calçadas (R27): o piso vai do meio-fio até a fachada do prédio (ou 40 de largura quando não há prédio
+  // perto), sem buracos por causa de carros/caixas, que são desenhados por cima. O material é por rua,
+  // não por zona: não há mais emenda no meio da calçada quando se muda de bairro.
+  const BLD=[...OBSTACLES.slice(0,4),...(typeof DISTRICT_BUILDINGS!=='undefined'?DISTRICT_BUILDINGS:[]),
+    ...(typeof DISTRICT_PROPS!=='undefined'?DISTRICT_PROPS.filter(p=>p.type==='garden'):[])];
+  const inBld=(x,y)=>BLD.some(o=>x>=o.x&&x<o.x+o.w&&y>=o.y&&y<o.y+o.h);
+  const sideFill=[];
   for(const s of pzSidewalks()){
-    const pat=ctx.createPattern(center?pzPisoPaulista():pzConcreto(),'repeat');
-    const step=12;
-    for(let a=0;a<(s.v?s.h:s.w);a+=step){
-      const x=s.v?s.x:s.x+a,y=s.v?s.y+a:s.y,w=s.v?s.w:step,h=s.v?step:s.h;
-      if(!inZone(x+w/2,y+h/2)||x<0||y<0||x>2800||y>2800)continue;
-      if(pzInCross(x+w/2,y+h/2,2)||!pzRectFree(x,y,w,h,0))continue;
+    const R=s.road,piso=R===PZ_ROADS[0]||R===PZ_ROADS[2];
+    const pat=ctx.createPattern(piso?pzPisoPaulista():pzConcreto(),'repeat');
+    const len=s.v?s.h:s.w,step=8,MAX=160;
+    for(let a=0;a<len;a+=step){
+      const al=(s.v?s.y:s.x)+a+step/2;
+      const at=q=>s.v?[s.side<0?R.x-q:R.x+R.w+q,al]:[al,s.side<0?R.y-q:R.y+R.h+q];
+      const [cx,cy]=at(3);if(pzOnRoad(cx,cy)||cx<0||cy<0||cx>2800||cy>2800)continue;
+      let d=0;while(d<MAX){const [px,py]=at(d+2);if(px<0||py<0||px>2800||py>2800||inBld(px,py)||pzOnRoad(px,py))break;d+=4;}
+      const depth=d>=MAX?40:Math.max(d,8);
+      const x=s.v?(s.side<0?R.x-depth:R.x+R.w):al-step/2,y=s.v?al-step/2:(s.side<0?R.y-depth:R.y+R.h);
+      const w=s.v?depth:step,h=s.v?step:depth;
+      if(x+w<zx0||y+h<zy0||x>zx1||y>zy1)continue;
       ctx.fillStyle=pat;ctx.fillRect(x,y,w,h);
+      sideFill.push([s,x,y,w,h,d>=MAX]);
     }
+  }
+  // meio-fio de granito e sarjeta; borda de terra onde a calçada acaba sem prédio
+  for(const [s,x,y,w,h,open] of sideFill){
+    const R=s.road;
+    if(s.v){const cx=s.side<0?x+w-2:x;ctx.fillStyle='#b9b4a8';ctx.fillRect(cx,y,2,h);ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(s.side<0?x+w:x-2,y,2,h);
+      if(open){ctx.fillStyle='rgba(30,26,20,.45)';ctx.fillRect(s.side<0?x:x+w-1.5,y,1.5,h);}}
+    else{const cy=s.side<0?y+h-2:y;ctx.fillStyle='#b9b4a8';ctx.fillRect(x,cy,w,2);ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x,s.side<0?y+h:y-2,w,2);
+      if(open){ctx.fillStyle='rgba(30,26,20,.45)';ctx.fillRect(x,s.side<0?y:y+h-1.5,w,1.5);}}
+  }
+  for(const s of pzSidewalks()){
     // sujeira, remendos, rampas de garagem e raízes de tipuana quebrando o piso
     for(let i=0;i<(s.v?s.h:s.w)/40;i++){
       const a=rand()*(s.v?s.h:s.w),x=s.v?s.x+rand()*s.w:s.x+a,y=s.v?s.y+a:s.y+rand()*s.h;

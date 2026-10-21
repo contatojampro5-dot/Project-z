@@ -16,11 +16,13 @@ building=function(ctx,x,y,w,h,options={}){
     const b={x,y,w,h,H:pzTallHeight(x,y,w,h),options,res:scale<.9?.5:1,cache:null,alpha:1};
     PZ_TALL.byKey.set(key,b);PZ_TALL.list.push(b);
   }
-  // No chão fica só a sombra do volume (luz vinda do noroeste) e o contato com a calçada.
+  // No chão fica só a sombra do volume e o contato com a calçada. A13: o sol vem da praia (leste),
+  // então a sombra cai para o oeste, um pouco para baixo (mesma direção dos feixes de 38g).
   const H=PZ_TALL.byKey.get(key).H;
   ctx.save();
   ctx.fillStyle='rgba(4,5,8,.42)';
-  ctx.beginPath();ctx.moveTo(x+w,y+h);ctx.lineTo(x+w+H*.42,y+h+H*.12);ctx.lineTo(x+w+H*.42,y-H*.1);ctx.lineTo(x+w,y);ctx.closePath();ctx.fill();
+  {const L=H*.55,ox=-.976*L,oy=.215*L;
+   ctx.beginPath();ctx.moveTo(x+w,y);ctx.lineTo(x,y);ctx.lineTo(x+ox,y+oy);ctx.lineTo(x+ox,y+h+oy);ctx.lineTo(x+w+ox,y+h+oy);ctx.lineTo(x+w,y+h);ctx.closePath();ctx.fill();}
   ctx.fillStyle='rgba(4,5,8,.35)';ctx.fillRect(x-4,y+h,w+8,9);
   ctx.fillStyle='#16171b';ctx.fillRect(x,y,w,h);
   ctx.restore();
@@ -91,9 +93,9 @@ function pzPaintFacade(ctx,b,ox,oy){
      if(rand()<.35){ctx.fillStyle='rgba(20,18,16,.45)';ctx.fillRect(sx+sw*.6,gy+.6,sw*.4,6);} // letreiro meio caído/queimado
    }}
   ctx.fillStyle='#2b2c31';ctx.fillRect(ox-2,gy-1,w+4,5);ctx.fillStyle=glow;ctx.globalAlpha=.55;ctx.fillRect(ox+w*.18,gy,w*.3,2);ctx.globalAlpha=1;
-  // quina direita na sombra e borda esquerda iluminada
-  ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(ox+w-7,oy,7,H);
-  ctx.fillStyle='rgba(255,255,255,.05)';ctx.fillRect(ox,oy,3,H);
+  // A13: sol vindo do leste — quina esquerda na sombra, borda direita iluminada (dourada)
+  ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(ox,oy,7,H);
+  ctx.fillStyle='rgba(255,214,160,.10)';ctx.fillRect(ox+w-4,oy,4,H);
 }
 
 function pzTallCache(b){

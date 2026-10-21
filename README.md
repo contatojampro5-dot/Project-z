@@ -302,3 +302,9 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Hadassa (durona), Hanna (sarcástica) e San (brincalhão) agora falam, com as mesmas 80 situações do Antônio (`src/scripts/game/38e-core_SurvivorLines.js`).
 - A caixa de fala mostra o rosto de cada um, com a expressão certa.
 - R26b: falas reescritas por personagem (irmãs Hadassa e Hanna procurando uma à outra; San, atleta que questiona as medalhas).
+
+## R27 · ATLAS A13 — sol da praia, calçadas e fogo lá fora
+- Sol vindo da praia (leste): feixes de luz dourada atravessando o ar entre os prédios, com a "sombra no ar" atrás de cada prédio se dissolvendo com a distância, poeira brilhando no sol (`38g-rendering_SunRays.js`). Some à noite, na chuva e na neblina forte; desligado na qualidade baixa.
+- Sombras dos prédios no chão e o lado iluminado das fachadas viraram para combinar com o sol do leste.
+- Calçadas: o piso vai do meio-fio até a fachada, sem buracos; meio-fio de granito; material por rua (piso paulista na Rangel Pestana e na Mooca, placas de concreto nas outras), sem emenda ao trocar de bairro.
+- Cidade lá fora: mais focos de incêndio, numa camada mais ao fundo e alguns isolados.

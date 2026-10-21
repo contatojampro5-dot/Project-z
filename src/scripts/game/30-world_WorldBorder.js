@@ -156,6 +156,19 @@ class WorldBorder{
       addCluster(-225,y,2+Math.floor(rand()*2),66,88,.84,.1);
       if(rand()<.78)addCluster(-285,y+(rand()-.5)*60,1+Math.floor(rand()*2),60,82,1.12,.36);
     }
+    // R27: cidade lá fora mais em chamas — uma camada de focos mais ao fundo (prédios e quarteirões
+    // inteiros queimando), espaçada para não virar um mar de fogo, e alguns focos isolados no meio.
+    const deep=mulberry32(77031);
+    for(const x of lineAnchors(120,W-120,250,40)){
+      if(deep()<.62)addCluster(x,-420-deep()*260,2+Math.floor(deep()*3),110,80,1.0,.4);
+      if(deep()<.62)addCluster(x,H+420+deep()*260,2+Math.floor(deep()*3),110,80,1.0,.4);
+    }
+    for(const y of lineAnchors(120,H-120,250,40)){
+      if(deep()<.62)addCluster(-420-deep()*260,y,2+Math.floor(deep()*3),80,110,1.0,.4);
+    }
+    for(let i=0;i<26;i++){const side=Math.floor(deep()*3),d=330+deep()*700;
+      const [cx,cy]=side===0?[160+deep()*(W-320),-d]:side===1?[160+deep()*(W-320),H+d]:[-d,160+deep()*(H-320)];
+      addCluster(cx,cy,1+Math.floor(deep()*2),40,40,.8,.15);}
     // Sem fogo na direita/praia.
     // Sem focos extras nos acessos para não cobrir os zumbis externos.
   }
