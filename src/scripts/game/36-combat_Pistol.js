@@ -459,7 +459,7 @@ class WorldDestruction {
         if(d.type==='vehicle' && d.x===982)emergencyVehicle(target,979,1644,{type:'ambulance',rotation:Math.PI/2,scale:1.58});
         if(d.type==='vehicle' && d.x===2185)emergencyVehicle(target,2184,2106,{type:'fire',rotation:Math.PI/2,scale:1.66});
       }else if(v.kind==='civilian')civilianCar(target,v.v.x,v.v.y,v.v);
-      else if(v.kind==='spriteCar')car(target,assets.get(v.sprite),v.x,v.y,v.angle,1.65);
+      else if(v.kind==='spriteCar')civilianCar(target,v.x,v.y,{kind:v.sprite==='carTeal'?'van':v.sprite==='carCoral'?'sedan':'pickup',angle:v.angle}); // A10: frota paulistana
       else if(v.kind==='emergency')emergencyVehicle(target,v.x,v.y,{type:v.type,rotation:v.rotation,scale:v.scale});
   }
   draw(ctx,assets,camera){

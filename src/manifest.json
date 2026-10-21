@@ -72,6 +72,8 @@
     "src/scripts/game/29b-world_TallBuildings.js",
     "src/scripts/game/29c-world_StreetSigns.js",
     "src/scripts/game/29d-world_StreetArt.js",
+    "src/scripts/game/29e-world_BrazilCars.js",
+    "src/scripts/game/29f-world_SPStreet.js",
     "src/scripts/game/30-world_WorldBorder.js",
     "src/scripts/game/31-world_CollisionMap.js",
     "src/scripts/game/32-world_FlowField.js",

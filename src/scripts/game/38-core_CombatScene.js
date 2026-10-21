@@ -1466,7 +1466,7 @@ class CombatScene {
     r.effects.drawOver(ctx);
     pzSurvivorDrawUnder(ctx,r);
     pzDrawTelegraphs(ctx,r); // C6 · Ares: avisos de ataque e fases do chefe
-    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport)].sort((a,b)=>a.y-b.y);
+    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport),...pzSPDrawables(g.camera)].sort((a,b)=>a.y-b.y);
     for(const entity of drawables){
       // Skip entities entirely outside the current viewport with generous padding.
       const screen=g.camera.worldToScreen(entity.x,entity.y);
@@ -1482,6 +1482,7 @@ class CombatScene {
     pzDrawReloadAndSwap(ctx,r);
     r.gun.drawFlashes(ctx,r.q04Environment?.dark||0);
     if(diag.fx!==false)r.worldFX?.drawAir(ctx,g.camera);
+    pzSPDrawWires(ctx,g.camera); // A10: fiação e rede do trólebus
     // Números de dano no espaço do mundo, desenhados acima dos personagens.
     // Mantidos inclusive no instante da morte, enquanto o inimigo ainda está no array.
     const now=performance.now();

@@ -33,6 +33,16 @@ function pzPaintFacade(ctx,b,ox,oy){
   const{w,H,options}=b,rand=mulberry32(Math.round(b.x*13+b.y*7+w));const glow=options.glow||'#e04b4d';
   const g=ctx.createLinearGradient(0,oy,0,oy+H);g.addColorStop(0,'#3a383d');g.addColorStop(.55,'#2c2c31');g.addColorStop(1,'#1c1d22');
   ctx.fillStyle=g;ctx.fillRect(ox,oy,w,H);
+  // ATLAS A10: material da fachada — tijolo aparente (galpões da Mooca/Brás), pastilhas (prédios dos anos 60–80) ou concreto
+  const mat=options.variant==='industrial'?'tijolo':rand()<.45?'pastilha':'concreto';b.mat=mat;
+  if(mat==='tijolo'){const bg=ctx.createLinearGradient(0,oy,0,oy+H);bg.addColorStop(0,'#7a4030');bg.addColorStop(1,'#4e281e');ctx.fillStyle=bg;ctx.fillRect(ox,oy,w,H);
+    for(let y=oy;y<oy+H;y+=3.2){ctx.fillStyle='rgba(30,16,12,.35)';ctx.fillRect(ox,y,w,.7);const off=(Math.round((y-oy)/3.2)%2)*3.5;for(let x=ox+off;x<ox+w;x+=7)ctx.fillRect(x,y,.6,3.2);}
+    for(let i=0;i<Math.floor(w/6);i++){ctx.fillStyle=`rgba(${rand()<.5?'150,80,60':'40,20,14'},${(.08+rand()*.12).toFixed(2)})`;ctx.fillRect(ox+rand()*w,oy+rand()*H,3+rand()*6,2+rand()*4);}}
+  else if(mat==='pastilha'){const pc=[[176,168,150],[140,160,170],[170,150,130],[150,155,140]][Math.floor(rand()*4)];
+    const pg=ctx.createLinearGradient(0,oy,0,oy+H);pg.addColorStop(0,`rgb(${pc.join(',')})`);pg.addColorStop(1,`rgb(${pc.map(v=>Math.round(v*.62)).join(',')})`);ctx.fillStyle=pg;ctx.fillRect(ox,oy,w,H);
+    ctx.fillStyle='rgba(40,40,40,.16)';for(let y=oy;y<oy+H;y+=2.2)ctx.fillRect(ox,y,w,.45);for(let x=ox;x<ox+w;x+=2.2)ctx.fillRect(x,oy,.45,H);
+    for(let i=0;i<Math.floor(w/10);i++){ctx.fillStyle='rgba(30,30,30,.2)';ctx.fillRect(ox+rand()*w,oy+rand()*H*.5,2+rand()*5,2+rand()*3);} // pastilhas caídas
+  }
   // textura de concreto e manchas de chuva escorrendo
   for(let i=0;i<Math.floor(w/9);i++){const sx=ox+rand()*w,sl=8+rand()*H*.6;ctx.fillStyle=`rgba(10,12,14,${(.05+rand()*.12).toFixed(3)})`;ctx.fillRect(sx,oy+rand()*H*.3,1+rand()*2,sl);}
   const F=PZ_TALL.floor,floors=Math.max(2,Math.round(H/F)),fh=H/floors;
@@ -73,6 +83,13 @@ function pzPaintFacade(ctx,b,ox,oy){
     if(rand()<.6)pzSpray(ctx,ox+4+rand()*Math.max(1,w-110),gy+gh*.62,PZ_POLITICS[Math.floor(rand()*PZ_POLITICS.length)],{color:PZ_SPRAY_COLORS[Math.floor(rand()*PZ_SPRAY_COLORS.length)],size:7+rand()*3,rot:(rand()-.5)*.1,rand});
     if(rand()<.6)pzPosterCluster(ctx,ox+rand()*Math.max(1,w-40),gy+3,34,gh-6,rand);
   }
+  // letreiros do comércio de rua (acrílico, lona, faixa)
+  {const shops=[['ATACADO','#c8302a','#fff'],['LOJA 1,99','#e5b92a','#c8302a'],['FARMÁCIA','#e8e6de','#2f8a4a'],['PADARIA','#7a3a1a','#f3d45a'],['CONFECÇÕES','#2f6fd0','#fff'],['LANCHES','#e86a1a','#fff'],['TECIDOS','#5b2a86','#fff'],['ÓTICA','#1d1e22','#e5b92a'],['BAZAR','#2f8a4a','#fff'],['IGREJA','#e8e6de','#1d4a85'],['BAR DO ZÉ','#c8302a','#e5b92a'],['VAREJO','#1d4a85','#fff']];
+   for(let sx=ox+4;sx<ox+w-24;sx+=Math.max(30,w/3)){if(rand()<.3)continue;const sh=shops[Math.floor(rand()*shops.length)],sw=Math.min(40,w/3.2);
+     ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(sx+1,gy+1.6,sw,6);ctx.fillStyle=sh[1];ctx.fillRect(sx,gy+.6,sw,6);
+     ctx.fillStyle=sh[2];ctx.font='900 4.6px Arial';ctx.textAlign='center';ctx.fillText(sh[0],sx+sw/2,gy+5.2,sw-2);ctx.textAlign='start';
+     if(rand()<.35){ctx.fillStyle='rgba(20,18,16,.45)';ctx.fillRect(sx+sw*.6,gy+.6,sw*.4,6);} // letreiro meio caído/queimado
+   }}
   ctx.fillStyle='#2b2c31';ctx.fillRect(ox-2,gy-1,w+4,5);ctx.fillStyle=glow;ctx.globalAlpha=.55;ctx.fillRect(ox+w*.18,gy,w*.3,2);ctx.globalAlpha=1;
   // quina direita na sombra e borda esquerda iluminada
   ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(ox+w-7,oy,7,H);
@@ -85,6 +102,17 @@ function pzTallCache(b){
   const c=document.createElement('canvas');c.width=cw;c.height=ch;const x=c.getContext('2d');x.scale(res,res);x.imageSmoothingEnabled=false;
   // telhado: o desenho original do prédio, sem as sombras de chão nem a fachada baixa antiga
   x.save();x.translate(pad-b.x,pad-b.y);_pzBuildingFlat(x,b.x,b.y,b.h>0?b.w:b.w,b.h,Object.assign({},b.options,{__shell:true}));x.restore();
+  // ATLAS A10: caixas d'água azuis de fibra, caixa de concreto e antenas no telhado
+  {const rr=mulberry32(Math.round(b.x*5+b.y*3));const n=1+Math.floor(rr()*3);
+   for(let i=0;i<n;i++){const tx=pad+10+rr()*(b.w-20),ty=pad+8+rr()*(b.h-16),rad=5+rr()*3;
+     x.fillStyle='rgba(0,0,0,.4)';x.beginPath();x.ellipse(tx+3,ty+3,rad,rad*.9,0,0,Math.PI*2);x.fill();
+     const g=x.createRadialGradient(tx-rad*.3,ty-rad*.3,1,tx,ty,rad);g.addColorStop(0,'#5a9ad8');g.addColorStop(1,'#1f4f8f');x.fillStyle=g;x.beginPath();x.arc(tx,ty,rad,0,Math.PI*2);x.fill();
+     x.fillStyle='#2a5a9a';x.beginPath();x.arc(tx,ty,rad*.55,0,Math.PI*2);x.fill();x.fillStyle='rgba(255,255,255,.25)';x.fillRect(tx-rad*.6,ty-rad*.75,rad*.5,1);}
+   if(rr()<.4){const tx=pad+6+rr()*(b.w-36),ty=pad+6+rr()*(b.h-22);x.fillStyle='rgba(0,0,0,.4)';x.fillRect(tx+3,ty+3,26,14);x.fillStyle='#8d8a84';x.fillRect(tx,ty,26,14);x.fillStyle='#a8a59e';x.fillRect(tx,ty,26,2);x.fillStyle='#5a5853';x.fillRect(tx+10,ty+5,6,4);}
+   if(b.options.variant==='industrial'){const tx=pad+8+rr()*(b.w*.3),ty=pad+8+rr()*(b.h*.4);x.fillStyle='rgba(0,0,0,.35)';x.beginPath();x.arc(tx+4,ty+4,8,0,Math.PI*2);x.fill();x.fillStyle='#6a3426';x.beginPath();x.arc(tx,ty,7,0,Math.PI*2);x.fill();x.fillStyle='#120d0b';x.beginPath();x.arc(tx,ty,4.2,0,Math.PI*2);x.fill();
+     x.fillStyle='rgba(20,18,16,.35)';x.beginPath();x.ellipse(tx+14,ty+4,16,7,.3,0,Math.PI*2);x.fill();} // chaminé vista de cima, com fuligem
+   x.strokeStyle='#2a2c30';x.lineWidth=1;for(let i=0;i<1+Math.floor(rr()*3);i++){const ax=pad+6+rr()*(b.w-12),ay=pad+6+rr()*(b.h-12);x.beginPath();x.moveTo(ax,ay);x.lineTo(ax+8,ay-3);x.moveTo(ax+3,ay-1);x.lineTo(ax+3,ay+5);x.moveTo(ax+5,ay-2);x.lineTo(ax+5,ay+4);x.stroke();}
+  }
   pzPaintFacade(x,b,pad,pad+b.h);
   // beiral: sombra do telhado sobre o topo da parede
   const eg=x.createLinearGradient(0,pad+b.h,0,pad+b.h+10);eg.addColorStop(0,'rgba(0,0,0,.55)');eg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=eg;x.fillRect(pad,pad+b.h,b.w,10);

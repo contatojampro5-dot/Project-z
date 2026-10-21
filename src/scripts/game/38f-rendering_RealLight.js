@@ -50,7 +50,7 @@ function pzLuxStatic(world){
   const out=[];
   const lamp=(x,y,radius,flicker,phase,seedTag)=>{
     const h=pzLampHead(x,y),rnd=mulberry32(Math.round(x*17+y*29+(seedTag||0)));
-    const kind=rnd()<.32?'led':'sodium';
+    const kind=rnd()<.82?'led':'sodium'; // A10: SP trocou ~90% do parque por LED; sobram alguns de sódio
     out.push({type:'lamp',x:h.gx,y:h.gy,hx:h.x,hy:h.y,R:Math.max(120,(radius||84)*1.75),rgb:PZ_LUX[kind],kind,flicker:flicker||0,phase:phase||0,p:kind==='led'?1.05:1.15,shadow:true});
   };
   for(const l of world.lampLights||[])lamp(l.x,l.y,l.radius,l.flicker,l.phase);

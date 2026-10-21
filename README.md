@@ -254,3 +254,12 @@ https://contatojampro5-dot.github.io/Project-z/ (atualiza alguns minutos depois 
 
 ## R22b · Mochila no celular deitado
 - A mochila cabia só pela metade com a barra do navegador. Agora, deitado: cabeçalho compacto, retrato menor, carga e acessórios em uma linha cada, espaços da mochila e rodapé visíveis sem cortar (e, se faltar espaço, o painel rola por dentro).
+
+## R23 · São Paulo de verdade: frota, rua e prédios (ATLAS A10)
+Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, Pari). Marcas e órgãos com nomes fictícios ou sem logotipo.
+- Carros: frota paulistana com as mesmas medidas/colisões — hatch popular quadradão, hatch moderno, Fusca desbotado, sedã compacto e médio, táxi branco com luminoso, viatura da polícia (branca com recortes vermelho/cinza/preto e giroflex), picape pequena com caçamba carregada (entulho, botijões, caixas, lona), Kombi (às vezes "saia e blusa" e bagageiro), furgão de entregas e ambulância SAMU 192. Cores pela frota real (muito branco, preto, prata e cinza), placa Mercosul nos novos e cinza nos antigos, sujeira, ferrugem e vidro trincado. Os carros-sprite antigos do Centro também viraram carros paulistanos.
+- Ônibus municipal vermelho (cor da Zona Leste) atravessado nos bloqueios das avenidas.
+- Chão: calçada "mapa de SP" preto e branco no Centro, concreto remendado nos bairros, faixa exclusiva "ÔNIBUS" na Rangel Pestana, ciclofaixa vermelha com tachões, lombadas, bueiros, caçambas de entulho, motos caídas com baú de entrega, carroças de catador com papelão, mesas e cadeiras plásticas de boteco, lonas de camelô, sacos de lixo e sofás largados.
+- Em pé: postes de concreto com cruzeta, transformador, rolos de fio e "gatos"; orelhões laranja e azuis; bancas de jornal; papeleiras verdes; pontos de ônibus. No ar: emaranhado de fios entre os postes e a rede do trólebus sobre a Rangel Pestana.
+- Prédios: fachadas de tijolo aparente (galpões industriais), de pastilhas ou de concreto; letreiros de comércio (ATACADO, LOJA 1,99, FARMÁCIA, PADARIA, CONFECÇÕES…); caixas d'água azuis, caixa de concreto, antenas e chaminés com fuligem nos telhados.
+- Noite: a maioria dos postes agora é LED branco (como São Paulo hoje); alguns de sódio laranja sobreviveram.

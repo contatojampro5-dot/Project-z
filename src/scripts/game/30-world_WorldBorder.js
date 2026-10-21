@@ -539,9 +539,13 @@ class WorldBorder{
     const sh=(x,y,w,h)=>{c.fillStyle='rgba(0,0,0,.45)';c.fillRect(x+8,y+10,w,h);};
     // camada externa: ônibus queimado + caminhão
     const bw=Math.min(len*.55,190);
-    sh(6,-70,bw,52);r(c,6,-70,bw,52,'#3b3a2c');r(c,6,-70,bw,5,'#5a573f');
-    for(let x=14;x<bw-8;x+=26)r(c,x,-60,18,20,'#14181b');
-    r(c,6,-70,bw,52,'rgba(0,0,0,.28)');
+    // A10: ônibus municipal vermelho (cor da Zona Leste) atravessado, teto claro com escotilhas e ar-condicionado
+    sh(6,-70,bw,52);r(c,6,-70,bw,52,'#a3231f');r(c,9,-67,bw-6,46,'#d9d6cc');
+    for(let x=24;x<bw-20;x+=44){r(c,x,-60,16,12,'#8f8b84');r(c,x+2,-58,12,8,'#6a675f');}
+    r(c,9,-67,bw-6,3,'#20262c');r(c,9,-24,bw-6,3,'#20262c');
+    r(c,6,-70,6,52,'#c32b25');r(c,bw,-70,6,52,'#c32b25');
+    c.fillStyle='rgba(20,18,16,.55)';c.beginPath();c.ellipse(bw*.55,-44,bw*.22,16,0,0,Math.PI*2);c.fill(); // teto queimado
+    c.fillStyle='#e8e2d4';c.font='bold 6px Arial';c.fillText('SP TRANSPORTE',16,-30);
     const tx=bw+22,tw=Math.min(len-tx-6,150);
     if(tw>40){sh(tx,-62,tw,44);r(c,tx,-62,tw,44,'#46534f');r(c,tx,-62,tw*.28,44,'#2b3532');r(c,tx+tw*.3,-62,tw*.7,5,'#6a7873');}
     // carros batidos
@@ -1045,6 +1049,7 @@ class World {
     ctx.beginPath();ctx.arc(592,575,43,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;
     r(ctx,565,614,55,3,'#8b4e52');
     r(ctx,572,628,42,2,'#e1d5d2');
+    pzSPGround(ctx,{x:0,y:0,w:1152,h:1152,id:'center'}); // A10: rua de São Paulo
   }
   createSector(zone) {
     const canvas=document.createElement('canvas');canvas.width=zone.w;canvas.height=zone.h;
@@ -1154,6 +1159,7 @@ class World {
     const mark=zone.id==='suburb'?[1500,775]:zone.id==='industry'?[75,2155]:[2220,2135];
     // ATLAS A9: nome do distrito não é mais pintado no chão (o HUD já anuncia a zona).
     for(const lamp of this.lampLights)if(lamp.x>=zone.x&&lamp.x<zone.x+zone.w&&lamp.y>=zone.y&&lamp.y<zone.y+zone.h)streetlightPole(ctx,lamp.x,lamp.y);
+    pzSPGround(ctx,zone); // A10: rua de São Paulo
     ctx.restore();return {...zone,canvas};
   }
   draw(ctx, camera, externalState) {

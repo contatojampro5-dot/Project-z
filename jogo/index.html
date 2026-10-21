@@ -4818,6 +4818,16 @@ function pzPaintFacade(ctx,b,ox,oy){
   const{w,H,options}=b,rand=mulberry32(Math.round(b.x*13+b.y*7+w));const glow=options.glow||'#e04b4d';
   const g=ctx.createLinearGradient(0,oy,0,oy+H);g.addColorStop(0,'#3a383d');g.addColorStop(.55,'#2c2c31');g.addColorStop(1,'#1c1d22');
   ctx.fillStyle=g;ctx.fillRect(ox,oy,w,H);
+  // ATLAS A10: material da fachada — tijolo aparente (galpões da Mooca/Brás), pastilhas (prédios dos anos 60–80) ou concreto
+  const mat=options.variant==='industrial'?'tijolo':rand()<.45?'pastilha':'concreto';b.mat=mat;
+  if(mat==='tijolo'){const bg=ctx.createLinearGradient(0,oy,0,oy+H);bg.addColorStop(0,'#7a4030');bg.addColorStop(1,'#4e281e');ctx.fillStyle=bg;ctx.fillRect(ox,oy,w,H);
+    for(let y=oy;y<oy+H;y+=3.2){ctx.fillStyle='rgba(30,16,12,.35)';ctx.fillRect(ox,y,w,.7);const off=(Math.round((y-oy)/3.2)%2)*3.5;for(let x=ox+off;x<ox+w;x+=7)ctx.fillRect(x,y,.6,3.2);}
+    for(let i=0;i<Math.floor(w/6);i++){ctx.fillStyle=`rgba(${rand()<.5?'150,80,60':'40,20,14'},${(.08+rand()*.12).toFixed(2)})`;ctx.fillRect(ox+rand()*w,oy+rand()*H,3+rand()*6,2+rand()*4);}}
+  else if(mat==='pastilha'){const pc=[[176,168,150],[140,160,170],[170,150,130],[150,155,140]][Math.floor(rand()*4)];
+    const pg=ctx.createLinearGradient(0,oy,0,oy+H);pg.addColorStop(0,`rgb(${pc.join(',')})`);pg.addColorStop(1,`rgb(${pc.map(v=>Math.round(v*.62)).join(',')})`);ctx.fillStyle=pg;ctx.fillRect(ox,oy,w,H);
+    ctx.fillStyle='rgba(40,40,40,.16)';for(let y=oy;y<oy+H;y+=2.2)ctx.fillRect(ox,y,w,.45);for(let x=ox;x<ox+w;x+=2.2)ctx.fillRect(x,oy,.45,H);
+    for(let i=0;i<Math.floor(w/10);i++){ctx.fillStyle='rgba(30,30,30,.2)';ctx.fillRect(ox+rand()*w,oy+rand()*H*.5,2+rand()*5,2+rand()*3);} // pastilhas caídas
+  }
   // textura de concreto e manchas de chuva escorrendo
   for(let i=0;i<Math.floor(w/9);i++){const sx=ox+rand()*w,sl=8+rand()*H*.6;ctx.fillStyle=`rgba(10,12,14,${(.05+rand()*.12).toFixed(3)})`;ctx.fillRect(sx,oy+rand()*H*.3,1+rand()*2,sl);}
   const F=PZ_TALL.floor,floors=Math.max(2,Math.round(H/F)),fh=H/floors;
@@ -4858,6 +4868,13 @@ function pzPaintFacade(ctx,b,ox,oy){
     if(rand()<.6)pzSpray(ctx,ox+4+rand()*Math.max(1,w-110),gy+gh*.62,PZ_POLITICS[Math.floor(rand()*PZ_POLITICS.length)],{color:PZ_SPRAY_COLORS[Math.floor(rand()*PZ_SPRAY_COLORS.length)],size:7+rand()*3,rot:(rand()-.5)*.1,rand});
     if(rand()<.6)pzPosterCluster(ctx,ox+rand()*Math.max(1,w-40),gy+3,34,gh-6,rand);
   }
+  // letreiros do comércio de rua (acrílico, lona, faixa)
+  {const shops=[['ATACADO','#c8302a','#fff'],['LOJA 1,99','#e5b92a','#c8302a'],['FARMÁCIA','#e8e6de','#2f8a4a'],['PADARIA','#7a3a1a','#f3d45a'],['CONFECÇÕES','#2f6fd0','#fff'],['LANCHES','#e86a1a','#fff'],['TECIDOS','#5b2a86','#fff'],['ÓTICA','#1d1e22','#e5b92a'],['BAZAR','#2f8a4a','#fff'],['IGREJA','#e8e6de','#1d4a85'],['BAR DO ZÉ','#c8302a','#e5b92a'],['VAREJO','#1d4a85','#fff']];
+   for(let sx=ox+4;sx<ox+w-24;sx+=Math.max(30,w/3)){if(rand()<.3)continue;const sh=shops[Math.floor(rand()*shops.length)],sw=Math.min(40,w/3.2);
+     ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(sx+1,gy+1.6,sw,6);ctx.fillStyle=sh[1];ctx.fillRect(sx,gy+.6,sw,6);
+     ctx.fillStyle=sh[2];ctx.font='900 4.6px Arial';ctx.textAlign='center';ctx.fillText(sh[0],sx+sw/2,gy+5.2,sw-2);ctx.textAlign='start';
+     if(rand()<.35){ctx.fillStyle='rgba(20,18,16,.45)';ctx.fillRect(sx+sw*.6,gy+.6,sw*.4,6);} // letreiro meio caído/queimado
+   }}
   ctx.fillStyle='#2b2c31';ctx.fillRect(ox-2,gy-1,w+4,5);ctx.fillStyle=glow;ctx.globalAlpha=.55;ctx.fillRect(ox+w*.18,gy,w*.3,2);ctx.globalAlpha=1;
   // quina direita na sombra e borda esquerda iluminada
   ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(ox+w-7,oy,7,H);
@@ -4870,6 +4887,17 @@ function pzTallCache(b){
   const c=document.createElement('canvas');c.width=cw;c.height=ch;const x=c.getContext('2d');x.scale(res,res);x.imageSmoothingEnabled=false;
   // telhado: o desenho original do prédio, sem as sombras de chão nem a fachada baixa antiga
   x.save();x.translate(pad-b.x,pad-b.y);_pzBuildingFlat(x,b.x,b.y,b.h>0?b.w:b.w,b.h,Object.assign({},b.options,{__shell:true}));x.restore();
+  // ATLAS A10: caixas d'água azuis de fibra, caixa de concreto e antenas no telhado
+  {const rr=mulberry32(Math.round(b.x*5+b.y*3));const n=1+Math.floor(rr()*3);
+   for(let i=0;i<n;i++){const tx=pad+10+rr()*(b.w-20),ty=pad+8+rr()*(b.h-16),rad=5+rr()*3;
+     x.fillStyle='rgba(0,0,0,.4)';x.beginPath();x.ellipse(tx+3,ty+3,rad,rad*.9,0,0,Math.PI*2);x.fill();
+     const g=x.createRadialGradient(tx-rad*.3,ty-rad*.3,1,tx,ty,rad);g.addColorStop(0,'#5a9ad8');g.addColorStop(1,'#1f4f8f');x.fillStyle=g;x.beginPath();x.arc(tx,ty,rad,0,Math.PI*2);x.fill();
+     x.fillStyle='#2a5a9a';x.beginPath();x.arc(tx,ty,rad*.55,0,Math.PI*2);x.fill();x.fillStyle='rgba(255,255,255,.25)';x.fillRect(tx-rad*.6,ty-rad*.75,rad*.5,1);}
+   if(rr()<.4){const tx=pad+6+rr()*(b.w-36),ty=pad+6+rr()*(b.h-22);x.fillStyle='rgba(0,0,0,.4)';x.fillRect(tx+3,ty+3,26,14);x.fillStyle='#8d8a84';x.fillRect(tx,ty,26,14);x.fillStyle='#a8a59e';x.fillRect(tx,ty,26,2);x.fillStyle='#5a5853';x.fillRect(tx+10,ty+5,6,4);}
+   if(b.options.variant==='industrial'){const tx=pad+8+rr()*(b.w*.3),ty=pad+8+rr()*(b.h*.4);x.fillStyle='rgba(0,0,0,.35)';x.beginPath();x.arc(tx+4,ty+4,8,0,Math.PI*2);x.fill();x.fillStyle='#6a3426';x.beginPath();x.arc(tx,ty,7,0,Math.PI*2);x.fill();x.fillStyle='#120d0b';x.beginPath();x.arc(tx,ty,4.2,0,Math.PI*2);x.fill();
+     x.fillStyle='rgba(20,18,16,.35)';x.beginPath();x.ellipse(tx+14,ty+4,16,7,.3,0,Math.PI*2);x.fill();} // chaminé vista de cima, com fuligem
+   x.strokeStyle='#2a2c30';x.lineWidth=1;for(let i=0;i<1+Math.floor(rr()*3);i++){const ax=pad+6+rr()*(b.w-12),ay=pad+6+rr()*(b.h-12);x.beginPath();x.moveTo(ax,ay);x.lineTo(ax+8,ay-3);x.moveTo(ax+3,ay-1);x.lineTo(ax+3,ay+5);x.moveTo(ax+5,ay-2);x.lineTo(ax+5,ay+4);x.stroke();}
+  }
   pzPaintFacade(x,b,pad,pad+b.h);
   // beiral: sombra do telhado sobre o topo da parede
   const eg=x.createLinearGradient(0,pad+b.h,0,pad+b.h+10);eg.addColorStop(0,'rgba(0,0,0,.55)');eg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=eg;x.fillRect(pad,pad+b.h,b.w,10);
@@ -5112,6 +5140,401 @@ function pzPoster(ctx,x,y,w,h,rand=Math.random,kind){
 function pzPosterCluster(ctx,x,y,w,h,rand){
   const n=2+Math.floor(rand()*3),pw=Math.min(w*.5,22),ph=pw*1.35;
   for(let i=0;i<n;i++)pzPoster(ctx,x+rand()*(w-pw),y+rand()*Math.max(1,h-ph),pw,ph,rand);
+}
+// -- src/world/BrazilCars.js --
+// ATLAS A10 · Hefesto — frota paulistana. As medidas (e as colisões) de cada tipo continuam as mesmas;
+// muda o desenho: hatch popular quadradão, hatch moderno, Fusca, sedã compacto/médio, táxi branco,
+// viatura da polícia, picape pequena com caçamba carregada, Kombi, furgão de entrega e ambulância.
+// Cores seguem a frota brasileira (muito branco, preto, prata e cinza). Marcas são fictícias / sem logotipo.
+// Cada carro é desenhado uma vez num canvas próprio (2x) e depois só copiado girado.
+const PZ_CAR_CACHE=new Map();
+const PZ_CAR_COLORS=[ // [peso, cor]
+  [22,'#d9dad6'],[19,'#1c1e22'],[17,'#a9adb0'],[15,'#6b7076'],[8,'#9c2a2a'],[7,'#2b4c86'],
+  [3,'#c9b48a'],[3,'#3f5a3c'],[3,'#5e2430'],[3,'#8a7a5a'],
+];
+const PZ_CLASSIC_COLORS=['#c9b48a','#8fb3c9','#5f6e46','#9a4a32','#d8cfa8','#6e8a8a'];
+function pzPick(rand,list){let t=list.reduce((s,a)=>s+a[0],0)*rand();for(const [w,c] of list){if((t-=w)<=0)return c;}return list[0][1];}
+function pzShade(hex,k){const v=hex.replace('#','');const c=[0,2,4].map(i=>Math.max(0,Math.min(255,Math.round(parseInt(v.slice(i,i+2),16)*k))));return `rgb(${c.join(',')})`;}
+
+function pzCarVariant(kind,rand){
+  const k=rand();
+  if(kind==='hatch')return k<.5?'quadrado':k<.8?'moderno':'fusca';
+  if(kind==='sedan')return k<.45?'compacto':k<.7?'medio':k<.86?'taxi':'policia';
+  if(kind==='pickup')return 'picape';
+  return k<.5?'kombi':k<.85?'furgao':'samu';
+}
+function pzRR(c,x,y,w,h,rad){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,rad);else c.rect(x,y,w,h);}
+
+// Desenho no espaço local: frente para -y, centro em 0,0.
+function pzPaintCar(c,kind,variant,rand,w,h){
+  let body=variant==='taxi'||variant==='policia'||variant==='samu'?'#e4e5e1':variant==='fusca'?PZ_CLASSIC_COLORS[Math.floor(rand()*PZ_CLASSIC_COLORS.length)]:pzPick(rand,PZ_CAR_COLORS);
+  if(variant==='furgao')body=rand()<.8?'#e2e3df':'#a9adb0';
+  const old=variant==='quadrado'||variant==='fusca'||variant==='kombi'||(variant==='compacto'&&rand()<.5);
+  const glass='#1a2630',glassHi='rgba(170,200,220,.22)',dark='#15171a';
+  // sombra
+  c.fillStyle='rgba(0,0,0,.45)';pzRR(c,-w/2+5,-h/2+7,w,h,8);c.fill();
+  // rodas aparecendo nos cantos
+  c.fillStyle='#0d0f12';for(const [sx,sy] of [[-1,-.3],[1,-.3],[-1,.3],[1,.3]])c.fillRect(sx*(w/2)-(sx<0?3:0),sy*h-6,3,12);
+  if(variant==='fusca'){
+    // carroceria oval com para-lamas
+    c.fillStyle=pzShade(body,.75);for(const [sx,sy] of [[-1,-.28],[1,-.28],[-1,.3],[1,.3]]){c.beginPath();c.ellipse(sx*w*.36,sy*h,w*.2,h*.14,0,0,Math.PI*2);c.fill();}
+    c.fillStyle=body;c.beginPath();c.ellipse(0,0,w*.42,h*.5,0,0,Math.PI*2);c.fill();
+    c.fillStyle=pzShade(body,1.12);c.beginPath();c.ellipse(-w*.08,h*.02,w*.3,h*.25,0,0,Math.PI*2);c.fill(); // teto
+    c.fillStyle=glass;c.beginPath();c.ellipse(0,-h*.17,w*.27,h*.07,0,Math.PI,0);c.fill();c.fillRect(-w*.27,-h*.17,w*.54,3);
+    c.fillStyle=glass;c.fillRect(-w*.16,h*.25,w*.32,4); // vigia traseira pequena
+    c.fillStyle='#e9e6d6';c.beginPath();c.arc(-w*.3,-h*.4,2.6,0,Math.PI*2);c.arc(w*.3,-h*.4,2.6,0,Math.PI*2);c.fill();
+    c.fillStyle='rgba(0,0,0,.25)';for(let i=-3;i<=3;i++)c.fillRect(i*2.4-.5,h*.33,1,6); // grade do motor atrás
+    c.fillStyle='#b8bcbf';c.fillRect(-w*.38,-h*.5,w*.76,1.6);c.fillRect(-w*.38,h*.49-1.6,w*.76,1.6); // para-choques cromados
+    c.fillStyle='#8a8f93';c.fillRect(-4,h*.5-1,8,2.4); // placa cinza antiga
+    return;
+  }
+  // carroceria
+  const rad=variant==='moderno'?9:variant==='kombi'?7:variant==='quadrado'?3.5:5;
+  c.fillStyle=body;pzRR(c,-w/2,-h/2,w,h,rad);c.fill();
+  // brilho na lateral esquerda e sombra na direita (volume)
+  c.fillStyle='rgba(255,255,255,.14)';c.fillRect(-w/2+1.5,-h/2+rad,2.4,h-rad*2);
+  c.fillStyle='rgba(0,0,0,.25)';c.fillRect(w/2-3.5,-h/2+rad,2.4,h-rad*2);
+  const bumper=(y)=>{c.fillStyle=old?'#25272a':pzShade(body,.85);c.fillRect(-w/2+2,y,w-4,2.2);};
+  if(variant==='kombi'||variant==='furgao'||variant==='samu'){
+    // teto longo com nervuras, frente achatada
+    if(variant==='kombi'&&rand()<.6){c.fillStyle='#e8e6de';pzRR(c,-w/2+2,-h/2+8,w-4,h-12,5);c.fill();} // "saia e blusa"
+    c.fillStyle=glass;c.fillRect(-w/2+4,-h/2+3,w-8,6); // para-brisa visto de cima
+    c.fillStyle='rgba(0,0,0,.14)';for(let y=-h/2+16;y<h/2-8;y+=6)c.fillRect(-w/2+5,y,w-10,1.2);
+    if(variant!=='furgao'){c.fillStyle=glass;for(let y=-h/2+16;y<h/2-14;y+=11){c.fillRect(-w/2+1,y,2,8);c.fillRect(w/2-3,y,2,8);}}
+    if(variant==='kombi'){c.fillStyle='#c9ccce';c.beginPath();c.moveTo(-6,-h/2+1);c.lineTo(0,-h/2+5);c.lineTo(6,-h/2+1);c.lineWidth=1.4;c.strokeStyle='#c9ccce';c.stroke();
+      if(rand()<.35){c.fillStyle='#2a2b2e';c.fillRect(-w/2+6,-h*.1,w-12,h*.35);for(let i=0;i<4;i++){c.fillStyle=['#7a5a3a','#5a6a7a','#3a3a3a'][i%3];c.fillRect(-w/2+8+i*8,-h*.05,6,8);}} // bagageiro com tralha
+    }
+    if(variant==='furgao'){c.fillStyle='#c8372f';c.fillRect(-w/2+2,h*.05,w-4,3);c.fillStyle='rgba(40,40,40,.65)';c.font='bold 5px monospace';c.save();c.rotate(Math.PI/2);c.fillText('ENTREGAS',-12,w/2-6);c.restore();}
+    if(variant==='samu'){c.fillStyle='#c8241f';c.fillRect(-w/2+2,-h*.05,w-4,5);c.fillRect(-2.5,-h*.3,5,16);c.fillRect(-8,-h*.3+5.5,16,5);
+      c.fillStyle='#c8241f';c.font='bold 6px Arial';c.textAlign='center';c.fillText('SAMU 192',0,h*.3);c.textAlign='start';
+      c.fillStyle='#e8352e';c.fillRect(-w/2+5,-h/2+11,w*.35,3);c.fillStyle='#2f6fd0';c.fillRect(w/2-5-w*.35,-h/2+11,w*.35,3);}
+    bumper(-h/2);bumper(h/2-2.2);
+  }else{
+    const pick=variant==='picape';
+    const hood=variant==='medio'?.3:variant==='moderno'?.22:.24;
+    const ws0=-h/2+h*hood;                         // começo do para-brisa
+    const roofLen=pick?h*.25:variant==='quadrado'?h*.33:h*.3;
+    const ws1=ws0+(variant==='moderno'?9:7);        // fim do para-brisa
+    const rf1=ws1+roofLen;
+    // vincos do capô
+    c.fillStyle='rgba(0,0,0,.12)';c.fillRect(-w*.22,-h/2+4,1,ws0+h/2-5);c.fillRect(w*.22,-h/2+4,1,ws0+h/2-5);
+    // para-brisa
+    c.fillStyle=glass;c.beginPath();c.moveTo(-w/2+4,ws0+ (variant==='moderno'?2:0));c.lineTo(w/2-4,ws0+(variant==='moderno'?2:0));c.lineTo(w/2-5.5,ws1);c.lineTo(-w/2+5.5,ws1);c.closePath();c.fill();
+    c.fillStyle=glassHi;c.fillRect(-w/2+6,ws0+1,w*.25,1.4);
+    // teto
+    c.fillStyle=pzShade(body,1.07);pzRR(c,-w/2+5.5,ws1,w-11,roofLen,2.5);c.fill();
+    // vidros laterais (filetes)
+    c.fillStyle=glass;c.fillRect(-w/2+3,ws1+1,2,roofLen-2);c.fillRect(w/2-5,ws1+1,2,roofLen-2);
+    if(pick){
+      // cabine fecha, caçamba aberta com carga
+      c.fillStyle=glass;c.fillRect(-w/2+6,rf1,w-12,3);
+      const b0=rf1+5,b1=h/2-3;c.fillStyle=pzShade(body,.6);c.fillRect(-w/2+3,b0,w-6,b1-b0);
+      c.fillStyle='#2a2522';c.fillRect(-w/2+5,b0+2,w-10,b1-b0-4);
+      const load=Math.floor(rand()*4);
+      if(load===0){for(let i=0;i<9;i++){c.fillStyle=['#7a7068','#5c5650','#8a6a4a'][i%3];c.fillRect(-w/2+6+rand()*(w-16),b0+3+rand()*(b1-b0-10),4+rand()*5,3+rand()*4);}} // entulho
+      else if(load===1){c.fillStyle='#2f5fa0';c.beginPath();c.arc(-5,b0+9,5,0,Math.PI*2);c.fill();c.fillStyle='#c8372f';c.beginPath();c.arc(6,b0+12,4.5,0,Math.PI*2);c.fill();} // botijões
+      else if(load===2){for(let i=0;i<4;i++){c.fillStyle=i%2?'#b08a5a':'#9a764a';c.fillRect(-w/2+6+(i%2)*14,b0+3+Math.floor(i/2)*10,12,9);}} // caixas
+      else{c.fillStyle='#4b6b3a';c.fillRect(-w/2+6,b0+3,w-12,b1-b0-6);c.fillStyle='rgba(0,0,0,.25)';for(let y=b0+5;y<b1-3;y+=4)c.fillRect(-w/2+6,y,w-12,1);} // lona
+    }else{
+      // vigia traseira e tampa (porta-malas no sedã)
+      const rw=variant==='quadrado'?4:6;c.fillStyle=glass;c.fillRect(-w/2+6,rf1,w-12,rw);
+      if(variant==='compacto'||variant==='medio'||variant==='taxi'||variant==='policia'){c.fillStyle='rgba(0,0,0,.14)';c.fillRect(-w/2+5,rf1+rw+1,w-10,1);}
+    }
+    // faróis e lanternas
+    c.fillStyle='#e9e6d6';
+    if(variant==='moderno'){c.beginPath();c.moveTo(-w/2+2,-h/2+4);c.lineTo(-w/2+11,-h/2+2);c.lineTo(-w/2+9,-h/2+6);c.fill();c.beginPath();c.moveTo(w/2-2,-h/2+4);c.lineTo(w/2-11,-h/2+2);c.lineTo(w/2-9,-h/2+6);c.fill();}
+    else{c.fillRect(-w/2+3,-h/2+1.5,7,3);c.fillRect(w/2-10,-h/2+1.5,7,3);}
+    bumper(-h/2);bumper(h/2-2.2);
+    // táxi: luminoso; polícia: giroflex e grafismo
+    if(variant==='taxi'){const ry=ws1+roofLen*.4;c.fillStyle='#f4f1e6';c.fillRect(-6,ry,12,5);c.fillStyle='#c8241f';c.font='bold 3.6px Arial';c.textAlign='center';c.fillText('TÁXI',0,ry+4);c.textAlign='start';
+      c.fillStyle='rgba(30,30,30,.55)';c.fillRect(-w/2,-h*.05,1.4,h*.3);c.fillRect(w/2-1.4,-h*.05,1.4,h*.3);}
+    if(variant==='policia'){const ry=ws1+2;c.fillStyle='#1d1e22';c.fillRect(-w/2+6,ry,w-12,4);c.fillStyle='#d8241f';c.fillRect(-w/2+6,ry,(w-12)/2-1,4);c.fillStyle='#2f6fd0';c.fillRect(1,ry,(w-12)/2-1,4);
+      c.fillStyle='#c8241f';c.fillRect(-w/2,-h*.02,2.4,h*.3);c.fillRect(w/2-2.4,-h*.02,2.4,h*.3);c.fillStyle='#5d6268';c.fillRect(-w/2,h*.28,2.4,h*.1);c.fillRect(w/2-2.4,h*.28,2.4,h*.1);
+      c.fillStyle='#1d1e22';c.font='bold 4.4px Arial';c.textAlign='center';c.fillText('POLÍCIA',0,-h/2+h*.14);c.textAlign='start';}
+  }
+  // lanternas traseiras e placa (Mercosul nos novos, cinza nos antigos)
+  c.fillStyle='#8f1d1d';c.fillRect(-w/2+2.5,h/2-3.5,5,2.5);c.fillRect(w/2-7.5,h/2-3.5,5,2.5);
+  if(old){c.fillStyle='#8a8f93';c.fillRect(-4,h/2-1.2,8,2.4);}else{c.fillStyle='#f2f2ee';c.fillRect(-4,h/2-1.2,8,2.4);c.fillStyle='#2f55a8';c.fillRect(-4,h/2-1.2,8,.7);}
+  // abandono: sujeira, ferrugem, vidro trincado, retrovisor
+  c.fillStyle='rgba(0,0,0,.3)';c.fillRect(-w/2-1.5,-h/2+h*.26,2,3);c.fillRect(w/2-.5,-h/2+h*.26,2,3);
+  for(let i=0;i<5;i++){c.fillStyle=rand()<.5?'rgba(90,70,50,.22)':'rgba(30,26,22,.2)';c.beginPath();c.ellipse((rand()-.5)*w*.8,(rand()-.5)*h*.8,2+rand()*5,1.5+rand()*3,rand()*3,0,Math.PI*2);c.fill();}
+  if(old&&rand()<.6){c.fillStyle='rgba(140,70,30,.45)';c.fillRect(-w/2+1,h*.2,3,5);c.fillRect(w/2-4,-h*.1,3,4);}
+  if(rand()<.5){c.strokeStyle='rgba(225,230,235,.55)';c.lineWidth=.6;const cx=(rand()-.5)*w*.4,cy=-h/2+h*.27;c.beginPath();for(let i=0;i<5;i++){const a=rand()*Math.PI*2;c.moveTo(cx,cy);c.lineTo(cx+Math.cos(a)*6,cy+Math.sin(a)*3);}c.stroke();}
+}
+civilianCar=function(ctx,x,y,{kind='sedan',angle=0,paint='slate'}={}){
+  const w=kind==='van'?47:kind==='pickup'?43:kind==='hatch'?36:37;
+  const h=kind==='van'?89:kind==='pickup'?82:kind==='hatch'?60:70;
+  const key=`${Math.round(x)}:${Math.round(y)}:${kind}`;let spr=PZ_CAR_CACHE.get(key);
+  if(!spr){
+    const rand=mulberry32(Math.round(x*131+y*71)+kind.length*7),variant=pzCarVariant(kind,rand),R=2,P=12;
+    const cv=document.createElement('canvas');cv.width=(w+P*2)*R;cv.height=(h+P*2)*R;const c=cv.getContext('2d');
+    c.scale(R,R);c.translate(w/2+P,h/2+P);pzPaintCar(c,kind,variant,rand,w,h);
+    spr={cv,w:w+P*2,h:h+P*2,variant};PZ_CAR_CACHE.set(key,spr);
+  }
+  ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.imageSmoothingEnabled=true;ctx.drawImage(spr.cv,-spr.w/2,-spr.h/2,spr.w,spr.h);ctx.restore();
+};
+// -- src/world/SPStreet.js --
+// ATLAS A10 · Deméter — rua de São Paulo (Zona Leste).
+// Chão: calçada "mapa de SP" (preto/branco) no Centro, concreto remendado nos bairros, faixa exclusiva
+// "ÔNIBUS", ciclofaixa vermelha com tachões, lombadas, bueiros, caçambas de entulho, motos caídas com baú
+// de entrega, carroças de catador, mesas plásticas de boteco, lonas de camelô, sacos de lixo.
+// Em pé (ordenados com os personagens): postes de concreto com emaranhado de fios e transformador,
+// orelhões laranja/azuis, bancas de jornal, papeleiras verdes, pontos de ônibus.
+// No ar: fiação entre os postes e a rede do trólebus sobre a Av. Rangel Pestana.
+
+const PZ_SP={props:[],poles:[],seeded:false};
+const PZ_INTERSECT=[[398,748,401,754],[1847,2055,401,754],[398,748,1777,2053],[1847,2055,1777,2053]];
+function pzInCross(x,y,pad=0){return PZ_INTERSECT.some(([x0,x1,y0,y1])=>x>x0-pad&&x<x1+pad&&y>y0-pad&&y<y1+pad);}
+function pzRectFree(x,y,w,h,pad=4){
+  if(typeof OBSTACLES==='undefined')return true;
+  return !OBSTACLES.some(o=>x<o.x+o.w+pad&&x+w>o.x-pad&&y<o.y+o.h+pad&&y+h>o.y-pad);
+}
+// Faixas de calçada de 24 de largura dos dois lados de cada avenida.
+function pzSidewalks(){
+  const out=[];
+  for(const r of PZ_ROADS){
+    if(r.v){out.push({x:r.x-24,y:r.y,w:24,h:r.h,v:1,side:-1,road:r});out.push({x:r.x+r.w,y:r.y,w:24,h:r.h,v:1,side:1,road:r});}
+    else{out.push({x:r.x,y:r.y-24,w:r.w,h:24,v:0,side:-1,road:r});out.push({x:r.x,y:r.y+r.h,w:r.w,h:24,v:0,side:1,road:r});}
+  }
+  return out;
+}
+
+// ---------- texturas ----------
+const PZ_SP_TILES={};
+function pzPisoPaulista(){
+  if(PZ_SP_TILES.piso)return PZ_SP_TILES.piso;
+  // módulo de Mirthes Bernardes: peças preta, branca e meia-cara (diagonal) formando o "mapa"
+  const S=4,c=document.createElement('canvas');c.width=c.height=S*4;const x=c.getContext('2d');
+  const W='#a9a49a',B='#2e2e30';
+  const cell=(i,j,t,rot)=>{const px=i*S,py=j*S;x.fillStyle=t==='b'?B:W;x.fillRect(px,py,S,S);
+    if(t==='d'){x.fillStyle=B;x.beginPath();const p=[[px,py],[px+S,py],[px+S,py+S],[px,py+S]];const a=p[rot%4],b=p[(rot+1)%4],d=p[(rot+3)%4];x.moveTo(...a);x.lineTo(...b);x.lineTo(...d);x.closePath();x.fill();}};
+  const grid=[['w','d0','d1','w'],['d3','b','b','d1'],['d3','b','b','d2'],['w','d3','d2','w']];
+  // módulo: um "mapa" preto no meio, quatro meias-caras em volta
+  const m=[['d',2],['b'],['b'],['d',3]];
+  for(let j=0;j<4;j++)for(let i=0;i<4;i++){const g=grid[j][i];if(g==='w')cell(i,j,'w');else if(g==='b')cell(i,j,'b');else cell(i,j,'d',+g[1]);}
+  x.strokeStyle='rgba(0,0,0,.14)';x.lineWidth=.4;for(let k=0;k<=4;k++){x.beginPath();x.moveTo(k*S,0);x.lineTo(k*S,S*4);x.moveTo(0,k*S);x.lineTo(S*4,k*S);x.stroke();}
+  return PZ_SP_TILES.piso=c;
+}
+function pzConcreto(){
+  if(PZ_SP_TILES.conc)return PZ_SP_TILES.conc;
+  const c=document.createElement('canvas');c.width=c.height=48;const x=c.getContext('2d'),rnd=mulberry32(77);
+  x.fillStyle='#5f5d5a';x.fillRect(0,0,48,48);
+  for(let i=0;i<220;i++){x.fillStyle=rnd()<.5?'rgba(0,0,0,.08)':'rgba(255,255,255,.05)';x.fillRect(rnd()*48,rnd()*48,1+rnd()*2,1);}
+  x.fillStyle='rgba(20,20,22,.45)';x.fillRect(0,23,48,1);x.fillRect(23,0,1,48);
+  return PZ_SP_TILES.conc=c;
+}
+
+// ---------- chão (pintado uma vez nos canvases do mapa) ----------
+function pzSPGround(ctx,zone){
+  const rand=mulberry32(zone.x*3+zone.y*7+11),center=zone.id==='center';
+  const zx0=zone.x,zy0=zone.y,zx1=zone.x+zone.w,zy1=zone.y+zone.h;
+  const inZone=(x,y)=>x>=zx0&&x<zx1&&y>=zy0&&y<zy1;
+  ctx.save();
+  // calçadas
+  for(const s of pzSidewalks()){
+    const pat=ctx.createPattern(center?pzPisoPaulista():pzConcreto(),'repeat');
+    const step=12;
+    for(let a=0;a<(s.v?s.h:s.w);a+=step){
+      const x=s.v?s.x:s.x+a,y=s.v?s.y+a:s.y,w=s.v?s.w:step,h=s.v?step:s.h;
+      if(!inZone(x+w/2,y+h/2)||x<0||y<0||x>2800||y>2800)continue;
+      if(pzInCross(x+w/2,y+h/2,2)||!pzRectFree(x,y,w,h,0))continue;
+      ctx.fillStyle=pat;ctx.fillRect(x,y,w,h);
+    }
+    // sujeira, remendos, rampas de garagem e raízes de tipuana quebrando o piso
+    for(let i=0;i<(s.v?s.h:s.w)/40;i++){
+      const a=rand()*(s.v?s.h:s.w),x=s.v?s.x+rand()*s.w:s.x+a,y=s.v?s.y+a:s.y+rand()*s.h;
+      if(!inZone(x,y)||pzInCross(x,y,4)||!pzRectFree(x-4,y-4,8,8,0))continue;
+      const k=rand();
+      if(k<.4){ctx.fillStyle='rgba(20,18,16,.28)';ctx.beginPath();ctx.ellipse(x,y,4+rand()*8,2+rand()*4,rand()*3,0,Math.PI*2);ctx.fill();}
+      else if(k<.6){ctx.fillStyle=center?'#9a958c':'#4f4d4a';ctx.fillRect(x-5,y-4,10+rand()*8,8);}
+      else if(k<.75){ctx.strokeStyle='rgba(30,26,22,.6)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);for(let q=0;q<4;q++)ctx.lineTo(x+(rand()-.5)*14,y+(rand()-.5)*10);ctx.stroke();}
+      else{ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x-1,y-1,3+rand()*4,2);}
+    }
+  }
+  // faixa exclusiva de ônibus na Av. Rangel Pestana (x 414–732)
+  const bus=(x,y0,y1,rot)=>{
+    for(let y=y0;y<y1;y+=4){if(pzInCross(x,y,24)||!inZone(x,y))continue;r(ctx,x,y,3,4,'rgba(222,216,204,.78)');}
+    ctx.font='900 17px Arial';ctx.fillStyle='rgba(222,216,204,.62)';
+    for(let y=y0+120;y<y1;y+=340){if(pzInCross(x,y,90)||!inZone(x,y))continue;const lx=rot>0?x-30:x+30;ctx.save();ctx.translate(lx,y);ctx.rotate(rot);ctx.textAlign='center';ctx.fillText('ÔNIBUS',0,6);ctx.restore();}
+  };
+  bus(470,0,2800,-Math.PI/2);bus(674,0,2800,Math.PI/2);
+  // ciclofaixa vermelha na via de cima (y 417–739), lado norte
+  for(let x=0;x<2800;x+=10){if(pzInCross(x,428,30)||!inZone(x,428))continue;
+    r(ctx,x,421,10,13,'#8f2a26');if(x%30===0)r(ctx,x+3,436,3,2,'#e8e2d4');}
+  for(let x=60;x<2800;x+=220){if(pzInCross(x,428,60)||!inZone(x,428))continue;
+    ctx.strokeStyle='rgba(240,236,228,.85)';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(x-5,430,3,0,Math.PI*2);ctx.arc(x+5,430,3,0,Math.PI*2);ctx.moveTo(x-5,430);ctx.lineTo(x,426);ctx.lineTo(x+5,430);ctx.stroke();}
+  // lombadas
+  for(const [x,y,w,h] of [[414,250,318,10],[414,1450,318,10],[1100,417,10,322],[2300,417,10,322],[1300,1790,10,250],[1860,2300,182,10],[1860,1000,182,10]]){
+    if(!inZone(x+w/2,y+h/2))continue;r(ctx,x,y,w,h,'#2e2e30');
+    for(let k=0;k<(w>h?w:h);k+=12){if(w>h)r(ctx,x+k,y+2,6,h-4,'#c9a43a');else r(ctx,x+2,y+k,w-4,6,'#c9a43a');}
+  }
+  // bueiros junto ao meio-fio
+  for(const r0 of PZ_ROADS)for(let a=60;a<(r0.v?r0.h:r0.w);a+=260){
+    const x=r0.v?r0.x+18:r0.x+a,y=r0.v?r0.y+a:r0.y+18;if(!inZone(x,y)||pzInCross(x,y,10))continue;
+    r(ctx,x,y,12,7,'#111214');for(let k=1;k<12;k+=2)r(ctx,x+k,y+1,1,5,'#3a3c40');
+  }
+  // objetos baixos nas calçadas: caçamba, moto caída, carroça, mesas de boteco, lona de camelô, lixo
+  let n=0;
+  for(const s of pzSidewalks()){
+    const len=s.v?s.h:s.w;
+    for(let a=30+rand()*80;a<len;a+=90+rand()*170){
+      const x=s.v?s.x+s.w/2:s.x+a,y=s.v?s.y+a:s.y+s.h/2;
+      if(!inZone(x,y)||pzInCross(x,y,40)||!pzRectFree(x-18,y-14,36,28,2))continue;
+      const k=rand();n++;
+      ctx.save();ctx.translate(x,y);if(s.v)ctx.rotate(Math.PI/2);
+      if(k<.14){ // caçamba de entulho
+        const col=['#d8a12a','#c8462f','#2f6f9a','#4a7a3a'][Math.floor(rand()*4)];
+        r(ctx,-15,-6,32,16,'rgba(0,0,0,.4)');ctx.fillStyle=pzShade(col,.75);ctx.beginPath();ctx.moveTo(-17,-8);ctx.lineTo(17,-8);ctx.lineTo(14,8);ctx.lineTo(-14,8);ctx.closePath();ctx.fill();
+        r(ctx,-14,-5,28,10,'#2a2622');for(let i=0;i<10;i++)r(ctx,-13+rand()*24,-4+rand()*7,3+rand()*4,2+rand()*3,['#7a7068','#9a8a72','#5c4a3a','#c9c2b0'][i%4]);
+        r(ctx,-17,-8,34,2,col);for(let q=-15;q<15;q+=6)r(ctx,q,6,3,2,'#e8e2d4');
+      }else if(k<.3){ // moto caída com baú de entrega
+        ctx.rotate((rand()-.5)*1.4);r(ctx,-9,-1,20,6,'rgba(0,0,0,.35)');r(ctx,-10,-3,20,5,'#24272b');ctx.fillStyle='#111';ctx.beginPath();ctx.arc(-9,-.5,3,0,Math.PI*2);ctx.arc(10,-.5,3,0,Math.PI*2);ctx.fill();
+        r(ctx,-4,-5,6,3,'#5a5e63');const bx=rand()<.6?['#d8261f','#ef6a1a'][Math.floor(rand()*2)]:'#16171a';r(ctx,-12,-11,9,9,bx);r(ctx,-12,-11,9,2,pzShade(bx,1.25));
+        if(rand()<.4){r(ctx,4,4,6,6,'rgba(150,20,18,.5)');}
+      }else if(k<.42){ // carroça de catador com papelão
+        ctx.rotate((rand()-.5)*.6);r(ctx,-10,-6,24,16,'rgba(0,0,0,.3)');r(ctx,-12,-8,22,15,'#6b4a2e');for(let i=0;i<5;i++)r(ctx,-11+i*4,-12+rand()*3,4+rand()*3,10+rand()*4,['#b08a5a','#9a764a','#c8a46a'][i%3]);
+        r(ctx,-15,-9,3,17,'#3a2a1a');ctx.fillStyle='#111';ctx.beginPath();ctx.arc(-1,8,3,0,Math.PI*2);ctx.fill();r(ctx,10,-2,10,2,'#3a2a1a');
+      }else if(k<.56&&!s.v){ // mesas e cadeiras plásticas de boteco
+        for(let i=0;i<2;i++){const mx=-12+i*22;r(ctx,mx-6,-4,12,10,'rgba(0,0,0,.25)');r(ctx,mx-6,-6,12,10,'#e5b92a');r(ctx,mx-5,-5,10,2,'#f3d45a');
+          for(const [cx,cy] of [[-9,-9],[7,-9],[-9,5],[7,5]])if(rand()<.7){r(ctx,mx+cx,cy,4,4,rand()<.2?'#c8302a':'#e5b92a');}}
+        if(rand()<.5){r(ctx,-2,-3,2,5,'#3a6a3a');r(ctx,1,-2,2,4,'#3a6a3a');} // garrafas
+      }else if(k<.7&&center){ // lona de camelô com mercadoria
+        const col=rand()<.5?'#2f6fd0':'#ef7a1a';ctx.rotate((rand()-.5)*.3);r(ctx,-16,-10,32,20,'rgba(0,0,0,.25)');r(ctx,-17,-11,32,20,col);
+        for(let i=0;i<12;i++)r(ctx,-15+(i%4)*7,-9+Math.floor(i/4)*6,5,4,['#e8e2d4','#1d1e22','#c8302a','#e5b92a','#3a8fd0'][i%5]);
+      }else if(k<.86){ // sacos de lixo
+        for(let i=0;i<3+Math.floor(rand()*4);i++){ctx.fillStyle=rand()<.8?'#16171a':'#2f5f3a';ctx.beginPath();ctx.ellipse((rand()-.5)*16,(rand()-.5)*8,4+rand()*3,3+rand()*2,rand()*3,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect((rand()-.5)*12,(rand()-.5)*6,2,1);}
+      }else{ // colchão/sofá largado
+        ctx.rotate((rand()-.5)*.8);r(ctx,-12,-7,26,16,'rgba(0,0,0,.3)');r(ctx,-14,-8,26,15,rand()<.5?'#c9c2a8':'#6a4a3a');r(ctx,-14,-8,26,2,'rgba(255,255,255,.2)');r(ctx,-6,-3,6,4,'rgba(90,60,30,.4)');
+      }
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+}
+
+// ---------- objetos em pé ----------
+function pzSPSeed(){
+  if(PZ_SP.seeded)return;PZ_SP.seeded=true;
+  const rand=mulberry32(19802),lamps=(window.__projectZGame?.world?.lampLights)||[];
+  const nearLamp=(x,y)=>lamps.some(l=>Math.hypot(l.x-x,l.y-y)<34)||(typeof PZ_SIGNS!=='undefined'&&PZ_SIGNS.list.some(s=>Math.hypot(s.x-x,s.y-y)<40));
+  // postes de concreto ao longo das duas bordas de cada avenida
+  for(const s of pzSidewalks()){
+    const len=s.v?s.h:s.w,line=[];
+    for(let a=40;a<len;a+=118){
+      const x=s.v?(s.side<0?s.x+18:s.x+6):s.x+a,y=s.v?s.y+a:(s.side<0?s.y+20:s.y+8);
+      if(x<0||y<0||x>2800||y>2800||pzInCross(x,y,20)||nearLamp(x,y)||!pzRectFree(x-3,y-3,6,6,2)){if(line.length>1)PZ_SP.poles.push(line.slice());line.length=0;continue;}
+      const p={type:'poste',x,y,tr:rand()<.25,gato:rand()<.3,seed:rand()};line.push(p);PZ_SP.props.push(p);
+    }
+    if(line.length>1)PZ_SP.poles.push(line.slice());
+  }
+  // orelhões, bancas, papeleiras e pontos de ônibus
+  for(const s of pzSidewalks()){
+    const len=s.v?s.h:s.w;
+    for(let a=70+rand()*120;a<len;a+=230+rand()*260){
+      const x=s.v?s.x+12:s.x+a,y=s.v?s.y+a:s.y+14;
+      if(x<10||y<10||x>2790||y>2790||pzInCross(x,y,30)||nearLamp(x,y)||!pzRectFree(x-10,y-8,20,16,2))continue;
+      if(PZ_SP.props.some(p=>Math.hypot(p.x-x,p.y-y)<26))continue;
+      const k=rand();
+      PZ_SP.props.push({type:k<.38?'orelhao':k<.6?'banca':k<.85?'papeleira':'ponto',x,y,col:rand()<.5?'#e86a1a':'#2f6fd0',seed:rand(),v:s.v});
+    }
+  }
+}
+function pzSPCanvas(p){
+  if(p.cv)return p.cv;
+  const RES=3,W=p.type==='banca'?40:p.type==='ponto'?50:28,H=p.type==='poste'?66:p.type==='banca'?36:p.type==='ponto'?40:34;
+  const c=document.createElement('canvas');c.width=W*RES;c.height=H*RES;const x=c.getContext('2d');x.scale(RES,RES);
+  const ax=W/2,base=H-3,rand=mulberry32(Math.round(p.seed*1e6));
+  x.fillStyle='rgba(0,0,0,.3)';x.beginPath();x.ellipse(ax+4,base,W*.32,3,0,0,Math.PI*2);x.fill();
+  if(p.type==='poste'){
+    // poste de concreto cônico, cruzeta, isoladores, transformador, rolos de fio
+    const g=x.createLinearGradient(ax-3,0,ax+3,0);g.addColorStop(0,'#b9b5ac');g.addColorStop(.5,'#9a968d');g.addColorStop(1,'#6e6b65');
+    x.fillStyle=g;x.beginPath();x.moveTo(ax-3,base);x.lineTo(ax+3,base);x.lineTo(ax+1.6,6);x.lineTo(ax-1.6,6);x.closePath();x.fill();
+    x.fillStyle='rgba(60,50,40,.35)';x.fillRect(ax-3,base-10,6,10);
+    x.fillStyle='#5a5853';x.fillRect(ax-10,9,20,2.2);x.fillRect(ax-8,15,16,1.8);
+    x.fillStyle='#cfd3d6';for(const dx of [-9,-4,4,9])x.fillRect(ax+dx-.7,7.4,1.4,2);
+    if(p.tr){x.fillStyle='#6b7076';x.fillRect(ax+3,18,7,11);x.fillStyle='#8a8f94';x.fillRect(ax+3,18,7,2);x.fillStyle='#3a3d41';x.fillRect(ax+4,21,5,1);}
+    x.strokeStyle='#121214';x.lineWidth=.8;for(let i=0;i<4;i++){x.beginPath();x.ellipse(ax-1+rand()*2,24+i*3+rand()*3,3+rand()*2,1.6,0,0,Math.PI*2);x.stroke();} // rolos de fio
+    if(p.gato){x.beginPath();x.moveTo(ax,20);x.quadraticCurveTo(ax-12,34,ax-14,base-6);x.stroke();}
+    x.fillStyle='#e8e2d4';x.fillRect(ax-2,base-22,4,3);x.fillStyle='#2a2a2a';x.font='bold 2.6px monospace';x.fillText(String(100+Math.floor(rand()*899)),ax-2,base-19.8);
+    // cartaz colado no poste
+    if(rand()<.35){x.fillStyle=['#f2dc3a','#e9e3d2','#f4b8c8'][Math.floor(rand()*3)];x.fillRect(ax-3,base-17,6,7);x.fillStyle='#222';x.fillRect(ax-2,base-15,4,.6);x.fillRect(ax-2,base-13,4,.6);}
+  }else if(p.type==='orelhao'){
+    // concha de fibra em forma de ovo sobre um pé (projeto de Chu Ming Silveira)
+    x.fillStyle='#4b4e52';x.fillRect(ax-1,base-14,2,14);
+    const g=x.createRadialGradient(ax-3,8,1,ax,12,11);g.addColorStop(0,pzShade(p.col,1.35));g.addColorStop(1,pzShade(p.col,.75));
+    x.fillStyle=g;x.beginPath();x.ellipse(ax,13,8.5,10.5,0,0,Math.PI*2);x.fill();
+    x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(ax,16,6,7,0,0,Math.PI);x.fill();
+    x.fillStyle='#2a2c30';x.fillRect(ax-3,13,6,7);x.fillStyle='#8a8f94';x.fillRect(ax-2,14,4,2);
+    if(rand()<.5){x.strokeStyle='#111';x.lineWidth=.7;x.beginPath();x.moveTo(ax+2,18);x.quadraticCurveTo(ax+6,26,ax+3,base-2);x.stroke();} // fone pendurado
+    x.fillStyle='#fff';x.font='bold 2.4px Arial';x.fillText('TELEFONE',ax-5.2,5.2);
+  }else if(p.type==='banca'){
+    // banca de jornal fechada: caixa metálica verde-escura com porta de enrolar e revistas penduradas
+    x.fillStyle='#2f4a3a';x.fillRect(4,8,32,base-8);x.fillStyle='#3d5e4a';x.fillRect(2,4,36,6);x.fillStyle='#1d2a22';x.fillRect(2,10,36,1.5);
+    x.fillStyle='#7a7e82';x.fillRect(7,13,26,base-15);for(let y=14;y<base-2;y+=2.4){x.fillStyle='rgba(20,22,26,.55)';x.fillRect(7,y,26,.7);}
+    for(let i=0;i<5;i++){x.fillStyle=['#c8302a','#e5b92a','#2f6fd0','#e8e2d4','#3a8f4a'][i];x.fillRect(4.5+i*6.4,10.5,5,4);}
+    x.fillStyle='#e8e2d4';x.font='bold 3.4px Arial';x.fillText('BANCA',14,7.8);
+    if(rand()<.5){x.fillStyle=PZ_SPRAY_COLORS[Math.floor(rand()*PZ_SPRAY_COLORS.length)];x.font='900 5px Impact,Arial';x.fillText(PZ_TAGS[Math.floor(rand()*PZ_TAGS.length)],9,base-6);}
+  }else if(p.type==='papeleira'){
+    // papeleira verde presa num pequeno poste
+    x.fillStyle='#5a5e63';x.fillRect(ax-1,10,2,base-10);
+    x.fillStyle='#2f7a45';x.beginPath();x.moveTo(ax-6,12);x.lineTo(ax+6,12);x.lineTo(ax+5,24);x.lineTo(ax-5,24);x.closePath();x.fill();
+    x.fillStyle='#3f9a58';x.fillRect(ax-6,12,12,2);x.fillStyle='#16241a';x.fillRect(ax-4,13,8,1.5);
+    if(rand()<.6){x.fillStyle='#e8e2d4';x.fillRect(ax-3,9.5,3,3);x.fillStyle='#c8302a';x.fillRect(ax+1,10,2,2.5);}
+  }else{
+    // ponto de ônibus: abrigo de vidro e metal com painel
+    x.fillStyle='#3a3d41';x.fillRect(4,10,2,base-10);x.fillRect(44,10,2,base-10);
+    x.fillStyle='rgba(170,200,215,.35)';x.fillRect(6,14,38,base-16);x.strokeStyle='rgba(220,235,240,.5)';x.lineWidth=.5;x.strokeRect(6,14,38,base-16);
+    x.fillStyle='#e9e5da';x.fillRect(2,6,46,5);x.fillStyle='#c8302a';x.fillRect(2,6,46,1.5);
+    x.fillStyle='#d9cdb4';x.fillRect(32,15,10,base-19);x.fillStyle='#2f6fd0';x.fillRect(33,16,8,6);
+    x.fillStyle='#4a4d52';x.fillRect(9,base-8,20,2);
+    x.fillStyle='#1d1e22';x.font='bold 3px Arial';x.fillText('ÔNIBUS',8,9.8);
+    if(rand()<.6){x.strokeStyle='rgba(240,245,250,.7)';x.beginPath();x.moveTo(12,18);x.lineTo(18,26);x.lineTo(15,30);x.moveTo(18,26);x.lineTo(24,24);x.stroke();} // vidro quebrado
+  }
+  p.cv={canvas:c,W,H,ax,base};return p.cv;
+}
+function pzSPDrawables(camera){
+  pzSPSeed();
+  const out=[],vw=camera.viewport.width/camera.zoom/2+60,vh=camera.viewport.height/camera.zoom/2+90;
+  for(const p of PZ_SP.props){
+    if(Math.abs(p.x-camera.x)>vw||Math.abs(p.y-camera.y)>vh)continue;
+    out.push({y:p.y,__tall:1,draw(ctx){const v=pzSPCanvas(p);ctx.drawImage(v.canvas,p.x-v.ax,p.y-v.base,v.W,v.H);}});
+  }
+  return out;
+}
+// ---------- fios no ar ----------
+function pzSPDrawWires(ctx,camera){
+  pzSPSeed();
+  const vw=camera.viewport.width/camera.zoom/2+140,vh=camera.viewport.height/camera.zoom/2+160;
+  const x0=camera.x-vw,x1=camera.x+vw,y0=camera.y-vh,y1=camera.y+vh;
+  ctx.save();ctx.lineCap='round';
+  // fiação entre postes (alturas diferentes, barriga, alguns fios soltos)
+  for(const line of PZ_SP.poles){
+    for(let i=0;i<line.length-1;i++){
+      const a=line[i],b=line[i+1];
+      if(Math.max(a.x,b.x)<x0||Math.min(a.x,b.x)>x1||Math.max(a.y,b.y)<y0||Math.min(a.y,b.y)>y1)continue;
+      const ax=a.x,ay=a.y-54,bx=b.x,by=b.y-54;
+      for(let k=0;k<5;k++){
+        const off=k<3?-8+k*8:-5+(k-3)*10,dy=k<3?0:6;
+        const sag=6+k*2.2+((a.seed*7+k)%3);
+        ctx.strokeStyle=k<3?'rgba(14,15,17,.85)':'rgba(24,24,26,.75)';ctx.lineWidth=k<3?.9:1.3;
+        const hx=ax+(Math.abs(bx-ax)>Math.abs(by-ay)?0:off),hy=ay+dy+(Math.abs(bx-ax)>Math.abs(by-ay)?off*.3:0);
+        const ex=bx+(Math.abs(bx-ax)>Math.abs(by-ay)?0:off),ey=by+dy+(Math.abs(bx-ax)>Math.abs(by-ay)?off*.3:0);
+        ctx.beginPath();ctx.moveTo(hx,hy);ctx.quadraticCurveTo((hx+ex)/2,(hy+ey)/2+sag,ex,ey);ctx.stroke();
+      }
+      if(a.gato){ctx.strokeStyle='rgba(14,15,17,.8)';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(ax,ay+8);ctx.quadraticCurveTo(ax+(a.seed-.5)*40,ay+30,ax+(a.seed-.5)*70,ay+40);ctx.stroke();}
+    }
+  }
+  // rede aérea do trólebus sobre a Av. Rangel Pestana (dois pares de fios + cabos transversais)
+  if(x1>398&&x0<748){
+    ctx.strokeStyle='rgba(18,19,21,.9)';ctx.lineWidth=1;
+    const ya=Math.max(0,y0),yb=Math.min(2800,y1);
+    ctx.beginPath();for(const fx of [500,508,640,648]){ctx.moveTo(fx,ya);ctx.lineTo(fx,yb);}ctx.stroke();
+    ctx.strokeStyle='rgba(30,30,32,.7)';ctx.lineWidth=.8;ctx.beginPath();
+    for(let y=Math.ceil(ya/118)*118;y<yb;y+=118){if(pzInCross(573,y,10))continue;ctx.moveTo(392,y-48);ctx.quadraticCurveTo(573,y-40,754,y-48);}
+    ctx.stroke();
+    ctx.fillStyle='#3a3c40';for(let y=Math.ceil(ya/118)*118;y<yb;y+=118){if(pzInCross(573,y,10))continue;for(const fx of [504,644])ctx.fillRect(fx-5,y-45,10,2);}
+  }
+  ctx.restore();
 }
 // -- src/world/WorldBorder.js --
 // Acabamento visual AO REDOR do mapa jogável (2800x2800). Somente decoração:
@@ -5654,9 +6077,13 @@ class WorldBorder{
     const sh=(x,y,w,h)=>{c.fillStyle='rgba(0,0,0,.45)';c.fillRect(x+8,y+10,w,h);};
     // camada externa: ônibus queimado + caminhão
     const bw=Math.min(len*.55,190);
-    sh(6,-70,bw,52);r(c,6,-70,bw,52,'#3b3a2c');r(c,6,-70,bw,5,'#5a573f');
-    for(let x=14;x<bw-8;x+=26)r(c,x,-60,18,20,'#14181b');
-    r(c,6,-70,bw,52,'rgba(0,0,0,.28)');
+    // A10: ônibus municipal vermelho (cor da Zona Leste) atravessado, teto claro com escotilhas e ar-condicionado
+    sh(6,-70,bw,52);r(c,6,-70,bw,52,'#a3231f');r(c,9,-67,bw-6,46,'#d9d6cc');
+    for(let x=24;x<bw-20;x+=44){r(c,x,-60,16,12,'#8f8b84');r(c,x+2,-58,12,8,'#6a675f');}
+    r(c,9,-67,bw-6,3,'#20262c');r(c,9,-24,bw-6,3,'#20262c');
+    r(c,6,-70,6,52,'#c32b25');r(c,bw,-70,6,52,'#c32b25');
+    c.fillStyle='rgba(20,18,16,.55)';c.beginPath();c.ellipse(bw*.55,-44,bw*.22,16,0,0,Math.PI*2);c.fill(); // teto queimado
+    c.fillStyle='#e8e2d4';c.font='bold 6px Arial';c.fillText('SP TRANSPORTE',16,-30);
     const tx=bw+22,tw=Math.min(len-tx-6,150);
     if(tw>40){sh(tx,-62,tw,44);r(c,tx,-62,tw,44,'#46534f');r(c,tx,-62,tw*.28,44,'#2b3532');r(c,tx+tw*.3,-62,tw*.7,5,'#6a7873');}
     // carros batidos
@@ -6160,6 +6587,7 @@ class World {
     ctx.beginPath();ctx.arc(592,575,43,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;
     r(ctx,565,614,55,3,'#8b4e52');
     r(ctx,572,628,42,2,'#e1d5d2');
+    pzSPGround(ctx,{x:0,y:0,w:1152,h:1152,id:'center'}); // A10: rua de São Paulo
   }
   createSector(zone) {
     const canvas=document.createElement('canvas');canvas.width=zone.w;canvas.height=zone.h;
@@ -6269,6 +6697,7 @@ class World {
     const mark=zone.id==='suburb'?[1500,775]:zone.id==='industry'?[75,2155]:[2220,2135];
     // ATLAS A9: nome do distrito não é mais pintado no chão (o HUD já anuncia a zona).
     for(const lamp of this.lampLights)if(lamp.x>=zone.x&&lamp.x<zone.x+zone.w&&lamp.y>=zone.y&&lamp.y<zone.y+zone.h)streetlightPole(ctx,lamp.x,lamp.y);
+    pzSPGround(ctx,zone); // A10: rua de São Paulo
     ctx.restore();return {...zone,canvas};
   }
   draw(ctx, camera, externalState) {
@@ -8047,7 +8476,7 @@ class WorldDestruction {
         if(d.type==='vehicle' && d.x===982)emergencyVehicle(target,979,1644,{type:'ambulance',rotation:Math.PI/2,scale:1.58});
         if(d.type==='vehicle' && d.x===2185)emergencyVehicle(target,2184,2106,{type:'fire',rotation:Math.PI/2,scale:1.66});
       }else if(v.kind==='civilian')civilianCar(target,v.v.x,v.v.y,v.v);
-      else if(v.kind==='spriteCar')car(target,assets.get(v.sprite),v.x,v.y,v.angle,1.65);
+      else if(v.kind==='spriteCar')civilianCar(target,v.x,v.y,{kind:v.sprite==='carTeal'?'van':v.sprite==='carCoral'?'sedan':'pickup',angle:v.angle}); // A10: frota paulistana
       else if(v.kind==='emergency')emergencyVehicle(target,v.x,v.y,{type:v.type,rotation:v.rotation,scale:v.scale});
   }
   draw(ctx,assets,camera){
@@ -9771,7 +10200,7 @@ class CombatScene {
     r.effects.drawOver(ctx);
     pzSurvivorDrawUnder(ctx,r);
     pzDrawTelegraphs(ctx,r); // C6 · Ares: avisos de ataque e fases do chefe
-    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport)].sort((a,b)=>a.y-b.y);
+    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport),...pzSPDrawables(g.camera)].sort((a,b)=>a.y-b.y);
     for(const entity of drawables){
       // Skip entities entirely outside the current viewport with generous padding.
       const screen=g.camera.worldToScreen(entity.x,entity.y);
@@ -9787,6 +10216,7 @@ class CombatScene {
     pzDrawReloadAndSwap(ctx,r);
     r.gun.drawFlashes(ctx,r.q04Environment?.dark||0);
     if(diag.fx!==false)r.worldFX?.drawAir(ctx,g.camera);
+    pzSPDrawWires(ctx,g.camera); // A10: fiação e rede do trólebus
     // Números de dano no espaço do mundo, desenhados acima dos personagens.
     // Mantidos inclusive no instante da morte, enquanto o inimigo ainda está no array.
     const now=performance.now();
@@ -10172,7 +10602,7 @@ function pzLuxStatic(world){
   const out=[];
   const lamp=(x,y,radius,flicker,phase,seedTag)=>{
     const h=pzLampHead(x,y),rnd=mulberry32(Math.round(x*17+y*29+(seedTag||0)));
-    const kind=rnd()<.32?'led':'sodium';
+    const kind=rnd()<.82?'led':'sodium'; // A10: SP trocou ~90% do parque por LED; sobram alguns de sódio
     out.push({type:'lamp',x:h.gx,y:h.gy,hx:h.x,hy:h.y,R:Math.max(120,(radius||84)*1.75),rgb:PZ_LUX[kind],kind,flicker:flicker||0,phase:phase||0,p:kind==='led'?1.05:1.15,shadow:true});
   };
   for(const l of world.lampLights||[])lamp(l.x,l.y,l.radius,l.flicker,l.phase);
@@ -12495,6 +12925,6 @@ try {
 
 // G318_VISUALS: 8-directions x 4-frame enemy atlases, occluded north-pointing guns.
 </script>
-<div id="cronos-c4-version" aria-label="Versão do jogo">PROJECT Z · R22 · ATLAS A9</div>
+<div id="cronos-c4-version" aria-label="Versão do jogo">PROJECT Z · R23 · ATLAS A10</div>
 </body>
 </html>
