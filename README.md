@@ -291,3 +291,6 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 
 ## R25c · Sobreviventes 20% mais lentos
 - Velocidade base de todos os sobreviventes de 165 para 132 (−20%); o limite com tênis subiu proporcionalmente de 260 para 208. As diferenças entre personagens, o Acelerar (+40%) e os tênis continuam valendo por cima.
+
+## R25d · Infectados 20% mais lentos
+- Todos os infectados, chefes e o Notívago 20% mais lentos, acompanhando os sobreviventes: comum 74→59, corredor 146→117, explosivo 94→75, cuspidor 68→54, tanque 54→43, invocador 65→52, Colosso 49→39, Colmeia 36→29, Notívago 173→138 (salto 470→376). A investida do Colosso diminui junto.

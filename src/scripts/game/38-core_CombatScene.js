@@ -672,7 +672,7 @@ class Midnight extends Enemy {
   constructor(x,y,seed=0,packIndex=0){
     super(x,y,seed,'runner');
     this.kind='midnight';this.template={...this.template,sprite:'runner'};
-    this.radius=15;this.maxHp=65;this.hp=65;this.speed=173;this.damage=22;this.xp=0;
+    this.radius=15;this.maxHp=65;this.hp=65;this.speed=138;this.damage=22;this.xp=0;
     this.packIndex=packIndex;this.state='stalk';this.stateTime=1.2+Math.random()*1.5;
     this.exposure=0;this.sunburn=0;this.jumpVX=0;this.jumpVY=0;
     this.retreating=false;this.lightDeath=false;this.animation='walk';this.heading=0;
@@ -716,7 +716,7 @@ class Midnight extends Enemy {
         this.state='leap';this.stateTime=.34;
         const leadX=player.x+(player._autoVX||0)*.16,leadY=player.y+(player._autoVY||0)*.16;
         const a=Math.atan2(leadY-this.y,leadX-this.x);
-        this.jumpVX=Math.cos(a)*470;this.jumpVY=Math.sin(a)*470;
+        this.jumpVX=Math.cos(a)*376;this.jumpVY=Math.sin(a)*376;
       }
       return 0;
     }
