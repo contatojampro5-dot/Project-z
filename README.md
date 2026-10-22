@@ -326,3 +326,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 
 - Os zumbis amontoados do lado de fora das barricadas agora usam as mesmas folhas dos infectados comuns da cidade (operário, executivo e paciente), no mesmo tamanho.
 - A fileira da frente arranha a barricada com a animação de ataque; as de trás andam no lugar, empurrando. Os braços desenhados à mão do modelo antigo saíram.
+
+## Mudanças do R31 — Arquivo de infectados com o visual novo
+
+- O cartão "Nova ameaça identificada" e o arquivo de infectados (lista e ficha) agora mostram cada infectado e chefe com o visual das folhas novas, de frente, em vez do desenho pixelado antigo.
+- Os retratos ficam em `assets/images/game/bestiario/`, um por tipo.

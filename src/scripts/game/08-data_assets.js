@@ -71,3 +71,12 @@ ASSETS.colossusAtlas = '@@ASSET:assets/images/game/colossusAtlas.d3807ea4.png@@'
 ASSETS.hive = '@@ASSET:assets/images/game/hive.bc6d49ed.png@@';
 ASSETS.hiveAtlas = '@@ASSET:assets/images/game/hiveAtlas.efbc0907.png@@';
 
+// R31 · retratos do arquivo de infectados feitos das folhas novas (de frente, quadro de andar)
+ASSETS.best_normal = '@@ASSET:assets/images/game/bestiario/normal.webp@@';
+ASSETS.best_runner = '@@ASSET:assets/images/game/bestiario/runner.webp@@';
+ASSETS.best_bomber = '@@ASSET:assets/images/game/bestiario/bomber.webp@@';
+ASSETS.best_spitter = '@@ASSET:assets/images/game/bestiario/spitter.webp@@';
+ASSETS.best_tank = '@@ASSET:assets/images/game/bestiario/tank.webp@@';
+ASSETS.best_summoner = '@@ASSET:assets/images/game/bestiario/summoner.webp@@';
+ASSETS.best_colossus = '@@ASSET:assets/images/game/bestiario/colossus.webp@@';
+ASSETS.best_hive = '@@ASSET:assets/images/game/bestiario/hive.webp@@';

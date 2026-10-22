@@ -1,3 +1,5 @@
+// R31: retrato novo do infectado quando existe; senão, o desenho antigo.
+function pzBestArt(d){return ASSETS['best_'+d.id]||ASSETS[d.sprite];}
 // -- src/ui/UIManager.js --
 
 
@@ -478,7 +480,7 @@ class UIManager {
     return `<div class="discovery-overlay" role="dialog" aria-modal="true" aria-label="Novo infectado: ${d.name}">
       <div class="discovery-card ${boss?'discovery-boss':''}">
         <div class="discovery-stripe">${boss?'⚠ ALERTA DE ANOMALIA':'NOVA AMEAÇA IDENTIFICADA'} <span>ARQUIVO DESBLOQUEADO</span></div>
-        <div class="discovery-art"><span class="discovery-number">Z—${String(BESTIARY_IDS.indexOf(id)+1).padStart(2,'0')}</span><div class="discovery-halo"></div><img src="${ASSETS[d.sprite]}" alt="Arte pixel art de ${d.name}" draggable="false" /></div>
+        <div class="discovery-art"><span class="discovery-number">Z—${String(BESTIARY_IDS.indexOf(id)+1).padStart(2,'0')}</span><div class="discovery-halo"></div><img src="${pzBestArt(d)}" alt="Retrato de ${d.name}" draggable="false" /></div>
         <div class="discovery-body"><span class="discovery-category">${d.category}</span><h2>${d.name}</h2>
           <div class="discovery-metrics"><div><span>VIDA</span><strong>${d.hp}</strong></div><div><span>DANO</span><strong>${d.damage}</strong></div><div><span>VELOCIDADE</span><strong>${d.speed}</strong></div><div><span>XP</span><strong>${d.xp}</strong></div></div>
           <span class="discovery-section">REGISTRO BIOLÓGICO</span><p>${d.lore}</p><span class="discovery-section">COMPORTAMENTO</span><p>${d.behavior}</p>
@@ -495,7 +497,7 @@ class UIManager {
       const d=BESTIARY[id],stats=this.game.save.bestiary;
       return `<span class="modal-kicker">ARQUIVO DE INFECTADOS / ${unlocked} DE 8</span><div class="bestiary-detail">
         <button class="bestiary-back" data-action="bestiary-list">← TODOS OS REGISTROS</button>
-        <div class="bestiary-detail-art"><img src="${ASSETS[d.sprite]}" alt="${d.name}"/></div><span class="discovery-category">${d.category}</span><h2>${d.name}<span>.</span></h2>
+        <div class="bestiary-detail-art"><img src="${pzBestArt(d)}" alt="${d.name}"/></div><span class="discovery-category">${d.category}</span><h2>${d.name}<span>.</span></h2>
         <div class="discovery-metrics"><div><span>VIDA</span><strong>${d.hp}</strong></div><div><span>DANO</span><strong>${d.damage}</strong></div><div><span>VELOCIDADE</span><strong>${d.speed}</strong></div><div><span>XP</span><strong>${d.xp}</strong></div></div>
         <span class="discovery-section">REGISTRO BIOLÓGICO</span><p>${d.lore}</p><span class="discovery-section">COMPORTAMENTO</span><p>${d.behavior}</p><div class="discovery-tip"><span>PROTOCOLO</span><p>${d.tip}</p></div>
         <div class="bestiary-counts"><span>ELIMINAÇÕES <strong>${stats.kills[id]||0}</strong></span><span>MORTES POR CONTATO <strong>${stats.deaths[id]||0}</strong></span></div>
@@ -505,7 +507,7 @@ class UIManager {
     <div class="bestiary-meter"><div style="width:${unlocked/BESTIARY_IDS.length*100}%"></div></div>
     <div class="bestiary-grid">${BESTIARY_IDS.map((key,i)=>{
       const d=BESTIARY[key],seen=this.game.save.hasDiscovered(key);
-      return `<button class="bestiary-tile ${seen?'is-known':'is-unknown'}" data-action="bestiary-detail" data-infected="${key}" ${seen?'':'disabled'} aria-label="${seen?d.name:'Infectado não descoberto'}"><span class="bestiary-index">REG. ${String(i+1).padStart(2,'0')}</span><span class="bestiary-sprite">${seen?`<img src="${ASSETS[d.sprite]}" alt=""/>`:'?'}</span><span class="bestiary-title">${seen?d.name:'DADOS BLOQUEADOS'}</span><small>${seen?d.category:'ENCONTRE PARA REVELAR'}</small></button>`;
+      return `<button class="bestiary-tile ${seen?'is-known':'is-unknown'}" data-action="bestiary-detail" data-infected="${key}" ${seen?'':'disabled'} aria-label="${seen?d.name:'Infectado não descoberto'}"><span class="bestiary-index">REG. ${String(i+1).padStart(2,'0')}</span><span class="bestiary-sprite">${seen?`<img src="${pzBestArt(d)}" alt=""/>`:'?'}</span><span class="bestiary-title">${seen?d.name:'DADOS BLOQUEADOS'}</span><small>${seen?d.category:'ENCONTRE PARA REVELAR'}</small></button>`;
     }).join('')}</div><p class="bestiary-legend">Os atributos apresentados são os valores-base dos infectados. Eles podem escalar conforme a onda.</p>`;
   }
   modalMarkup(){
