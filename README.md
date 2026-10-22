@@ -314,3 +314,10 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Cada fala é um arquivo em `assets/audio/voices/<personagem>/<id>.mp3` (silêncio cortado, volume nivelado); a lista é gerada por `laboratorio/src/gerar_dados_vozes.py`.
 - A voz toca junto com a legenda, a legenda dura o tempo do áudio, pausar o jogo pausa a voz. Fala sem arquivo continua só com legenda.
 - Novo controle "VOZES" nas configurações.
+
+## Mudanças do R29 — Antônio em 3D
+
+- As 6 folhas do Antônio (pistola, revólver, SMG, fuzil, escopeta e .50) agora vêm do modelo 3D do Tripo com animações do Mixamo, renderizado nas mesmas 8 direções e no mesmo tamanho de célula (75 px).
+- As armas são peças simples montadas no render, porque o modelo veio sem arma. A morte é uma queda feita a partir da animação de impacto, e o especial (Aceleração) usa o salto com fuzil.
+- Os pontos de saída do clarão de cada arma foram recalculados a partir da ponta do cano no render.
+- O estudo comparando o modelo novo com o antigo continua em `laboratorio/estudo-sobrevivente-3d.html`.
