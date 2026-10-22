@@ -321,3 +321,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - As armas são peças simples montadas no render, porque o modelo veio sem arma. A morte é uma queda feita a partir da animação de impacto, e o especial (Aceleração) usa o salto com fuzil.
 - Os pontos de saída do clarão de cada arma foram recalculados a partir da ponta do cano no render.
 - O estudo comparando o modelo novo com o antigo continua em `laboratorio/estudo-sobrevivente-3d.html`.
+
+## Mudanças do R30 — Multidão lá fora com os infectados novos
+
+- Os zumbis amontoados do lado de fora das barricadas agora usam as mesmas folhas dos infectados comuns da cidade (operário, executivo e paciente), no mesmo tamanho.
+- A fileira da frente arranha a barricada com a animação de ataque; as de trás andam no lugar, empurrando. Os braços desenhados à mão do modelo antigo saíram.

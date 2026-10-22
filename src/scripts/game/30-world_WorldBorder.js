@@ -76,6 +76,22 @@ class ExternalBarricadeCrowd {
       for(let i=count-1;i>=0;i--){
         const z=cluster.members[i],p=this.worldPosition(cluster,z,time);
         if(p.x<bounds.x0-35||p.x>bounds.x1+35||p.y<bounds.y0-35||p.y>bounds.y1+35)continue;
+        // R30: mesmas folhas novas dos infectados comuns da cidade (operário, executivo, paciente).
+        // A fileira da frente arranha a barricada (ataque); as de trás andam no lugar, empurrando.
+        const NS=typeof PZ_SPRITES!=='undefined'?PZ_SPRITES.normal:null;
+        const nimg=NS&&assets.get(NS.variants[Math.floor(z.style*NS.variants.length)%NS.variants.length]);
+        if(nimg&&nimg.width){
+          const dir=((Math.round(p.heading/(Math.PI/4))%8)+8)%8;
+          const speed=.8+z.style*.5;
+          let anim='walk',fr=0;
+          if(z.row===0&&!still){anim='attack';fr=Math.floor(time*8*speed+z.phase*3)%NS.anims.attack.frames;}
+          else fr=still?0:Math.floor(time*7*speed+z.gait*3)%NS.anims.walk.frames;
+          const fy=p.y+11,k=typeof PZ_ENTITY_SCALE!=='undefined'?PZ_ENTITY_SCALE:1;
+          ctx.save();ctx.translate(p.x,fy);ctx.scale(k,k);ctx.translate(-p.x,-fy);
+          pzBlit(ctx,nimg,NS,anim,fr,dir,p.x,p.y);
+          ctx.restore();
+          continue;
+        }
         ctx.save();ctx.translate(Math.round(p.x),Math.round(p.y));
         ctx.fillStyle='rgba(4,7,8,.38)';ctx.beginPath();ctx.ellipse(0,13,13,5,0,0,Math.PI*2);ctx.fill();
         // Same 8-direction/4-frame atlas as enemies inside the city.
