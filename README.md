@@ -331,3 +331,6 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 
 - O cartão "Nova ameaça identificada" e o arquivo de infectados (lista e ficha) agora mostram cada infectado e chefe com o visual das folhas novas, de frente, em vez do desenho pixelado antigo.
 - Os retratos ficam em `assets/images/game/bestiario/`, um por tipo.
+
+## R31b — mais vozes da Hadassa
+- Hadassa agora tem 71 de 80 falas com voz (faltam 56, 57, 60, 68, 69, 70, 75, 76, 77). Hanna e San continuam só com legenda.
