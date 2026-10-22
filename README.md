@@ -334,3 +334,10 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 
 ## R31b — mais vozes da Hadassa
 - Hadassa agora tem 71 de 80 falas com voz (faltam 56, 57, 60, 68, 69, 70, 75, 76, 77). Hanna e San continuam só com legenda.
+
+## R32 · ATLAS A14 — cenário em 3D
+- Os prédios agora são caixas 3D vistas por uma câmera alta, em perspectiva: o telhado fica mais perto da câmera, os prédios se inclinam para longe do centro da tela e mudam de ângulo conforme o jogador anda (paralaxe de verdade).
+- Aparecem as paredes laterais (empenas) dos prédios que estão à esquerda ou à direita: a maioria é parede cega de reboco manchado com pixo, algumas têm janelas. A face leste pega o sol da praia, a oeste fica na sombra.
+- As janelas acesas à noite seguem a mesma perspectiva da fachada.
+- A colisão, o chão e a jogabilidade não mudaram; o prédio continua translúcido só quando o jogador passa atrás dele.
+- Feito em `src/scripts/game/29g-world_Buildings3D.js`, sem trocar o motor (continua canvas 2D, sem WebGL).

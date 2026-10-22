@@ -160,7 +160,7 @@ PzLightMap.prototype.drawLux=function(ctx,viewport,run,camera,world){
   for(const b of PZ_TALL.list){
     if(!inView(b.x+b.w/2,b.y-b.H/2,b.w/2+b.H+40))continue;
     const c=pzTallCache(b);this.tall.push(b);
-    if(c.emis){L.globalAlpha=Math.min(1,(.55+.45*b.alpha)*s);L.drawImage(c.emis,b.x-c.pad,b.y-b.H-c.pad,b.w+c.pad*2,b.h+b.H+c.pad*2);}
+    if(c.emis){L.globalAlpha=Math.min(1,(.55+.45*b.alpha)*s);if(pz3dOn())pz3dDrawEmis(L,b,c);else L.drawImage(c.emis,b.x-c.pad,b.y-b.H-c.pad,b.w+c.pad*2,b.h+b.H+c.pad*2);}
     for(const q of c.spill||[])put(pzLuxSprite(q.rgb,.35,1.3),b.x+q.x,b.y+b.h+q.y,q.R,q.p*s);
   }
   // 4) fogo, tiros, explosões

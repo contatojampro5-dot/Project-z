@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R31b · ATLAS A13** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R32 · ATLAS A14** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -34,6 +34,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   `window.__PROJECT_Z_CLIMATE_PREVIEW__={time:250}`.
 
 ## Mapa do código (principais)
+- `29g-world_Buildings3D.js` (R32) prédios como caixas 3D em perspectiva (câmera alta ao sul da tela, paredes
+  laterais, paralaxe); `window.__PZ_FLAT3D=true` volta ao visual antigo para comparar. Ajustes em `PZ_3D` (E, lean).
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).
 - `30-world_WorldBorder.js` muro, praia (leste), cidade em chamas lá fora (`seedPerimeterInferno`), multidão nas barricadas.
