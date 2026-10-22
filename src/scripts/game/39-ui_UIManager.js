@@ -168,7 +168,7 @@ class UIManager {
       this.game.applySettings(options,false,false);
       return;
     }
-    if(['masterVolume','menuMusicVolume','gameMusicVolume','effectsVolume'].includes(name)){
+    if(['masterVolume','menuMusicVolume','gameMusicVolume','effectsVolume','voiceVolume'].includes(name)){
       this.game.applySettings({[name]:Number(event.target.value)/100},false,false);
       void this.game.audio.unlock();
       const v=event.target.closest('.range-row')?.querySelector('.range-value');
@@ -512,7 +512,7 @@ class UIManager {
     let content='';const settings=this.game.save.settings;
     if(this.modal==='settings'){
       content=`<span class="modal-kicker">CONFIGURAÇÕES / SYSTEM</span><h2>AJUSTES<span>.</span></h2><p>Preferências salvas automaticamente neste navegador.</p>
-      ${[['masterVolume','VOLUME GERAL'],['menuMusicVolume','MÚSICA DO MENU'],['gameMusicVolume','MÚSICA DA PARTIDA'],['effectsVolume','EFEITOS SONOROS']].map(([key,name])=>`<div class="range-row"><span>${name}</span><button class="volume-step" type="button" data-action="volume-step" data-setting="${key}" data-delta="-10" aria-label="Diminuir ${name}">−</button><input aria-label="${name}" type="range" min="0" max="100" step="1" value="${Math.round((settings[key]??1)*100)}" data-setting="${key}"/><button class="volume-step" type="button" data-action="volume-step" data-setting="${key}" data-delta="10" aria-label="Aumentar ${name}">+</button><b class="range-value">${Math.round((settings[key]??1)*100)}%</b></div>`).join('')}
+      ${[['masterVolume','VOLUME GERAL'],['menuMusicVolume','MÚSICA DO MENU'],['gameMusicVolume','MÚSICA DA PARTIDA'],['effectsVolume','EFEITOS SONOROS'],['voiceVolume','VOZES']].map(([key,name])=>`<div class="range-row"><span>${name}</span><button class="volume-step" type="button" data-action="volume-step" data-setting="${key}" data-delta="-10" aria-label="Diminuir ${name}">−</button><input aria-label="${name}" type="range" min="0" max="100" step="1" value="${Math.round((settings[key]??1)*100)}" data-setting="${key}"/><button class="volume-step" type="button" data-action="volume-step" data-setting="${key}" data-delta="10" aria-label="Aumentar ${name}">+</button><b class="range-value">${Math.round((settings[key]??1)*100)}%</b></div>`).join('')}
       <button class="audio-test" type="button" data-action="test-effects">▶ TESTAR ÁUDIO E VERIFICAR CARREGAMENTO</button>
       <div class="b5-section"><h3>QUALIDADE GRÁFICA</h3><p>Visual original preservado; níveis ajustam somente detalhes secundários.</p>
         <div class="b5-quality-pills">${GRAPHIC_LEVELS.map(level=>`<button type="button" data-action="graphics-preset" data-level="${level}" class="${settings.graphicsQuality===level?'active':''}">${{low:'BAIXA',medium:'MÉDIA',high:'ALTA'}[level]}</button>`).join('')}</div>

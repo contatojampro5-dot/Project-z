@@ -16,7 +16,7 @@ const KEY = 'project-z:save:v1';
 function createDefaultSave() {
   return {
     version: 1,
-    settings: { difficulty: 'medium', musicEnabled: true, soundEnabled: true, masterVolume: 1, menuMusicVolume: 1, gameMusicVolume: 1, musicVolume: 0.42, effectsVolume: 0.65, weaponsVolume: .9, creaturesVolume: .8, environmentVolume: .8, uiVolume: .85, reducedMotion: false, showPerformance: false, ...GRAPHIC_DEFAULTS, keybinds:{...KEYBIND_DEFAULTS},padbinds:{...PAD_BIND_DEFAULTS},touchLayout:null,axisTuning:{moveSensitivity:1,aimSensitivity:1,moveDead:.14,aimDead:.16},vibration:{shots:true,damage:true,explosions:true} },
+    settings: { difficulty: 'medium', musicEnabled: true, soundEnabled: true, masterVolume: 1, menuMusicVolume: 1, gameMusicVolume: 1, musicVolume: 0.42, effectsVolume: 0.65, voiceVolume: 1, weaponsVolume: .9, creaturesVolume: .8, environmentVolume: .8, uiVolume: .85, reducedMotion: false, showPerformance: false, ...GRAPHIC_DEFAULTS, keybinds:{...KEYBIND_DEFAULTS},padbinds:{...PAD_BIND_DEFAULTS},touchLayout:null,axisTuning:{moveSensitivity:1,aimSensitivity:1,moveDead:.14,aimDead:.16},vibration:{shots:true,damage:true,explosions:true} },
     statistics: { plays: 0, totalZombies: 0, totalSurvivalSeconds: 0 },
     characterProgress: { kills: 0, bestWave: 0 },
     records: { easy: null, medium: null, hardcore: null },
@@ -29,7 +29,7 @@ function normalizeSave(data) {
   const settings = { ...base.settings, ...(data.settings && typeof data.settings === 'object' ? data.settings : {}) };
   if (!DIFFICULTIES[settings.difficulty]) settings.difficulty = 'medium';
   if(!CRONOS_CHARACTERS.some(c=>c.id===settings.selectedCharacter))settings.selectedCharacter='antonio';
-  for (const k of ['masterVolume', 'menuMusicVolume', 'gameMusicVolume', 'musicVolume', 'effectsVolume', 'weaponsVolume', 'creaturesVolume', 'environmentVolume', 'uiVolume']) settings[k] = Number.isFinite(settings[k]) ? Math.max(0, Math.min(1, settings[k])) : base.settings[k];
+  for (const k of ['masterVolume', 'menuMusicVolume', 'gameMusicVolume', 'musicVolume', 'effectsVolume', 'voiceVolume', 'weaponsVolume', 'creaturesVolume', 'environmentVolume', 'uiVolume']) settings[k] = Number.isFinite(settings[k]) ? Math.max(0, Math.min(1, settings[k])) : base.settings[k];
   for (const k of ['musicEnabled', 'soundEnabled', 'reducedMotion', 'showPerformance']) settings[k] = Boolean(settings[k]);
   for(const key of Object.keys(GRAPHIC_DEFAULTS))settings[key]=graphicLevel(settings[key]);
   const stored={...(settings.keybinds&&typeof settings.keybinds==='object'?settings.keybinds:{})};

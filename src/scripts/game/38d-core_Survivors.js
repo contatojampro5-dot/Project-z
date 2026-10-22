@@ -22,6 +22,7 @@ function pzSurvivorSetup(scene){
   p.lastHurtAt=0;p.punchClock=SAN_PUNCH.interval;p.minesLeft=HANNA_MINE.perBatch;
   r.mines=[];r.punchFX=null;
   // Cada sobrevivente fala com o próprio catálogo (Antônio: original; Hadassa, Hanna e San: 38e).
+  if(r.dialogue)r.dialogue.charId=ch.id; // R28: qual voz toca
   if(ch.id!=='antonio'&&r.dialogue&&typeof pzSurvCatalog==='function'){const c=pzSurvCatalog(ch.id);if(c)r.dialogue.catalog=c;}
 }
 

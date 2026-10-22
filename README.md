@@ -308,3 +308,9 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Sombras dos prédios no chão e o lado iluminado das fachadas viraram para combinar com o sol do leste.
 - Calçadas: o piso vai do meio-fio até a fachada, sem buracos; meio-fio de granito; material por rua (piso paulista na Rangel Pestana e na Mooca, placas de concreto nas outras), sem emenda ao trocar de bairro.
 - Cidade lá fora: mais focos de incêndio, numa camada mais ao fundo e alguns isolados.
+
+## R28 · ATLAS A13 — vozes (ElevenLabs)
+- As falas agora têm voz: Antônio (80 de 80, voz "Thiago") e Hadassa (28 de 80, voz "Lucinda"). Hanna e San ainda sem voz — a geração parou porque o ElevenLabs bloqueou o plano gratuito da conta.
+- Cada fala é um arquivo em `assets/audio/voices/<personagem>/<id>.mp3` (silêncio cortado, volume nivelado); a lista é gerada por `laboratorio/src/gerar_dados_vozes.py`.
+- A voz toca junto com a legenda, a legenda dura o tempo do áudio, pausar o jogo pausa a voz. Fala sem arquivo continua só com legenda.
+- Novo controle "VOZES" nas configurações.
