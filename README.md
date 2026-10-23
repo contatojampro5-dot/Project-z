@@ -399,3 +399,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Brilho nas luzes:** fogo, faróis, lanterna, explosões e clarão do tiro agora soltam um halo que "vaza" na tela, e as luzes fortes fazem um risco de lente, como em filme.
 - **Neblina em camadas:** duas camadas de névoa andando com o vento em velocidades diferentes, mais fortes com neblina ou chuva.
 - Sem tremor de tela (regra do jogo). Tudo feito para não pesar: as cores são camadas que a placa de vídeo junta.
+
+## R39 · ATLAS A21 — visual de cinema (parte 2): câmera viva e partículas
+- **Câmera viva (sem tremer a tela):** quando um chefe aparece, a câmera dá um zoom leve e volta devagar. Quando cai o último zumbi da horda, o tempo fica em câmera lenta por um instante.
+- **Partículas no ar:** cinzas da cidade em chamas caindo com o vento (mais perto do muro e à noite, algumas ainda em brasa), poeira brilhando no sol de dia e faíscas subindo das fogueiras e dos carros pegando fogo.
+- Com "reduzir movimento" ligado, não tem câmera lenta.

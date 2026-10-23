@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R38 · ATLAS A20** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R39 · ATLAS A21** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -53,6 +53,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 - `38p-rendering_Cinema.js` (R38) visual de cinema: cor por hora do dia (tinta, divisão de tom, vinheta colorida, grão animado
   nas camadas CSS do `PzPost`), halo/flare nas luzes (`PZ_DL.lights`) e neblina em 2 camadas. `window.__PZ_NO_CINEMA=true` desliga.
   Tremor de tela continua proibido (regra do dono), mesmo no pacote de cinema.
+- `38q-rendering_CinemaLife.js` (R39) câmera viva sem tremer (zoom leve quando o chefe aparece, câmera lenta curta no último
+  zumbi da horda; `Camera.baseZoom`) e partículas no ar: cinzas (mais perto do muro), poeira no sol, faíscas do fogo.
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).
 - `30-world_WorldBorder.js` muro, praia (leste), cidade em chamas lá fora (`seedPerimeterInferno`), multidão nas barricadas.
