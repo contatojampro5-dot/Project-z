@@ -54,6 +54,7 @@ function pzRainDraw(ctx,viewport,run,camera,env,weatherMul){
   if(!(dt>0&&dt<.1))dt=dt>=.1?.1:0;
   pzRainUpdate(dt,camera,viewport,env);
   const wet=env.wet,w=viewport.width,h=viewport.height,zoom=camera.zoom||1;
+  PZ_RAIN.lastWet=wet;PZ_RAIN.lastDraw=performance.now();
   ctx.save();
   // leve escurecida e tom azul-acinzentado do tempo fechado
   ctx.fillStyle=`rgba(60,74,92,${(.10*wet).toFixed(3)})`;ctx.fillRect(0,0,w,h);
@@ -108,6 +109,6 @@ function pzRainFlashDraw(ctx,viewport){
 // O trovão do som (AudioSystem) puxa o relâmpago junto.
 {const P=AudioSystem.prototype,_u=P.updateEnvironment;
  if(_u)P.updateEnvironment=function(dt,weather){const before=this.thunderCooldown;const r=_u.apply(this,arguments);
-   if(this.thunderCooldown>before+1&&!window.__projectZGame?.save?.settings?.reducedMotion)PZ_RAIN.flashT=.55;return r;};}
+   /* R42: relâmpago só com chuva de verdade caindo na tela */if(this.thunderCooldown>before+1&&!window.__projectZGame?.save?.settings?.reducedMotion&&(PZ_RAIN.lastWet||0)>.55&&performance.now()-(PZ_RAIN.lastDraw||0)<1000&&PZ_RAIN.drops.length>40)PZ_RAIN.flashT=.55;return r;};}
 // Ferramenta de teste: window.__PZ_RAIN_FORCE=0..1 força a intensidade da chuva.
 {const _g=Q04_ENVIRONMENT.get.bind(Q04_ENVIRONMENT);Q04_ENVIRONMENT.get=function(t,p){const e=_g(t,p);const f=window.__PZ_RAIN_FORCE;if(typeof f==='number'&&e)e.wet=f;return e;};}

@@ -33,7 +33,8 @@
     "src/styles/31-atlas-a7-transitions.css",
     "src/styles/32-atlas-a9-mobile-fit.css",
     "src/styles/33-r33c-story.css",
-    "src/styles/34-r41-rain-timer.css"
+    "src/styles/34-r41-rain-timer.css",
+    "src/styles/35-r42-bag-discard.css"
   ],
   "headScripts": [
     "src/scripts/01-embedded-music.js",
@@ -113,6 +114,7 @@
     "src/scripts/game/38b-world_WorldFX.js",
     "src/scripts/game/38s-rendering_RainTimerPuddleSun.js",
     "src/scripts/game/38t-rendering_Sirens.js",
+    "src/scripts/game/38u-world_SpitWeatherAmmo.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",
     "src/scripts/game/39c-ui_StoryScreen.js",

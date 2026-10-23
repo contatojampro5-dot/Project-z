@@ -959,6 +959,15 @@ class CombatScene {
     this.run.backpackOpen=!this.run.backpackOpen;this.run.bagSelectedSlot=null;
     this.game.ui.render();this.game.ui.updateHUD(this.run);return true;
   }
+  // R42: botão ✕ da mochila — primeiro toque pede confirmação, o segundo joga o item fora.
+  discardBagSlot(index){
+    const r=this.run;if(!r||!r.backpackOpen)return false;
+    index=Number(index);const bag=r.player.backpack;if(!Number.isInteger(index)||index<0||index>=bag.capacity||!bag.slots[index])return false;
+    if(r.bagDiscardArm!==index){r.bagDiscardArm=index;clearTimeout(this._discardTimer);this._discardTimer=setTimeout(()=>{if(r.bagDiscardArm===index){r.bagDiscardArm=null;this.game.ui.render();}},2500);this.game.ui.render();return false;}
+    bag.slots[index]=null;r.bagDiscardArm=null;if(r.bagSelectedSlot===index)r.bagSelectedSlot=null;
+    r.noticeText='ITEM DESCARTADO';r.noticeTextTime=1.4;
+    this.game.ui.render();this.game.ui.updateHUD(r);return true;
+  }
   selectBagSlot(index){
     const r=this.run;if(!r||!r.backpackOpen)return false;
     index=Number(index);if(!Number.isInteger(index)||index<0||index>=r.player.backpack.capacity)return false;

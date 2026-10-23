@@ -1,0 +1,6 @@
+/* R42: botão ✕ para jogar fora itens da mochila (computador e celular) */
+.q54-slot .b3-discard{position:absolute;top:6px;right:6px;z-index:2;min-width:30px;height:30px;padding:0 8px;border-radius:9px;border:1px solid rgba(231,85,88,.55);background:rgba(40,12,16,.85);color:#ff9a9c;font:800 13px/1 system-ui;letter-spacing:.04em;cursor:pointer;touch-action:manipulation}
+.q54-slot .b3-discard:hover,.q54-slot .b3-discard:focus-visible{background:#5a1a20;color:#fff;border-color:#e75558}
+.q54-slot .b3-discard.armed{background:#c9373c;color:#fff;border-color:#ff8d8f;font-size:10px;box-shadow:0 0 14px rgba(231,85,88,.55)}
+@media(max-width:560px){.q54-slot .b3-discard{min-width:34px;height:34px;top:4px;right:4px}}
+body:has(.q54-backdrop) .pz-rain-timer{display:none!important}

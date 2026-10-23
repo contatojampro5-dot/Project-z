@@ -202,7 +202,7 @@ function pzL3Shade(item){
      ctx.globalAlpha=1;
      if(item.type==='attachment'&&item.tier>=4){ctx.globalAlpha=.22;ctx.fillStyle=shade;ctx.fillRect(-3,-66,6,58);ctx.globalAlpha=1;}
      ctx.translate(0,-7-bob);
-     pzL3Draw(ctx,model,th,item.type==='fullHeart'?1.22:1.14);
+     pzL3Draw(ctx,model,th,item.type==='fullHeart'?1.22:item.small?.95:1.14);
      // faíscas nos itens raros
      if(item.type==='fullHeart'||item.type==='shieldCell'||(item.tier>=4&&(item.type==='attachment'||item.type==='armor'))){
        ctx.fillStyle='#fff8e0';

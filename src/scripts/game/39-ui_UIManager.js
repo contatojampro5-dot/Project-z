@@ -44,6 +44,7 @@ function b3InventoryMarkup(r){
         <small>${String(i+1).padStart(2,'0')}</small>
         ${item?`<strong>${att?'⌖':item.type==='medkit'?'✚':'◈'}</strong><span>${itemName}</span><b>×${item.qty}</b>${rare?`<i>${rare.name}</i>`:''}`:'<em>VAZIO</em>'}
       </button>
+      ${item?`<button type="button" class="b3-discard ${r.bagDiscardArm===i?'armed':''}" data-action="bag-discard" data-slot="${i}" aria-label="${r.bagDiscardArm===i?'Confirmar: jogar fora '+itemName:'Jogar fora '+itemName}">${r.bagDiscardArm===i?'JOGAR FORA?':'✕'}</button>`:''}
       ${att?`<button type="button" class="b3-equip-button" data-action="equip-attachment" data-bag-index="${i}" ${canEquip?'':'disabled'} aria-label="Instalar ${itemName}">${canEquip?'INSTALAR':'INCOMPATÍVEL'}</button>`:''}
     </div>`;
   }).join('');
@@ -133,6 +134,7 @@ class UIManager {
     if(action==='consumable-use')this.game.scenes.current?.useSelectedConsumable();
     if(action==='backpack-toggle')this.game.scenes.current?.toggleBackpack();
     if(action==='bag-slot')this.game.scenes.current?.selectBagSlot(button.dataset.slot);
+    if(action==='bag-discard')this.game.scenes.current?.discardBagSlot?.(button.dataset.slot);
     if(action==='equip-attachment')this.game.scenes.current?.equipBagAttachment(button.dataset.bagIndex);
     if(action==='remove-attachment')this.game.scenes.current?.removeGunAttachment(button.dataset.slot);
     if(action==='throw-grenade')this.game.scenes.current?.useGrenade();

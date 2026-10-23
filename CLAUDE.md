@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R41 · ATLAS A22** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R42 · ATLAS A23** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -61,6 +61,10 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   refletido nas poças depois da chuva. `window.__PZ_NO_PUDDLE_SUN=true` desliga o brilho. Precisa vir depois do `38b` no manifest.
 - `38t-rendering_Sirens.js` (R41) giroflex das viaturas/SAMU/bombeiros (luz no `PZ_LIGHTMAP.drawAfter` + `PZ_DL.lights`) e som da
   sirene em WebAudio quando o jogador chega perto (~330 px). `window.__PZ_NO_SIRENS=true` desliga.
+- `38u-world_SpitWeatherAmmo.js` (R42) cuspe do Cuspidor em arco + poça roxa que dá dano (`PZ_SPIT`); ciclo do clima novo
+  (`pzWeatherCurve`: começa chovendo, para ~1 min, chuva volta no amanhecer; substitui o `wet` e o `pzWetAt` do timer;
+  `window.__PZ_OLD_WEATHER=true` volta ao antigo); poças secam com o sol; zumbi morto solta 'bullet' (bala 3D, +5 balas, fica no mapa).
+  Relâmpago só com chuva visível (38o). Mochila: botão ✕ por espaço (`discardBagSlot`, 2 toques: confirma).
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).
 - `30-world_WorldBorder.js` muro, praia (leste), cidade em chamas lá fora (`seedPerimeterInferno`), multidão nas barricadas.

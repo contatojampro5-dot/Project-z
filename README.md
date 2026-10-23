@@ -414,3 +414,10 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Timer da chuva:** embaixo do botão CLIMA aparece quanto falta para começar a chover ("CHUVA EM 1:20 · FORTE/FRACA") ou para a chuva parar ("CHUVA · PARA EM 0:45"), com uma barrinha da força da chuva. Fica amarelo quando falta pouco e azul enquanto chove.
 - **Sol nas poças:** depois da chuva, com o céu aberto, as poças refletem o sol que vem da praia: brilho quente do lado do sol, faíscas piscando na água, ondinhas de luz e um reflexo dourado no fim da tarde. Some na chuva forte, na neblina e à noite.
 - **Sirenes:** viaturas, ambulâncias (SAMU) e o caminhão de bombeiros piscam o giroflex (polícia vermelho/azul, SAMU vermelho/branco, bombeiros vermelho), com brilho no ar e luz colorida no chão em volta; à noite brilha mais e tinge os zumbis perto. Chegando perto, a sirene toca: polícia sobe e desce, SAMU faz os dois tons, bombeiros um uivo mais lento. Fica mais alta quanto mais perto e vem do lado certo. Carro explodido perde a sirene.
+
+## R42 · ATLAS A23 — cuspe que cai no chão, clima novo, bala dos zumbis e mochila
+- **Cuspe do Cuspidor:** agora ele é jogado em arco, sobe e desce, e a sombra no chão mostra onde vai cair. Ao bater no chão estoura e deixa uma **poça roxa** de gosma por alguns segundos. Quem pisa nela leva dano, e se cair em cima de você o estouro também machuca.
+- **Raio só na chuva:** o relâmpago só acontece quando está chovendo de verdade na tela.
+- **Clima novo:** a partida começa chovendo, com as poças já cheias. A chuva para em pouco mais de 1 minuto, e o sol do fim da tarde deixa as poças brilhando enquanto elas secam. A noite fica escura e sem chuva, e no amanhecer volta a chover. Depois o sol da manhã seca tudo de novo. O timer da chuva acompanha esse ciclo.
+- **Bala dos zumbis:** todo zumbi que morre solta uma bala 3D girando (menor que os outros itens). Cada uma dá **5 balas** e fica no mapa até você pegar.
+- **Mochila:** cada espaço com item tem um botão **✕** para jogar fora, no computador e no celular. No primeiro toque ele pergunta "JOGAR FORA?" e no segundo descarta, para não perder item sem querer.
