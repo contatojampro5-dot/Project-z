@@ -155,7 +155,8 @@ function pzAmbCarsOn(run){
      if(!boss)PZ_AMB.lastBoss=null;
      if(boss){PZ_AMB.nextBossRoar-=dt;if(PZ_AMB.nextBossRoar<=0){PZ_AMB.nextBossRoar=7+Math.random()*7;
        const key=boss.kind==='colossus'?'roarColossus':'roarHive';
-       if(!pzAmbAt(this,key,boss.x,boss.y,{vol:1.25,max:1100}))this.effect(boss.kind==='colossus'?'colossusGrowl':'hiveGrowl',{x:boss.x,y:boss.y,volume:1.2});
+       const own=pzAmbAt(this,key,boss.x,boss.y,{vol:1.15,max:1100,rate:.92+Math.random()*.16});
+       this.effect(boss.kind==='colossus'?'colossusGrowl':'hiveGrowl',{x:boss.x,y:boss.y,volume:own?.7:1.2}); // os dois juntos dão mais corpo
        this.body?.('explosion',{x:boss.x,y:boss.y,volume:.35});}}
      // ---- pessoas presas nos prédios
      if(on&&typeof PZ_TALL!=='undefined'){
