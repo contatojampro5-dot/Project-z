@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R33 · ATLAS A15** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R34 · ATLAS A16** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -27,7 +27,7 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   Pastas externas (copiadas, não embutidas): ver `EXTERNAL` no `build.py`
   (infectados, sobreviventes, música, **vozes**, PWA). Assets são referenciados no código como `@@ASSET:caminho@@`.
 - Sempre rodar os dois builds antes do commit (`jogo/` e `dist/` são versionados).
-- Testes: `NODE_PATH=$(npm root -g) node tests/hera.js jogo/index.html <pasta-saida>` → deve dar **25/25**.
+- Testes: `NODE_PATH=$(npm root -g) node tests/hera.js jogo/index.html <pasta-saida>` → deve dar **26/26** (R34 incluiu o teste da noite).
   Precisa de Playwright/Chromium. Servidor local para testes manuais: `python3 -m http.server 8765` na raiz.
 - Acesso no console do navegador: `window.__projectZGame` (cena atual em `.scenes.current`, partida em `.run`,
   personagem escolhido em `.save.settings.selectedCharacter`). Prévia de clima/noite:
@@ -38,6 +38,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   laterais, paralaxe); `window.__PZ_FLAT3D=true` volta ao visual antigo para comparar. Ajustes em `PZ_3D` (E, lean).
 - `38i-world_Props3D.js` (R33) postes/placas/orelhões inclinados (`pz3dLean`), carros/contêineres/barreiras com
   volume (camadas empilhadas), muro de quarentena como caixa 3D; postes de luz deixaram de ser pintados no chão.
+- `38j-rendering_DirLight.js` (R34) luz com direção nos objetos: fogo, explosões, tiro, faróis, lanterna, postes e sol
+  tingem só o lado virado para a luz (mais forte perto; em cima do fogo fica todo tingido). `window.__PZ_NO_DIRLIGHT=true` desliga.
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).
 - `30-world_WorldBorder.js` muro, praia (leste), cidade em chamas lá fora (`seedPerimeterInferno`), multidão nas barricadas.
@@ -88,5 +90,5 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
    trólebus completo; fábrica de tijolo estilo Cotonifício; estação de trem/metrô.
 
 ## Commits
-Mensagem curta em português começando pela versão (ex.: `R32: ...`). Testar (Hera 25/25) e conferir em captura
+Mensagem curta em português começando pela versão (ex.: `R32: ...`). Testar (Hera 26/26) e conferir em captura
 de tela antes de subir.

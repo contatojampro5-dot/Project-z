@@ -85,6 +85,7 @@ function pz3dDrawTall(ctx,b){
   if(vy<y-1)pz3dQuad(ctx,x,y,x1,y,H,'#24252a'); // parede de trás (só se a câmera passar do prédio)
   // fachada da frente (sul)
   if(vy>y1)pz3dWall(ctx,base,c.canvas,pad*res,(pad+h)*res,w*res,H*res,x,y1,x1,y1,H,band);
+  if(typeof pzDLBuilding==='function')pzDLBuilding(ctx,b); // R34: fogo/faróis/explosões só nas faces viradas para a luz
   // telhado (com platibanda): a uma altura H, é só um retângulo ampliado a partir do ponto de fuga
   {const e=6,r0=pz3dP(x-e,y-7,H),r1=pz3dP(x1+e,y1,H);
    ctx.drawImage(c.canvas,(pad-e)*res,(pad-7)*res,(w+e*2)*res,(h+7)*res,r0.x,r0.y,r1.x-r0.x,r1.y-r0.y);

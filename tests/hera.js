@@ -81,6 +81,12 @@ const q = (p, fn, arg) => p.evaluate(fn, arg);
       const f = now => { t.push(now - last); last = now; if (++n < 90) requestAnimationFrame(f); else { t.sort((a, b) => a - b); r({ mediana: t[45], p95: t[85] }); } };
       requestAnimationFrame(f); }));
     check('Tempo de quadro medido', true, `mediana ${frame.mediana.toFixed(1)} ms, p95 ${frame.p95.toFixed(1)} ms (máquina de teste sem GPU; não representa celular)`);
+    // R34: a noite liga o mapa de luz, faróis, lanterna e postes — precisa rodar sem erro
+    const nightErr = errors.length;
+    await q(p, () => { window.__PROJECT_Z_CLIMATE_PREVIEW__ = { time: 250 }; }); await wait(p, 1800);
+    await p.screenshot({ path: path.join(OUT, 'pc-partida-noite.png') });
+    check('Noite roda sem erro (luzes, faróis, lanterna)', errors.length === nightErr, errors.slice(nightErr, nightErr + 2).join(' | '));
+    await q(p, () => { window.__PROJECT_Z_CLIMATE_PREVIEW__ = null; });
     check('Nenhum erro de JavaScript no computador', errors.length === 0, errors.slice(0, 3).join(' | '));
     await p.close();
   }

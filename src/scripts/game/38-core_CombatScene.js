@@ -1467,18 +1467,24 @@ class CombatScene {
     pzSurvivorDrawUnder(ctx,r);
     pzDrawTelegraphs(ctx,r); // C6 · Ares: avisos de ataque e fases do chefe
     const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport,r.player),...pzSPDrawables(g.camera,r.player),...pzPoleDrawables(g.camera,r.player),...pzWallDrawables(g.camera)].sort((a,b)=>a.y-b.y);
+    pzDLCollect(r,g.world,g.camera);let dlBudget=PZ_DL.quality==='low'?8:PZ_DL.quality==='high'?40:18;r.player.__isPlayer=true;
     for(const entity of drawables){
       // Skip entities entirely outside the current viewport with generous padding.
       const screen=g.camera.worldToScreen(entity.x,entity.y);
       if(entity.__tall){if(entity.lean&&pz3dOn()){ctx.save();pz3dLean(ctx,entity.x,entity.y);entity.draw(ctx);ctx.restore();}else entity.draw(ctx);continue;} // R33: objetos em pé inclinam na perspectiva
       if(screen.x<-105||screen.y<-105||screen.x>viewport.width+105||screen.y>viewport.height+105)continue;
       // A11: personagens e infectados 15% menores (só o desenho; a colisão não muda), escalados a partir dos pés.
-      ctx.save();const fy=entity.y+(entity.radius||12)*.9;ctx.translate(entity.x,fy);ctx.scale(PZ_ENTITY_SCALE,PZ_ENTITY_SCALE);ctx.translate(-entity.x,-fy);
-      if(entity===r.player&&r.player._recoil>.05){
-        // Recuo visual do sprite (não altera a posição real nem a câmera).
-        ctx.translate(-Math.cos(r.player.facing)*r.player._recoil,-Math.sin(r.player.facing)*r.player._recoil);
-      }
-      entity.draw(ctx,g.assets);ctx.restore();
+      const paint=(c)=>{
+        c.save();const fy=entity.y+(entity.radius||12)*.9;c.translate(entity.x,fy);c.scale(PZ_ENTITY_SCALE,PZ_ENTITY_SCALE);c.translate(-entity.x,-fy);
+        if(entity===r.player&&r.player._recoil>.05){
+          // Recuo visual do sprite (não altera a posição real nem a câmera).
+          c.translate(-Math.cos(r.player.facing)*r.player._recoil,-Math.sin(r.player.facing)*r.player._recoil);
+        }
+        entity.draw(c,g.assets);c.restore();
+      };
+      paint(ctx);
+      // R34: luz com direção (fogo, explosão, faróis, lanterna, sol) só no lado virado para ela
+      if(entity===r.player||(PZ_DL.lights.length&&dlBudget-->0))pzDLEntity(ctx,entity,paint);
     }
     pzSurvivorDrawOver(ctx,r);
     pzDrawReloadAndSwap(ctx,r);

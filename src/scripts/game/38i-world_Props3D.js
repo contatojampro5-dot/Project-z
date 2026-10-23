@@ -71,6 +71,7 @@ function pz3dStack(ctx,T,Hz,step){
     const z=Hz*i/n,k=1+PZ_3D.a*z;
     ctx.setTransform(base);ctx.translate(vx,vy);ctx.scale(k,k);ctx.translate(-vx,-vy);
     ctx.drawImage(i<n?T.dark:T.top,T.cx-T.S/2,T.cy-T.S/2,T.S,T.S);
+    if(i===n&&typeof pzDLProp==='function')pzDLProp(ctx,T); // R34: luz no lado virado para ela
   }
   ctx.setTransform(base);
 }

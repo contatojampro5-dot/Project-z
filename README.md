@@ -352,3 +352,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - O botão HISTÓRIA do menu agora mostra a história oficial do jogo (de `docs/historia.md`): os quatro sobreviventes com retrato, idade e um resumo, a cronologia em 7 capítulos (das irmãs até a fuga para a fazenda do Seu João) e o mistério da origem do surto.
 - Só entram fatos já definidos pelo Theo. O modo história completo e as cutscenes vêm depois.
 - Feito em `src/scripts/game/39c-ui_StoryScreen.js` e `src/styles/33-r33c-story.css`. Jogabilidade igual.
+## R34 · ATLAS A16 — iluminação com direção e distância
+- Toda luz agora pega nos objetos só do lado virado para ela: fogueiras, carros pegando fogo, explosões de barril e granada, clarão do tiro, faróis dos carros, lanterna, postes (à noite) e o sol da praia (de dia, só fora da sombra dos prédios).
+- Quanto mais perto da luz, mais forte; longe, não pega. Em cima do fogo, o personagem ou o zumbi fica todo tingido da cor do fogo. O lado de trás fica mais escuro, dando volume.
+- Vale para o seu personagem (roupa inclusive), zumbis, carros, contêineres e as paredes dos prédios (só a face virada para o fogo ou o farol acende).
+- Correção: a R33 tinha um erro que travava as luzes dos postes e a fiação à noite (corrigido na R33b). A Hera agora também testa a noite.
