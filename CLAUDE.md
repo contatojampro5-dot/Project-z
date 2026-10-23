@@ -55,6 +55,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 - **Antônio** (protagonista, nervoso/engraçado), **Hadassa** (durona, irmã mais velha), **Hanna** (sarcástica, irmã;
   as duas se procuram), **San/Sansão** (brincalhão, ex-lutador de boxe que questiona as medalhas e a vida).
 - Cada um tem 80 falas próprias (não repetir piadas/apelidos do Antônio).
+- **História oficial:** `docs/historia.md` (cronologia, fichas, origem do surto, tipos de infectados, fazenda do
+  Seu João). Seguir ao escrever falas, cenas ou missões; itens *[Parcial]*/pendentes não são cânone ainda.
 
 ## Vozes (ElevenLabs)
 - Arquivos: `assets/audio/voices/<personagem>/<id 3 dígitos>.mp3` (mono 64 kbps, silêncio cortado, `loudnorm`).
