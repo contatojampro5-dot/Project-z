@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R43 · ATLAS A24** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R44 · ATLAS A25** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -113,7 +113,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 2. Cartões dos inimigos: Theo vai gerar 8 imagens por IA (6 infectados + chefes Colosso e Colmeia), quadradas,
    fundo escuro liso; recortar e colocar no cartão "Nova ameaça identificada" e no arquivo de infectados
    (`assets/images/game/bestiario/`, estilos em `src/styles/15-base.css`).
-3. Pré-seleção de habilidades antes da partida (ideia do Theo: ~10 habilidades com 2 evoluções cada). Antes de
+3. (R44 feito em parte: a trilha de sobrevivência — melee/traps/firearms — é escolhida no começo da partida, `SPECIAL_MILESTONES=[1,5,10]`,
+   e o personagem olha para onde anda quando não atira, `r.aimHold` no `38-core`.) Pré-seleção de habilidades antes da partida (ideia do Theo: ~10 habilidades com 2 evoluções cada). Antes de
    fazer, perguntar: (a) a escolha no meio da partida continua ou sai? (b) todas liberadas ou desbloqueio aos poucos?
    (c) as habilidades de personagem (Acelerar, Sobrevida, Punhos, Mina) continuam separadas e somam?
 4. Ideias oferecidas e ainda sem resposta: clarear roupas de Hadassa/Hanna ou contorno no personagem controlado;
