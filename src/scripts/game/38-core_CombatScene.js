@@ -444,7 +444,7 @@ class Q04Environment {
       ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
     }
     if(env.fog>.03){ctx.fillStyle=`rgba(145,171,189,${(env.fog*.07*weatherMul).toFixed(3)})`;ctx.fillRect(0,0,w,h);}
-    if(env.wet>.08){
+    if(env.wet>.08&&!(typeof pzRainDraw==='function'&&pzRainDraw(ctx,viewport,run,camera,env,weatherMul))){ /* R37: chuva nova em 38o */
       ctx.strokeStyle=`rgba(190,212,230,${(.14+env.wet*.30).toFixed(3)})`;ctx.lineWidth=1.2;
       const count=Math.min(190,Math.floor(w*h/7800*env.wet*weatherMul)),shift=t*330;
       for(let i=0;i<count;i++){

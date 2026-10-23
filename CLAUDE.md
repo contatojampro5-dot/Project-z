@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R36d · ATLAS A18** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R37 · ATLAS A19** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -48,6 +48,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   frente/verso, laterais iluminadas, flutuar e brilho. `window.__PZ_FLAT_LOOT=true` volta ao desenho antigo.
 - `38n-world_GroundFix.js` (R36b) não desenha mais o corpo provisório antigo (quadrados verdes no chão) e deixa o
   cuspe do Cuspidor com cara de gosma (rastro, brilho, sombra).
+- `38o-rendering_Rain.js` (R37) chuva no mundo 3D: gotas com altura caindo para o ponto de fuga (3 camadas), vento, respingos
+  em coroa, cortinas de chuva e relâmpago junto do trovão. `window.__PZ_RAIN_FORCE=0..1` força a chuva para testar.
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).
 - `30-world_WorldBorder.js` muro, praia (leste), cidade em chamas lá fora (`seedPerimeterInferno`), multidão nas barricadas.

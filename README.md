@@ -388,3 +388,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 
 ## R36d — muro de baixo transparente só quando você passa atrás
 - Correção da R36c: o muro de baixo volta a aparecer normal e fica meio transparente só quando você passa atrás dele, igual aos carros e prédios.
+
+## R37 · ATLAS A19 — chuva realista
+- A chuva deixou de ser uma grade de risquinhos iguais. Agora cada gota cai de verdade, com altura, na mesma câmera 3D dos prédios: as gotas altas (perto da câmera) são maiores e mais borradas, as de perto do chão são finas, e todas caem na direção certa da perspectiva.
+- O vento inclina e empurra a chuva, com rajadas. Onde a gota bate no chão abre um respingo com gotinhas pulando.
+- Passam "cortinas" de chuva mais forte com o vento, o tempo fica mais fechado e, na chuva forte, o relâmpago clareia a tela junto com o trovão (sem tremer a tela).
