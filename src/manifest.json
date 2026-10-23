@@ -103,6 +103,7 @@
     "src/scripts/game/38j-rendering_DirLight.js",
     "src/scripts/game/38k-world_Cars3D.js",
     "src/scripts/game/38l-world_Hitboxes.js",
+    "src/scripts/game/38m-world_Loot3D.js",
     "src/scripts/game/38b-world_WorldFX.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",

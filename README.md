@@ -373,3 +373,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 ## R35b — carro translúcido quando você passa atrás
 - O carro agora é desenhado na ordem certa: se você está na frente, aparece por cima dele; se passa por trás, o carro fica por cima e fica meio transparente (igual aos prédios), então dá para ver o personagem e não parece mais que você está em cima do carro.
 - Ajuste de colisão: ambulância e caminhão de bombeiros tinham a colisão mais comprida que o desenho; agora é do tamanho do veículo.
+
+## R36 · ATLAS A18 — itens em 3D girando
+- Todos os itens que dá para pegar no mapa agora são objetos 3D de verdade, girando sem parar como a moedinha do Mario e flutuando um pouco acima do chão.
+- Cada um tem frente, verso e espessura, com as laterais iluminadas, borda lapidada e um reflexo que passa pela face enquanto gira: coração (e o coração dourado de vida completa), caixa de munição com o número de balas, kit médico com alça, célula de escudo hexagonal, granada redonda com alavanca e argola, mochila, colete com o nível e peça de arma (engrenagem na cor da raridade).
+- Itens raros (vida completa, célula de escudo, peças e coletes de nível alto) soltam faíscas. Com "reduzir movimento" ligado, o giro fica mais lento.
