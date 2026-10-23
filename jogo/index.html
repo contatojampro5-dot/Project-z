@@ -2092,6 +2092,7 @@ html,body{background:#050506}
 .app[data-scene="field"] .pz-pad-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);bottom:13px;
  background:#15232be8;color:#c9deea;font:600 9px/1.3 system-ui;padding:7px 10px;border:1px solid #66839966;z-index:12;border-radius:7px;pointer-events:none;white-space:nowrap}
 .app[data-scene="field"].pz-pad-mode .pz-pad-tip{display:block}
+.app[data-scene="field"].pz-pad-mode .control-hint{display:none!important} /* R45: com controle, some a dica do teclado */
 .app[data-scene="field"] .pz-skill-button{display:none;position:absolute;z-index:8;right:calc(15% + 90px);bottom:32px;min-width:60px;
  min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:9px;border:1px solid #8d9c96aa;background:#12272be9;color:#daebe6;
  pointer-events:auto;cursor:pointer;font:700 9px system-ui;box-shadow:0 3px 13px #000a}
@@ -14462,7 +14463,7 @@ class UIManager {
             <div class="q53-choices"><button type="button" data-action="consumable-select" data-item="shield" aria-label="Selecionar célula de escudo">◈ <b data-shield-cells>× ${r.player.shieldCells}</b></button><button type="button" data-action="consumable-select" data-item="medkit" aria-label="Selecionar kit médico">✚ <b data-medkits>× ${r.player.medkits}</b></button></div>
           </div>
         </div>`:''}
-        <div class="pz-pad-tip" aria-live="polite">CONTROLE CONECTADO · RT DISPARA · RB GRANADA · B HABILIDADE</div>
+        <div class="pz-pad-tip" aria-live="polite">CONTROLE CONECTADO · RT ATIRA · X RECARREGA · RB GRANADA · LB CURA · B HABILIDADE · SELECT MOCHILA · START PAUSA</div>
         <div class="control-hint"><b>WASD</b> MOVER &nbsp;·&nbsp; <b>MOUSE</b> ATIRAR · <b>ESPAÇO</b> ACELERAR &nbsp;·&nbsp; <b>G</b> GRANADA &nbsp;·&nbsp; <b>H</b> CURA &nbsp;·&nbsp; <b>V</b> USAR &nbsp;·&nbsp; <b>ESC</b> PAUSAR &nbsp;·&nbsp; <b>C</b> CONTROLES</div>
         <div class="loot-toast" data-loot-toast aria-live="polite" style="opacity:${r.lootToastTime>0?1:0}">${r.lootToastTime>0?r.lootToast:''}</div>
         ${r.backpackOpen?b3InventoryMarkup(r):''}
@@ -14946,8 +14947,12 @@ class PhysicalGamepad {
     this.frame=requestAnimationFrame(this.tick);
   }
   read(){
-    try{return [...(navigator.getGamepads?.()||[])].find(p=>p&&p.connected&&p.mapping==='standard')||null;}
-    catch{return null;}
+    // R45: controle Bluetooth genérico (mapping '' em alguns navegadores) também vale; os botões
+    // diferentes podem ser trocados em Controles > Gamepad.
+    try{
+      const pads=[...(navigator.getGamepads?.()||[])].filter(p=>p&&p.connected);
+      return pads.find(p=>p.mapping==='standard')||pads.find(p=>(p.axes?.length||0)>=2&&(p.buttons?.length||0)>=8)||null;
+    }catch{return null;}
   }
   axes(){return this.lastAxes;}
   tick(){
@@ -15582,7 +15587,16 @@ PhysicalGamepad.prototype.tick=function(){
      else if(r?.discovery.selecting)game.scenes.current.closeDiscovery();
      else {
      const selected=document.activeElement;
-     if(selected?.matches?.('button:not([disabled])')&&game.root.contains(selected))selected.click();
+     if(selected?.matches?.('button:not([disabled])')&&game.root.contains(selected)){
+       // R45: a mochila redesenha a cada clique; o cursor do controle volta para o mesmo botão.
+       const key=selected.dataset.action?`[data-action="${selected.dataset.action}"]${selected.dataset.slot!=null?`[data-slot="${selected.dataset.slot}"]`:''}`:null;
+       const slot=selected.dataset.slot;
+       selected.click();
+       if(key&&!selected.isConnected){
+         const again=game.root.querySelector(key)||(slot!=null&&game.root.querySelector(`[data-slot="${slot}"]`));
+         again?.focus({preventScroll:true});
+       }
+     }
      else if(game.ui?.modal)game.ui.showModal(null);
      else if(game.previewPaused)game.resumePreview();
      }
@@ -15676,6 +15690,6 @@ try {
 
 // G318_VISUALS: 8-directions x 4-frame enemy atlases, occluded north-pointing guns.
 </script>
-<div id="cronos-c4-version" aria-label="Versão do jogo">PROJECT Z · R44 · ATLAS A25</div>
+<div id="cronos-c4-version" aria-label="Versão do jogo">PROJECT Z · R45 · ATLAS A25</div>
 </body>
 </html>

@@ -437,3 +437,9 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 ## R44 · ATLAS A25 — trilha escolhida no começo e personagem olhando para onde anda
 - **Trilha logo no início:** assim que a partida começa, aparece a escolha da trilha de sobrevivência (Corpo a corpo, Armadilhas ou Armamentos), com o jogo em câmera lenta. A trilha **evolui** no nível 5 (etapa 2) e no nível 10 (etapa 3, a última). O HUD mostra a trilha, a etapa e o nível da próxima evolução.
 - **Personagem vira para onde anda:** sem atirar, ele corre olhando para o lado em que está andando (acabou o "correr de ré" olhando para a mira do mouse). Atirando, volta a seguir a mira, e fica mirando mais meio segundo depois do último tiro para não ficar girando entre um clique e outro. Mirar de propósito no analógico direito do controle (ou nas teclas IJKL) continua segurando a mira.
+
+## R45 · ATLAS A25 — controle Bluetooth
+- **Controle sem fio funciona:** controles de Xbox, PlayStation e genéricos conectados por Bluetooth (ou cabo) já eram reconhecidos; agora controles genéricos que o navegador não identifica como "padrão" também entram (dá para trocar os botões em Controles > Gamepad).
+- **Comandos padrão:** analógico esquerdo anda, analógico direito mira, RT/R2 atira, X/Quadrado recarrega, Y/Triângulo troca a arma, RB/R1 granada, LB/L1 cura, LT/L2 escudo, B/Círculo habilidade (e voltar nos menus), A/Cruz confirma e usa, SELECT abre a mochila, START pausa. D-pad ou analógico navegam nos menus, na escolha da trilha, nas evoluções e na mochila.
+- **Mochila no controle:** depois de apertar A num espaço (ou no ✕ de jogar fora), o cursor continua no mesmo lugar em vez de voltar para o começo.
+- **Dica na tela:** com o controle ligado, a dica do teclado some e fica só a dos botões do controle (antes as duas se sobrepunham).

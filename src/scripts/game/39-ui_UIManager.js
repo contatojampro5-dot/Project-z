@@ -374,7 +374,7 @@ class UIManager {
             <div class="q53-choices"><button type="button" data-action="consumable-select" data-item="shield" aria-label="Selecionar célula de escudo">◈ <b data-shield-cells>× ${r.player.shieldCells}</b></button><button type="button" data-action="consumable-select" data-item="medkit" aria-label="Selecionar kit médico">✚ <b data-medkits>× ${r.player.medkits}</b></button></div>
           </div>
         </div>`:''}
-        <div class="pz-pad-tip" aria-live="polite">CONTROLE CONECTADO · RT DISPARA · RB GRANADA · B HABILIDADE</div>
+        <div class="pz-pad-tip" aria-live="polite">CONTROLE CONECTADO · RT ATIRA · X RECARREGA · RB GRANADA · LB CURA · B HABILIDADE · SELECT MOCHILA · START PAUSA</div>
         <div class="control-hint"><b>WASD</b> MOVER &nbsp;·&nbsp; <b>MOUSE</b> ATIRAR · <b>ESPAÇO</b> ACELERAR &nbsp;·&nbsp; <b>G</b> GRANADA &nbsp;·&nbsp; <b>H</b> CURA &nbsp;·&nbsp; <b>V</b> USAR &nbsp;·&nbsp; <b>ESC</b> PAUSAR &nbsp;·&nbsp; <b>C</b> CONTROLES</div>
         <div class="loot-toast" data-loot-toast aria-live="polite" style="opacity:${r.lootToastTime>0?1:0}">${r.lootToastTime>0?r.lootToast:''}</div>
         ${r.backpackOpen?b3InventoryMarkup(r):''}

@@ -188,8 +188,12 @@ class PhysicalGamepad {
     this.frame=requestAnimationFrame(this.tick);
   }
   read(){
-    try{return [...(navigator.getGamepads?.()||[])].find(p=>p&&p.connected&&p.mapping==='standard')||null;}
-    catch{return null;}
+    // R45: controle Bluetooth genérico (mapping '' em alguns navegadores) também vale; os botões
+    // diferentes podem ser trocados em Controles > Gamepad.
+    try{
+      const pads=[...(navigator.getGamepads?.()||[])].filter(p=>p&&p.connected);
+      return pads.find(p=>p.mapping==='standard')||pads.find(p=>(p.axes?.length||0)>=2&&(p.buttons?.length||0)>=8)||null;
+    }catch{return null;}
   }
   axes(){return this.lastAxes;}
   tick(){
@@ -824,7 +828,16 @@ PhysicalGamepad.prototype.tick=function(){
      else if(r?.discovery.selecting)game.scenes.current.closeDiscovery();
      else {
      const selected=document.activeElement;
-     if(selected?.matches?.('button:not([disabled])')&&game.root.contains(selected))selected.click();
+     if(selected?.matches?.('button:not([disabled])')&&game.root.contains(selected)){
+       // R45: a mochila redesenha a cada clique; o cursor do controle volta para o mesmo botão.
+       const key=selected.dataset.action?`[data-action="${selected.dataset.action}"]${selected.dataset.slot!=null?`[data-slot="${selected.dataset.slot}"]`:''}`:null;
+       const slot=selected.dataset.slot;
+       selected.click();
+       if(key&&!selected.isConnected){
+         const again=game.root.querySelector(key)||(slot!=null&&game.root.querySelector(`[data-slot="${slot}"]`));
+         again?.focus({preventScroll:true});
+       }
+     }
      else if(game.ui?.modal)game.ui.showModal(null);
      else if(game.previewPaused)game.resumePreview();
      }
