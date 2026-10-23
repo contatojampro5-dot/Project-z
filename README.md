@@ -426,6 +426,7 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Fogo com som:** chegar perto de carro pegando fogo, fogueira ou do incêndio do muro faz subir o barulho das chamas (gravado no ElevenLabs), vindo do lado certo. Longe, some.
 - **R43b — sons sintéticos no lugar dos que o ElevenLabs não deixou gerar:** gritos de mulher vindos dos prédios, gemido da horda (sobe com a quantidade de zumbis perto) e rugidos novos do Colosso e da Colmeia (somados ao rugido antigo). Quando o ElevenLabs liberar, eles são trocados pelos gravados.
 - **R43c — mais falas dos prédios (ElevenLabs):** "Socorro! Alguém me ajuda!", "Foge! Eles tão subindo a escada!" e "Fecha a porta! Fecha a porta, rápido!", junto do "Corre! Sai daí!".
+- **R43d — motor de carro gravado e rugido novo do Colosso (ElevenLabs).**
 - **Trovão de verdade:** junto do relâmpago agora vem um estalo seco e um ronco longo que rola pelo céu. Primeiro o clarão, depois o som (o atraso muda como se o raio caísse perto ou longe).
 - **Zumbis mais vivos:** quando chegam perto, rosnam com mais frequência e mais alto. Longe, ficam baixinhos.
 - **Rugido dos chefões:** o Colosso e a Colmeia rugem quando aparecem e de tempos em tempos enquanto estão vivos, com um grave por baixo. Perto deles é bem mais alto.
