@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R36b · ATLAS A18** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R36c · ATLAS A18** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -38,6 +38,7 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   laterais, paralaxe); `window.__PZ_FLAT3D=true` volta ao visual antigo para comparar. Ajustes em `PZ_3D` (E, lean).
 - `38i-world_Props3D.js` (R33) postes/placas/orelhões inclinados (`pz3dLean`), carros/contêineres/barreiras com
   volume (camadas empilhadas), muro de quarentena como caixa 3D; postes de luz deixaram de ser pintados no chão.
+  R36c: o muro de baixo (sul) não é desenhado na partida em 3D, a pedido do Theo (só a sombra e a colisão ficam).
 - `38j-rendering_DirLight.js` (R34) luz com direção nos objetos: fogo, explosões, tiro, faróis, lanterna, postes e sol
   tingem só o lado virado para a luz (mais forte perto; em cima do fogo fica todo tingido). `window.__PZ_NO_DIRLIGHT=true` desliga.
 - `38k-world_Cars3D.js` (R35) carros em 3D de verdade: lataria com laterais, rodas, capô, para-brisa, cabine e teto.

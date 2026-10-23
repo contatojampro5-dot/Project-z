@@ -382,3 +382,6 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 ## R36b — limpeza do chão
 - Os quadrados verdes que apareciam no asfalto eram um corpo provisório antigo (feito de retângulos) que o jogo ainda desenhava quando o zumbi morria. O corpo de verdade já aparece, então esses quadrados saíram.
 - A bolinha roxa é o cuspe do **Cuspidor** (o infectado que ataca de longe). Agora ela parece uma bolha de gosma tremendo, com rastro de gotas, brilho e sombra no chão, para dar para ver o que é e desviar.
+
+## R36c — muro de baixo invisível
+- O muro de quarentena do lado de baixo do mapa aparecia como uma laje grande deitada por cima da tela. Agora ele fica invisível na partida (continua bloqueando a passagem e a sombra no chão marca onde ele está). A barricada com arame continua aparecendo.

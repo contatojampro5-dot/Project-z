@@ -152,7 +152,8 @@ function pzWallDrawables(camera){
 {const _crowd=ExternalBarricadeCrowd.prototype.draw;
  ExternalBarricadeCrowd.prototype.draw=function(ctx,assets,bounds,ext,still){
    const cam=window.__projectZGame?.camera;
-   if(cam){pz3dCamera(cam,cam.viewport);for(const w of PZ_WALLS)if(w.side==='bottom'&&bounds.y1>w.y0-120&&w.b>bounds.x0&&w.a<bounds.x1)pz3dDrawWall(ctx,w);}
+   /* R36c: o Theo pediu o muro de baixo invisível na partida (ficava uma laje grande cobrindo a tela); fica só a sombra no chão */
+   if(cam&&!pz3dOn()){pz3dCamera(cam,cam.viewport);for(const w of PZ_WALLS)if(w.side==='bottom'&&bounds.y1>w.y0-120&&w.b>bounds.x0&&w.a<bounds.x1)pz3dDrawWall(ctx,w);}
    return _crowd.call(this,ctx,assets,bounds,ext,still);
  };}
 // Fora da partida (menu ao fundo), postes e muros aparecem na vista antiga.
