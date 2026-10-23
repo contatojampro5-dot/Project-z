@@ -10515,7 +10515,7 @@ class CombatScene {
     r.effects.drawOver(ctx);
     pzSurvivorDrawUnder(ctx,r);
     pzDrawTelegraphs(ctx,r); // C6 · Ares: avisos de ataque e fases do chefe
-    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport,r.player),...pzSPDrawables(g.camera,r.player),...pzPoleDrawables(g.camera,r.player),...pzWallDrawables(g.camera)].sort((a,b)=>a.y-b.y);
+    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport,r.player),...pzSPDrawables(g.camera,r.player),...pzPoleDrawables(g.camera,r.player),...pzWallDrawables(g.camera),...(typeof pzCarDrawables==='function'?pzCarDrawables(g.camera,r.player,1/60):[])].sort((a,b)=>a.y-b.y);
     pzDLCollect(r,g.world,g.camera);let dlBudget=PZ_DL.quality==='low'?8:PZ_DL.quality==='high'?40:18;r.player.__isPlayer=true;
     for(const entity of drawables){
       // Skip entities entirely outside the current viewport with generous padding.
@@ -12227,7 +12227,7 @@ function pzCar3DShape(kind,variant,w,h){
   }
   return S;
 }
-function pzCar3DDraw(ctx,o,wd,assets){
+function pzCar3DDraw(ctx,o,wd,assets,part3d){ // part3d: 'shadow' só a sombra, 'body' sem a sombra
   const p=pzCar3DParams(o);if(!p)return false;
   const spr=pzCar3DSprite(p);if(!spr)return false;
   const [w,h]=PZ_CAR3D_DIMS[p.kind]||PZ_CAR3D_DIMS.sedan,R=2,P=12,variant=spr.variant;
@@ -12247,7 +12247,8 @@ function pzCar3DDraw(ctx,o,wd,assets){
   ctx.save();ctx.imageSmoothingEnabled=true;
   const hw=w/2,hh=h/2;
   // sombra no chão (sol do leste: cai para o oeste)
-  {const q=[[-hw-1,-hh-1],[hw+1,-hh-1],[hw+1,hh+1],[-hw-1,hh+1]].map(([lx,ly])=>{const t=W(lx,ly);return{x:t[0]-5,y:t[1]+2};});poly(q,'rgba(0,0,0,.34)');}
+  if(part3d!=='body'){const q=[[-hw-1,-hh-1],[hw+1,-hh-1],[hw+1,hh+1],[-hw-1,hh+1]].map(([lx,ly])=>{const t=W(lx,ly);return{x:t[0]-5,y:t[1]+2};});poly(q,'rgba(0,0,0,.34)');}
+  if(part3d==='shadow'){ctx.restore();return true;}
   // carroceria: 4 lados (só os que a câmera vê)
   const sides=[[-hw,hh,-hw,-hh,'L'],[hw,-hh,hw,hh,'R'],[-hw,-hh,hw,-hh,'F'],[hw,hh,-hw,hh,'B']];
   for(const [ax,ay,bx,by,t] of sides){
@@ -12308,9 +12309,38 @@ function pzCar3DDraw(ctx,o,wd,assets){
 }
 {const _p=WorldDestruction.prototype.paintOriginalObject;
  WorldDestruction.prototype.paintOriginalObject=function(target,o,assets){
-   if(!this.__pz3dPaint&&this.__pz3dCtx&&target===this.__pz3dCtx&&o.kind==='vehicle'&&pz3dOn()&&!window.__PZ_STACKCARS&&pzCar3DDraw(target,o,this,assets))return;
+   if(!this.__pz3dPaint&&this.__pz3dCtx&&target===this.__pz3dCtx&&o.kind==='vehicle'&&pz3dOn()&&!window.__PZ_STACKCARS){
+     // R35b: no chão fica só a sombra; o carro entra na fila e é desenhado na ordem de profundidade (pzCarDrawables)
+     if(!this.__pzCarSorted&&pzCar3DParams(o)&&pzCar3DDraw(target,o,this,assets,'shadow')){PZ_CARQ.push({wd:this,o,assets});return;}
+     if(pzCar3DDraw(target,o,this,assets,this.__pzCarSorted?'body':undefined))return;
+   }
    return _p.call(this,target,o,assets);
  };}
+
+// R35b · carro na ordem de profundidade + translúcido quando o jogador passa atrás dele (igual aos prédios).
+const PZ_CARQ=[];
+function pzCarDrawables(camera,player,dt){
+  const out=[];
+  for(const it of PZ_CARQ.splice(0)){
+    const {wd,o,assets}=it,p=pzCar3DParams(o);if(!p)continue;
+    const [w,h]=PZ_CAR3D_DIMS[p.kind]||PZ_CAR3D_DIMS.sedan,ca=Math.cos(p.angle),sa=Math.sin(p.angle);
+    let y0=1e9,y1=-1e9,x0=1e9,x1=-1e9;
+    for(const [lx,ly] of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){
+      const X=p.x+lx*ca-ly*sa,Y=p.y+lx*sa+ly*ca,T=pz3dP(X,Y,22);
+      y0=Math.min(y0,Y,T.y);y1=Math.max(y1,Y);x0=Math.min(x0,X,T.x);x1=Math.max(x1,X,T.x);}
+    // translúcido só quando o jogador está atrás (acima da frente do carro, dentro da área que ele cobre na tela)
+    let target=1;
+    if(player&&player.x>x0-10&&player.x<x1+10&&player.y<y1-4&&player.y>y0-30)target=.38;
+    o.__pzA=(o.__pzA??1)+(target-(o.__pzA??1))*Math.min(1,(dt||.016)*9);
+    out.push({x:p.x,y:y1,__tall:1,draw(ctx){
+      ctx.save();if(o.__pzA<.995)ctx.globalAlpha=o.__pzA;
+      wd.__pz3dCtx=ctx;wd.__pzCarSorted=true;
+      try{wd.paintOriginalObject(ctx,o,assets);}finally{wd.__pz3dCtx=null;wd.__pzCarSorted=false;ctx.restore();}
+    }});
+  }
+  return out;
+}
+{const _d=WorldDestruction.prototype.draw;WorldDestruction.prototype.draw=function(){PZ_CARQ.length=0;return _d.apply(this,arguments);};}
 // -- src/world/Hitboxes.js --
 // R35 · Ares + Hefesto — colisão do tamanho do desenho.
 // Revisão do mapa (ver README R35): várias colisões não batiam com o que aparece na tela:
@@ -12339,10 +12369,10 @@ function pzHBSet(o,shape){
   pzHBBucketsAdd(o);
 }
 // Contorno opaco (alfa > 60%) do desenho do objeto, para tirar a sombra semitransparente.
-function pzHBMeasure(wd,o,assets){
+function pzHBMeasure(wd,o,assets,paint){
   const p=o.rect,S=Math.ceil(Math.max(p.w,p.h)*2.4+80),cx=p.x+p.w/2,cy=p.y+p.h/2;
   const c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
-  x.translate(S/2-cx,S/2-cy);wd.__pz3dPaint=true;try{wd.paintOriginalObject(x,o,assets);}finally{wd.__pz3dPaint=false;}
+  x.translate(S/2-cx,S/2-cy);wd.__pz3dPaint=true;try{if(paint)paint(x);else wd.paintOriginalObject(x,o,assets);}finally{wd.__pz3dPaint=false;}
   const d=x.getImageData(0,0,S,S).data;let x0=S,y0=S,x1=-1,y1=-1;
   for(let j=0;j<S;j++)for(let i=0;i<S;i++)if(d[(j*S+i)*4+3]>153){if(i<x0)x0=i;if(i>x1)x1=i;if(j<y0)y0=j;if(j>y1)y1=j;}
   if(x1<0)return null;
@@ -12356,7 +12386,11 @@ function pzHBFix(wd,run){
     if(v.kind==='civilian'||v.kind==='spriteCar'){
       const p=pzCar3DParams(o),[w,h]=PZ_CAR3D_DIMS[p.kind]||PZ_CAR3D_DIMS.sedan;
       shape={cx:p.x,cy:p.y,angle:p.angle,halfW:w/2+1,halfH:h/2+.5}; // lataria + retrovisor
-    }else if(v.kind==='smallBox'||v.kind==='spriteBox'||v.kind==='emergency'||(v.kind==='district'&&v.prop?.type==='vehicle'&&(v.prop.x===982||v.prop.x===2185))){
+    }else if(v.kind==='district'&&v.prop?.type==='vehicle'&&(v.prop.x===982||v.prop.x===2185)){
+      // ambulância e bombeiros: mede só o veículo (o retângulo antigo pintado embaixo deixava a colisão comprida demais)
+      const amb=v.prop.x===982;
+      shape=pzHBMeasure(wd,o,assets,c=>emergencyVehicle(c,amb?979:2184,amb?1644:2106,{type:amb?'ambulance':'fire',rotation:Math.PI/2,scale:amb?1.58:1.66}));
+    }else if(v.kind==='smallBox'||v.kind==='spriteBox'||v.kind==='emergency'){
       shape=pzHBMeasure(wd,o,assets);
     }
     if(!shape){if(o.collider)used.add(o.collider);continue;}
@@ -14268,6 +14302,6 @@ try {
 
 // G318_VISUALS: 8-directions x 4-frame enemy atlases, occluded north-pointing guns.
 </script>
-<div id="cronos-c4-version" aria-label="Versão do jogo">PROJECT Z · R35 · ATLAS A17</div>
+<div id="cronos-c4-version" aria-label="Versão do jogo">PROJECT Z · R35b · ATLAS A17</div>
 </body>
 </html>

@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R35 · ATLAS A17** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R35b · ATLAS A17** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -41,6 +41,7 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 - `38j-rendering_DirLight.js` (R34) luz com direção nos objetos: fogo, explosões, tiro, faróis, lanterna, postes e sol
   tingem só o lado virado para a luz (mais forte perto; em cima do fogo fica todo tingido). `window.__PZ_NO_DIRLIGHT=true` desliga.
 - `38k-world_Cars3D.js` (R35) carros em 3D de verdade: lataria com laterais, rodas, capô, para-brisa, cabine e teto.
+  R35b: o carro entra na ordem de profundidade (`pzCarDrawables`) e fica translúcido quando o jogador passa atrás.
 - `38l-world_Hitboxes.js` (R35) colisão do tamanho do desenho (carros, caixas, viaturas); `window.__PZ_HITBOX_DEBUG=true` mostra as colisões.
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).

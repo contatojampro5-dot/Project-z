@@ -1466,7 +1466,7 @@ class CombatScene {
     r.effects.drawOver(ctx);
     pzSurvivorDrawUnder(ctx,r);
     pzDrawTelegraphs(ctx,r); // C6 · Ares: avisos de ataque e fases do chefe
-    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport,r.player),...pzSPDrawables(g.camera,r.player),...pzPoleDrawables(g.camera,r.player),...pzWallDrawables(g.camera)].sort((a,b)=>a.y-b.y);
+    const drawables=[...r.enemies,r.player,...pzTallDrawables(g.camera,viewport,r.player,1/60),...pzSignDrawables(g.camera,viewport,r.player),...pzSPDrawables(g.camera,r.player),...pzPoleDrawables(g.camera,r.player),...pzWallDrawables(g.camera),...(typeof pzCarDrawables==='function'?pzCarDrawables(g.camera,r.player,1/60):[])].sort((a,b)=>a.y-b.y);
     pzDLCollect(r,g.world,g.camera);let dlBudget=PZ_DL.quality==='low'?8:PZ_DL.quality==='high'?40:18;r.player.__isPlayer=true;
     for(const entity of drawables){
       // Skip entities entirely outside the current viewport with generous padding.

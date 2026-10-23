@@ -26,10 +26,10 @@ function pzHBSet(o,shape){
   pzHBBucketsAdd(o);
 }
 // Contorno opaco (alfa > 60%) do desenho do objeto, para tirar a sombra semitransparente.
-function pzHBMeasure(wd,o,assets){
+function pzHBMeasure(wd,o,assets,paint){
   const p=o.rect,S=Math.ceil(Math.max(p.w,p.h)*2.4+80),cx=p.x+p.w/2,cy=p.y+p.h/2;
   const c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
-  x.translate(S/2-cx,S/2-cy);wd.__pz3dPaint=true;try{wd.paintOriginalObject(x,o,assets);}finally{wd.__pz3dPaint=false;}
+  x.translate(S/2-cx,S/2-cy);wd.__pz3dPaint=true;try{if(paint)paint(x);else wd.paintOriginalObject(x,o,assets);}finally{wd.__pz3dPaint=false;}
   const d=x.getImageData(0,0,S,S).data;let x0=S,y0=S,x1=-1,y1=-1;
   for(let j=0;j<S;j++)for(let i=0;i<S;i++)if(d[(j*S+i)*4+3]>153){if(i<x0)x0=i;if(i>x1)x1=i;if(j<y0)y0=j;if(j>y1)y1=j;}
   if(x1<0)return null;
@@ -43,7 +43,11 @@ function pzHBFix(wd,run){
     if(v.kind==='civilian'||v.kind==='spriteCar'){
       const p=pzCar3DParams(o),[w,h]=PZ_CAR3D_DIMS[p.kind]||PZ_CAR3D_DIMS.sedan;
       shape={cx:p.x,cy:p.y,angle:p.angle,halfW:w/2+1,halfH:h/2+.5}; // lataria + retrovisor
-    }else if(v.kind==='smallBox'||v.kind==='spriteBox'||v.kind==='emergency'||(v.kind==='district'&&v.prop?.type==='vehicle'&&(v.prop.x===982||v.prop.x===2185))){
+    }else if(v.kind==='district'&&v.prop?.type==='vehicle'&&(v.prop.x===982||v.prop.x===2185)){
+      // ambulância e bombeiros: mede só o veículo (o retângulo antigo pintado embaixo deixava a colisão comprida demais)
+      const amb=v.prop.x===982;
+      shape=pzHBMeasure(wd,o,assets,c=>emergencyVehicle(c,amb?979:2184,amb?1644:2106,{type:amb?'ambulance':'fire',rotation:Math.PI/2,scale:amb?1.58:1.66}));
+    }else if(v.kind==='smallBox'||v.kind==='spriteBox'||v.kind==='emergency'){
       shape=pzHBMeasure(wd,o,assets);
     }
     if(!shape){if(o.collider)used.add(o.collider);continue;}

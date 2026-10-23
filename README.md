@@ -369,3 +369,7 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
   - ambulância, caminhão de bombeiros e viatura agora usam o contorno do próprio desenho.
 - Depois da revisão, o mapa de caminhos dos zumbis é refeito, então eles contornam os carros em vez de atravessar.
 - Ferramenta: `window.__PZ_HITBOX_DEBUG=true` mostra as colisões na tela.
+
+## R35b — carro translúcido quando você passa atrás
+- O carro agora é desenhado na ordem certa: se você está na frente, aparece por cima dele; se passa por trás, o carro fica por cima e fica meio transparente (igual aos prédios), então dá para ver o personagem e não parece mais que você está em cima do carro.
+- Ajuste de colisão: ambulância e caminhão de bombeiros tinham a colisão mais comprida que o desenho; agora é do tamanho do veículo.
