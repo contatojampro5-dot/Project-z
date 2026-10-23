@@ -145,6 +145,14 @@ function pzWallDrawables(camera){
   for(const w of PZ_WALLS){
     if(w.side==='left'){if(Math.abs(-40-camera.x)>vw||w.b<camera.y-vh||w.a>camera.y+vh)continue;out.push({y:w.b,__tall:1,draw(ctx){pz3dDrawWall(ctx,w);}});}
     else if(w.side==='top'){if(camera.y-vh>0||w.b<camera.x-vw||w.a>camera.x+vw)continue;out.push({y:w.y0+56,__tall:1,draw(ctx){pz3dDrawWall(ctx,w);}});}
+    else if(w.side==='bottom'&&pz3dOn()){
+      /* R36d: muro de baixo na ordem de profundidade; fica translúcido quando o jogador passa atrás dele (igual carros e prédios) */
+      const yb=w.y0+56;if(camera.y+vh<yb-80||w.b<camera.x-vw||w.a>camera.x+vw)continue;
+      const pl=window.__projectZGame?.scenes?.current?.run?.player;
+      const target=pl&&pl.x>w.a-20&&pl.x<w.b+20&&pl.y<yb+4&&pl.y>yb-90?.28:1;
+      w.alpha=(w.alpha??1)+(target-(w.alpha??1))*.15;
+      out.push({y:yb,__tall:1,draw(ctx){ctx.save();if(w.alpha<.995)ctx.globalAlpha=w.alpha;pz3dDrawWall(ctx,w);ctx.restore();}});
+    }
   }
   return out;
 }
@@ -152,7 +160,7 @@ function pzWallDrawables(camera){
 {const _crowd=ExternalBarricadeCrowd.prototype.draw;
  ExternalBarricadeCrowd.prototype.draw=function(ctx,assets,bounds,ext,still){
    const cam=window.__projectZGame?.camera;
-   /* R36c: o Theo pediu o muro de baixo invisível na partida (ficava uma laje grande cobrindo a tela); fica só a sombra no chão */
+   /* R36d: na partida em 3D o muro de baixo vai para pzWallDrawables (translúcido quando o jogador está atrás) */
    if(cam&&!pz3dOn()){pz3dCamera(cam,cam.viewport);for(const w of PZ_WALLS)if(w.side==='bottom'&&bounds.y1>w.y0-120&&w.b>bounds.x0&&w.a<bounds.x1)pz3dDrawWall(ctx,w);}
    return _crowd.call(this,ctx,assets,bounds,ext,still);
  };}

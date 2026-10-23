@@ -385,3 +385,6 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 
 ## R36c — muro de baixo invisível
 - O muro de quarentena do lado de baixo do mapa aparecia como uma laje grande deitada por cima da tela. Agora ele fica invisível na partida (continua bloqueando a passagem e a sombra no chão marca onde ele está). A barricada com arame continua aparecendo.
+
+## R36d — muro de baixo transparente só quando você passa atrás
+- Correção da R36c: o muro de baixo volta a aparecer normal e fica meio transparente só quando você passa atrás dele, igual aos carros e prédios.
