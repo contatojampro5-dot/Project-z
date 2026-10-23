@@ -108,6 +108,7 @@
     "src/scripts/game/38o-rendering_Rain.js",
     "src/scripts/game/38p-rendering_Cinema.js",
     "src/scripts/game/38q-rendering_CinemaLife.js",
+    "src/scripts/game/38r-core_CinemaSound.js",
     "src/scripts/game/38b-world_WorldFX.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",

@@ -404,3 +404,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Câmera viva (sem tremer a tela):** quando um chefe aparece, a câmera dá um zoom leve e volta devagar. Quando cai o último zumbi da horda, o tempo fica em câmera lenta por um instante.
 - **Partículas no ar:** cinzas da cidade em chamas caindo com o vento (mais perto do muro e à noite, algumas ainda em brasa), poeira brilhando no sol de dia e faíscas subindo das fogueiras e dos carros pegando fogo.
 - Com "reduzir movimento" ligado, não tem câmera lenta.
+
+## R40 · ATLAS A22 — som de cinema
+- **Trilha que cresce com a horda:** por baixo da música entra uma camada de tensão: um grave que vai abrindo e um pulso, tipo batida de coração, que acelera conforme chegam mais zumbis. Com chefe na área entra uma nota mais aguda, e a música sobe um pouco no aperto.
+- **Cidade ao longe:** de tempos em tempos toca uma sirene distante, com eco, vindo de um lado ou do outro, e um rádio chiando com vozes picotadas e o bipe de fim de mensagem. Tudo baixinho, como se fosse longe.
+- Segue os botões de som e música das configurações.
