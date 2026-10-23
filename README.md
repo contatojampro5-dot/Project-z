@@ -341,3 +341,9 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - As janelas acesas à noite seguem a mesma perspectiva da fachada.
 - A colisão, o chão e a jogabilidade não mudaram; o prédio continua translúcido só quando o jogador passa atrás dele.
 - Feito em `src/scripts/game/29g-world_Buildings3D.js`, sem trocar o motor (continua canvas 2D, sem WebGL).
+
+## R33 · ATLAS A15 — postes, carros e muros em 3D
+- Postes de luz, postes de concreto, placas de rua, orelhões, bancas e pontos de ônibus agora se inclinam na mesma perspectiva dos prédios; a fiação e a rede do trólebus acompanham o topo dos postes, e a luz da luminária sai do lugar certo.
+- Carros, ambulâncias, caminhões, contêineres, caixas e barreiras de concreto ganharam volume: laterais escuras embaixo e o teto em cima, em perspectiva.
+- O muro de quarentena virou um muro de verdade, com topo, face pichada e concertina, visto de lado conforme o jogador anda.
+- Colisão e jogabilidade iguais. `window.__PZ_FLAT3D=true` no console volta ao visual antigo.

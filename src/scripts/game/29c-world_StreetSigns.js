@@ -109,7 +109,7 @@ function pzSignDrawables(camera,viewport,player){
   const out=[];const vw=camera.viewport.width/camera.zoom/2+60,vh=camera.viewport.height/camera.zoom/2+80;
   for(const s of PZ_SIGNS.list){
     if(Math.abs(s.x-camera.x)>vw||Math.abs(s.y-camera.y)>vh)continue;
-    out.push({y:s.y,__tall:1,draw(ctx){const v=pzSignCanvas(s);const a=typeof pzOccludes==='function'?pzOccludes(s,s.x,s.y,v.W,v.H,player):1;if(a<.99)ctx.globalAlpha=a;ctx.drawImage(v.canvas,s.x-v.ax,s.y-v.base,v.W,v.H);ctx.globalAlpha=1;}});
+    out.push({x:s.x,y:s.y,__tall:1,lean:1,draw(ctx){const v=pzSignCanvas(s);const a=typeof pzOccludes==='function'?pzOccludes(s,s.x,s.y,v.W,v.H,player):1;if(a<.99)ctx.globalAlpha=a;ctx.drawImage(v.canvas,s.x-v.ax,s.y-v.base,v.W,v.H);ctx.globalAlpha=1;}});
   }
   return out;
 }

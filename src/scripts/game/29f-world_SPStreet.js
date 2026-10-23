@@ -253,7 +253,7 @@ function pzSPDrawables(camera,player){
   const out=[],vw=camera.viewport.width/camera.zoom/2+60,vh=camera.viewport.height/camera.zoom/2+150;
   for(const p of PZ_SP.props){
     if(Math.abs(p.x-camera.x)>vw||Math.abs(p.y-camera.y)>vh)continue;
-    out.push({y:p.y,__tall:1,draw(ctx){const v=pzSPCanvas(p);const a=pzOccludes(p,p.x,p.y,v.W,v.H,player);if(a<.99)ctx.globalAlpha=a;ctx.drawImage(v.canvas,p.x-v.ax,p.y-v.base,v.W,v.H);ctx.globalAlpha=1;}});
+    out.push({x:p.x,y:p.y,__tall:1,lean:1,draw(ctx){const v=pzSPCanvas(p);const a=pzOccludes(p,p.x,p.y,v.W,v.H,player);if(a<.99)ctx.globalAlpha=a;ctx.drawImage(v.canvas,p.x-v.ax,p.y-v.base,v.W,v.H);ctx.globalAlpha=1;}});
   }
   return out;
 }
@@ -270,7 +270,7 @@ function pzSPDrawWires(ctx,camera,player){
     for(let i=0;i<line.length-1;i++){
       const a=line[i],b=line[i+1];
       if(Math.max(a.x,b.x)<x0||Math.min(a.x,b.x)>x1||Math.max(a.y,b.y)<y0||Math.min(a.y,b.y)>y1)continue;
-      const ax=a.x,ay=a.y-WH,bx=b.x,by=b.y-WH;ctx.globalAlpha=near(ax,ay,bx,by)?.14:.8;
+      const ta=pz3dTop(a.x,a.y,WH),tb=pz3dTop(b.x,b.y,WH),ax=ta.x,ay=ta.y,bx=tb.x,by=tb.y; // R33: topo do poste na perspectivactx.globalAlpha=near(ax,ay,bx,by)?.14:.8;
       for(let k=0;k<5;k++){
         const off=k<3?-8+k*8:-5+(k-3)*10,dy=k<3?0:6;
         const sag=6+k*2.2+((a.seed*7+k)%3);
@@ -287,13 +287,13 @@ function pzSPDrawWires(ctx,camera,player){
   if(x1>398&&x0<748){
     ctx.strokeStyle='rgba(18,19,21,.9)';ctx.lineWidth=1;
     const ya=Math.max(0,y0),yb=Math.min(2800,y1);
-    for(const fx of [500,508,640,648]){ctx.globalAlpha=player&&Math.abs(player.x-fx)<46?.14:.8;ctx.beginPath();ctx.moveTo(fx,ya);ctx.lineTo(fx,yb);ctx.stroke();}
+    for(const fx of [500,508,640,648]){ctx.globalAlpha=player&&Math.abs(player.x-fx)<46?.14:.8;const p0=pz3dTop(fx,ya,WH),p1=pz3dTop(fx,yb+WH,WH);ctx.beginPath();ctx.moveTo(p0.x,p0.y+(pz3dOn()?0:WH));ctx.lineTo(p1.x,p1.y);ctx.stroke();}
     ctx.strokeStyle='rgba(30,30,32,.7)';ctx.lineWidth=.8;ctx.beginPath();
     ctx.stroke();
     ctx.fillStyle='#3a3c40';
     for(let y=Math.ceil(ya/118)*118;y<yb;y+=118){if(pzInCross(573,y,10))continue;
-      ctx.globalAlpha=near(392,y-WH,754,y-WH)?.14:.75;ctx.beginPath();ctx.moveTo(392,y-WH);ctx.quadraticCurveTo(573,y-WH+8,754,y-WH);ctx.stroke();
-      for(const fx of [504,644])ctx.fillRect(fx-5,y-WH+3,10,2);}
+      ctx.globalAlpha=near(392,y-WH,754,y-WH)?.14:.75;const q0=pz3dTop(392,y,WH),q1=pz3dTop(754,y,WH),qm=pz3dTop(573,y,WH);ctx.beginPath();ctx.moveTo(q0.x,q0.y);ctx.quadraticCurveTo(qm.x,qm.y+8,q1.x,q1.y);ctx.stroke();
+      for(const fx of [504,644]){const q=pz3dTop(fx,y,WH);ctx.fillRect(q.x-5,q.y+3,10,2);}}
     ctx.globalAlpha=1;
   }
   ctx.restore();

@@ -98,6 +98,7 @@
     "src/scripts/game/38d-core_Survivors.js",
     "src/scripts/game/38e-core_SurvivorLines.js",
     "src/scripts/game/38h-core_Voices.js",
+    "src/scripts/game/38i-world_Props3D.js",
     "src/scripts/game/38b-world_WorldFX.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",
