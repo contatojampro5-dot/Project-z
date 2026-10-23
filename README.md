@@ -358,3 +358,14 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Quanto mais perto da luz, mais forte; longe, não pega. Em cima do fogo, o personagem ou o zumbi fica todo tingido da cor do fogo. O lado de trás fica mais escuro, dando volume.
 - Vale para o seu personagem (roupa inclusive), zumbis, carros, contêineres e as paredes dos prédios (só a face virada para o fogo ou o farol acende).
 - Correção: a R33 tinha um erro que travava as luzes dos postes e a fiação à noite (corrigido na R33b). A Hera agora também testa a noite.
+
+## R35 · ATLAS A17 — carros de verdade e colisão do tamanho do desenho
+- Os carros deixaram de ser o desenho de cima "esticado". Agora têm lataria com laterais, quatro rodas com pneu e calota, para-choque, faróis e grade na frente, lanternas e placa atrás, capô, para-brisa, cabine com vidros e colunas, e teto. Sedã, hatch, picape e Kombi têm alturas e formas diferentes.
+- Revisão das colisões do mapa (zumbi passando por cima, personagem travando do nada):
+  - carros do centro usavam a mesma caixa para sedã, picape e Kombi; agora cada um tem a do seu tamanho;
+  - carros comuns tinham colisão 3 px maior de cada lado (travava em vão que dava para passar);
+  - 2 caixas pequenas e as 3 caixas de madeira grandes não tinham colisão (zumbi e jogador atravessavam);
+  - uma colisão antiga de caixa, fora do lugar e maior que o desenho, foi removida;
+  - ambulância, caminhão de bombeiros e viatura agora usam o contorno do próprio desenho.
+- Depois da revisão, o mapa de caminhos dos zumbis é refeito, então eles contornam os carros em vez de atravessar.
+- Ferramenta: `window.__PZ_HITBOX_DEBUG=true` mostra as colisões na tela.
