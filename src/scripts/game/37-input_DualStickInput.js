@@ -66,7 +66,7 @@ class DualStickInput {
     const kx=Number(this.keys.has('KeyL'))-Number(this.keys.has('KeyJ'));
     const ky=Number(this.keys.has('KeyK'))-Number(this.keys.has('KeyI'));
     if(this.pointers.aim===null&&(kx||ky)){
-      const m=Math.hypot(kx,ky);aim={x:kx/m,y:ky/m,active:true,fire:false};this.lastAim={x:aim.x,y:aim.y};
+      const m=Math.hypot(kx,ky);aim={x:kx/m,y:ky/m,active:true,fire:false,hold:true};this.lastAim={x:aim.x,y:aim.y};
     }else if(this.pointers.aim===null&&pad?.aim?.active){
       aim=pad.aim;this.lastAim={x:aim.x,y:aim.y};
     }

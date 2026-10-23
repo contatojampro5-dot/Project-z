@@ -26,7 +26,8 @@ function xpForLevel(level){
   while(XP_TOTAL.length<target){const tier=XP_TOTAL.length;XP_TOTAL.push(XP_TOTAL[tier-1]+xpNeedForLevel(tier));}
   return XP_TOTAL[target-1];
 }
-const SPECIAL_MILESTONES=Object.freeze([5,10,15]);
+// R44: a trilha é escolhida logo no começo da partida (nível 1) e evolui nos níveis 5 e 10.
+const SPECIAL_MILESTONES=Object.freeze([1,5,10]);
 const SURVIVAL_TRACKS=Object.freeze({
   melee:[
     {id:'survival_melee_1',name:'FACA DE SOBREVIVÊNCIA',desc:'Ataque automático de emergência quando um infectado encosta. Rápido, alcance curto.',type:'special',branch:'melee',tier:1,max:1},

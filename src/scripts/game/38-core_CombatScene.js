@@ -797,6 +797,8 @@ class CombatScene {
     this.run.loot.seedNear(this.run.player,g.camera);
     this.run.waves.update(.04,()=>this.spawnEnemy(),this.run.enemies.length);
     this.run.dialogue.request(2,{delay:1.5});
+    // R44: escolha da trilha de sobrevivência já no início (abre no primeiro quadro da partida).
+    progress.pending++;progress.pendingLevels.unshift(1);
     g.ui.updateHUD(this.run);
   }
   spawnEnemy(){
@@ -1230,7 +1232,13 @@ class CombatScene {
       if(acquired){axes.aim=acquired.aim;autoAimActive=true;}
     }else this.autoTarget=null;
     const lastPlayerX=r.player.x,lastPlayerY=r.player.y;
-    if(!axes.aim.active&&Math.hypot(axes.move.x,axes.move.y)>.11)r.player.facing=Math.atan2(axes.move.y,axes.move.x);
+    // R44: sem atirar, o personagem vira para onde anda (nada de correr de ré olhando para a mira).
+    // Atirando (ou logo depois de um tiro, ou mirando de propósito no analógico/IJKL), segue a mira.
+    const moving=Math.hypot(axes.move.x,axes.move.y)>.11;
+    const shooting=axes.aim.active&&(axes.aim.fire!==false||axes.aim.hold);
+    r.aimHold=shooting?.45:Math.max(0,(r.aimHold||0)-dt);
+    if(moving&&!shooting&&r.aimHold<=0)axes.aim={x:axes.aim.x,y:axes.aim.y,active:false};
+    if(!axes.aim.active&&moving)r.player.facing=Math.atan2(axes.move.y,axes.move.x);
     if(r.player.specialRemaining>0){r.player.specialRemaining=Math.max(0,r.player.specialRemaining-worldDt);if(r.player.specialRemaining===0){pzSpecialEnded(r.player);r.player.specialCooldown=pzSpecialCooldown(r.player);}}
     else r.player.specialCooldown=Math.max(0,r.player.specialCooldown-worldDt);
     r.player.move(axes.move,worldDt);

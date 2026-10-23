@@ -803,7 +803,7 @@ PhysicalGamepad.prototype.tick=function(){
  const oldAim=this.lastAxes.aim;
  const face=game.scenes.current?.run?.player?.facing??-Math.PI/2;
  const look=al>.16?{x:ax/al,y:ay/al}:oldAim.active?oldAim:{x:Math.cos(face),y:Math.sin(face)};
- this.lastAxes={move:{x:mx,y:my},aim:running&&(al>.16||trigger)?{...look,active:true,fire:trigger}:{x:0,y:0,active:false},firing:running&&trigger};
+ this.lastAxes={move:{x:mx,y:my},aim:running&&(al>.16||trigger)?{...look,active:true,fire:trigger,hold:al>.16}:{x:0,y:0,active:false},firing:running&&trigger};
  if(game.ui?.rebindPadAction){
    if(anyEdge){
      const index=pressed.findIndex((v,i)=>v&&!this.previous[i]);const action=game.ui.rebindPadAction;

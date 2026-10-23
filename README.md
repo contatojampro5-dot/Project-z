@@ -432,3 +432,7 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Motor dos carros:** carro com farol aceso fica com o motor ligado em marcha lenta; dá para ouvir quando você passa do lado.
 - **Pessoas nos prédios:** de vez em quando alguém grita de dentro de um prédio perto ("Corre! Sai daí!"), abafado e com eco, como se estivesse lá dentro. Voz feita no ElevenLabs; mais falas entram aos poucos.
 - Arquivos em `assets/audio/ambient/`. `window.__PZ_NO_AMBIENT=true` desliga tudo.
+
+## R44 · ATLAS A25 — trilha escolhida no começo e personagem olhando para onde anda
+- **Trilha logo no início:** assim que a partida começa, aparece a escolha da trilha de sobrevivência (Corpo a corpo, Armadilhas ou Armamentos), com o jogo em câmera lenta. A trilha **evolui** no nível 5 (etapa 2) e no nível 10 (etapa 3, a última). O HUD mostra a trilha, a etapa e o nível da próxima evolução.
+- **Personagem vira para onde anda:** sem atirar, ele corre olhando para o lado em que está andando (acabou o "correr de ré" olhando para a mira do mouse). Atirando, volta a seguir a mira, e fica mirando mais meio segundo depois do último tiro para não ficar girando entre um clique e outro. Mirar de propósito no analógico direito do controle (ou nas teclas IJKL) continua segurando a mira.
