@@ -270,7 +270,7 @@ function pzSPDrawWires(ctx,camera,player){
     for(let i=0;i<line.length-1;i++){
       const a=line[i],b=line[i+1];
       if(Math.max(a.x,b.x)<x0||Math.min(a.x,b.x)>x1||Math.max(a.y,b.y)<y0||Math.min(a.y,b.y)>y1)continue;
-      const ta=pz3dTop(a.x,a.y,WH),tb=pz3dTop(b.x,b.y,WH),ax=ta.x,ay=ta.y,bx=tb.x,by=tb.y; // R33: topo do poste na perspectivactx.globalAlpha=near(ax,ay,bx,by)?.14:.8;
+      const ta=pz3dTop(a.x,a.y,WH),tb=pz3dTop(b.x,b.y,WH),ax=ta.x,ay=ta.y,bx=tb.x,by=tb.y; /* R33: topo do poste na perspectiva */ctx.globalAlpha=near(ax,ay,bx,by)?.14:.8;
       for(let k=0;k<5;k++){
         const off=k<3?-8+k*8:-5+(k-3)*10,dy=k<3?0:6;
         const sag=6+k*2.2+((a.seed*7+k)%3);

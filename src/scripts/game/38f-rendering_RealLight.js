@@ -225,7 +225,7 @@ PzLightMap.prototype.drawAfter=function(ctx,viewport,run,camera){
     }
     // postes: cone de luz descendo da luminária, chuva atravessando e a lâmpada estourando
     for(let {l,k} of this.vis||[]){
-      if(l.type==='sign')continue;if(l.type==='lamp'&&l.hx!=null&&pz3dOn())l=pz3dLampHead(l); // R33: luminária no topo do poste inclinadoconst a=k*s,C=l.rgb.join(',');
+      if(l.type==='sign')continue;if(l.type==='lamp'&&l.hx!=null&&pz3dOn())l=pz3dLampHead(l); /* R33: luminária no topo do poste inclinado */const a=k*s,C=l.rgb.join(',');
       if(l.hx!=null){
         if(quality!=='low'){
           const top=l.hy+2,bot=l.y,wTop=4,wBot=l.type==='flood'?70:46;
