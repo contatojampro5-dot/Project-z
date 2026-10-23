@@ -106,6 +106,7 @@
     "src/scripts/game/38m-world_Loot3D.js",
     "src/scripts/game/38n-world_GroundFix.js",
     "src/scripts/game/38o-rendering_Rain.js",
+    "src/scripts/game/38p-rendering_Cinema.js",
     "src/scripts/game/38b-world_WorldFX.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",

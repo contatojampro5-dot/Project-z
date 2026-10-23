@@ -393,3 +393,9 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - A chuva deixou de ser uma grade de risquinhos iguais. Agora cada gota cai de verdade, com altura, na mesma câmera 3D dos prédios: as gotas altas (perto da câmera) são maiores e mais borradas, as de perto do chão são finas, e todas caem na direção certa da perspectiva.
 - O vento inclina e empurra a chuva, com rajadas. Onde a gota bate no chão abre um respingo com gotinhas pulando.
 - Passam "cortinas" de chuva mais forte com o vento, o tempo fica mais fechado e, na chuva forte, o relâmpago clareia a tela junto com o trovão (sem tremer a tela).
+
+## R38 · ATLAS A20 — visual de cinema (parte 1)
+- **Cor de cinema:** cada hora do dia tem a sua cor mais marcada (pôr do sol alaranjado, noite azul, amanhecer rosado, dia um pouco mais frio), com o céu mais frio em cima e o chão mais quente embaixo, vinheta escura nas bordas com a cor da hora e um granulado de filme leve que se mexe.
+- **Brilho nas luzes:** fogo, faróis, lanterna, explosões e clarão do tiro agora soltam um halo que "vaza" na tela, e as luzes fortes fazem um risco de lente, como em filme.
+- **Neblina em camadas:** duas camadas de névoa andando com o vento em velocidades diferentes, mais fortes com neblina ou chuva.
+- Sem tremor de tela (regra do jogo). Tudo feito para não pesar: as cores são camadas que a placa de vídeo junta.
