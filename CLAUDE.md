@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R42 · ATLAS A23** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R43 · ATLAS A24** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -65,6 +65,11 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   (`pzWeatherCurve`: começa chovendo, para ~1 min, chuva volta no amanhecer; substitui o `wet` e o `pzWetAt` do timer;
   `window.__PZ_OLD_WEATHER=true` volta ao antigo); poças secam com o sol; zumbi morto solta 'bullet' (bala 3D, +5 balas, fica no mapa).
   Relâmpago só com chuva visível (38o). Mochila: botão ✕ por espaço (`discardBagSlot`, 2 toques: confirma).
+- `38v-core_AmbientLife.js` (R43) som do ambiente por distância: fogo (fogueiras, carros, muro), trovão junto do relâmpago,
+  zumbis rosnando mais quando perto, rugido de chefe, motor de carro com farol aceso e pessoas gritando dos prédios (`PZ_TALL`).
+  Arquivos em `assets/audio/ambient/<grupo>_NN.mp3` (grupos: fire, thunder, engine, horde, people, scream, roarColossus, roarHive);
+  depois de adicionar, rodar `python3 laboratorio/src/gerar_dados_ambiente.py` (gera `38v-data_ambientFiles.js`). Sem arquivo,
+  fogo/trovão/motor são feitos na hora. Aberto via file:// não carrega os arquivos (usa o som feito na hora). `window.__PZ_NO_AMBIENT=true` desliga.
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).
 - `30-world_WorldBorder.js` muro, praia (leste), cidade em chamas lá fora (`seedPerimeterInferno`), multidão nas barricadas.

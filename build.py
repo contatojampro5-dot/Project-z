@@ -14,7 +14,7 @@ MIME = {'mp3': 'audio/mpeg', 'wav': 'audio/wav', 'flac': 'audio/flac', 'webp': '
 def read(rel):
     return open(os.path.join(ROOT, rel), encoding='utf8').read()
 
-EXTERNAL = ('assets/images/game/infectados/', 'assets/images/game/sobreviventes/', 'assets/audio/music/', 'assets/audio/voices/', 'assets/pwa/')
+EXTERNAL = ('assets/images/game/infectados/', 'assets/images/game/sobreviventes/', 'assets/audio/music/', 'assets/audio/voices/', 'assets/audio/ambient/', 'assets/pwa/')
 
 def inline_assets(text, web_dir=None):
     def rep(m):

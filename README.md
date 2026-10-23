@@ -421,3 +421,12 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Clima novo:** a partida começa chovendo, com as poças já cheias. A chuva para em pouco mais de 1 minuto, e o sol do fim da tarde deixa as poças brilhando enquanto elas secam. A noite fica escura e sem chuva, e no amanhecer volta a chover. Depois o sol da manhã seca tudo de novo. O timer da chuva acompanha esse ciclo.
 - **Bala dos zumbis:** todo zumbi que morre solta uma bala 3D girando (menor que os outros itens). Cada uma dá **5 balas** e fica no mapa até você pegar.
 - **Mochila:** cada espaço com item tem um botão **✕** para jogar fora, no computador e no celular. No primeiro toque ele pergunta "JOGAR FORA?" e no segundo descarta, para não perder item sem querer.
+
+## R43 · ATLAS A24 — som do ambiente (quanto mais perto, mais alto)
+- **Fogo com som:** chegar perto de carro pegando fogo, fogueira ou do incêndio do muro faz subir o barulho das chamas (gravado no ElevenLabs), vindo do lado certo. Longe, some.
+- **Trovão de verdade:** junto do relâmpago agora vem um estalo seco e um ronco longo que rola pelo céu. Primeiro o clarão, depois o som (o atraso muda como se o raio caísse perto ou longe).
+- **Zumbis mais vivos:** quando chegam perto, rosnam com mais frequência e mais alto. Longe, ficam baixinhos.
+- **Rugido dos chefões:** o Colosso e a Colmeia rugem quando aparecem e de tempos em tempos enquanto estão vivos, com um grave por baixo. Perto deles é bem mais alto.
+- **Motor dos carros:** carro com farol aceso fica com o motor ligado em marcha lenta; dá para ouvir quando você passa do lado.
+- **Pessoas nos prédios:** de vez em quando alguém grita de dentro de um prédio perto ("Corre! Sai daí!"), abafado e com eco, como se estivesse lá dentro. Voz feita no ElevenLabs; mais falas entram aos poucos.
+- Arquivos em `assets/audio/ambient/`. `window.__PZ_NO_AMBIENT=true` desliga tudo.
