@@ -378,3 +378,7 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Todos os itens que dá para pegar no mapa agora são objetos 3D de verdade, girando sem parar como a moedinha do Mario e flutuando um pouco acima do chão.
 - Cada um tem frente, verso e espessura, com as laterais iluminadas, borda lapidada e um reflexo que passa pela face enquanto gira: coração (e o coração dourado de vida completa), caixa de munição com o número de balas, kit médico com alça, célula de escudo hexagonal, granada redonda com alavanca e argola, mochila, colete com o nível e peça de arma (engrenagem na cor da raridade).
 - Itens raros (vida completa, célula de escudo, peças e coletes de nível alto) soltam faíscas. Com "reduzir movimento" ligado, o giro fica mais lento.
+
+## R36b — limpeza do chão
+- Os quadrados verdes que apareciam no asfalto eram um corpo provisório antigo (feito de retângulos) que o jogo ainda desenhava quando o zumbi morria. O corpo de verdade já aparece, então esses quadrados saíram.
+- A bolinha roxa é o cuspe do **Cuspidor** (o infectado que ataca de longe). Agora ela parece uma bolha de gosma tremendo, com rastro de gotas, brilho e sombra no chão, para dar para ver o que é e desviar.

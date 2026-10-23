@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R36 · ATLAS A18** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R36b · ATLAS A18** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -45,6 +45,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 - `38l-world_Hitboxes.js` (R35) colisão do tamanho do desenho (carros, caixas, viaturas); `window.__PZ_HITBOX_DEBUG=true` mostra as colisões.
 - `38m-world_Loot3D.js` (R36) itens do chão em 3D girando (moedinha do Mario): mini motor de prismas com arte na
   frente/verso, laterais iluminadas, flutuar e brilho. `window.__PZ_FLAT_LOOT=true` volta ao desenho antigo.
+- `38n-world_GroundFix.js` (R36b) não desenha mais o corpo provisório antigo (quadrados verdes no chão) e deixa o
+  cuspe do Cuspidor com cara de gosma (rastro, brilho, sombra).
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).
 - `30-world_WorldBorder.js` muro, praia (leste), cidade em chamas lá fora (`seedPerimeterInferno`), multidão nas barricadas.
