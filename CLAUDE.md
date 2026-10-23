@@ -47,6 +47,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   Hadassa, Hanna e San (mesmos 80 ids/gatilhos do Antônio).
 - `38f-rendering_RealLight.js` luz noturna; `38g-rendering_SunRays.js` feixes de sol vindos da praia (dia).
 - `38h-core_Voices.js` toca a voz junto da legenda; `08c-data_voiceFiles.js` (gerado) lista os áudios.
+- `39c-ui_StoryScreen.js` (R33c) tela HISTÓRIA do menu (textos em `PZ_STORY_CHAPTERS`/`PZ_STORY_PEOPLE`, tirados de
+  `docs/historia.md`).
 - `39-ui_UIManager.js` HUD/menus; `39b-ui_AntonioFaces.js` rostos com 6 expressões dos 4 personagens.
 - `laboratorio/` estudos de arte (sprites procedurais, sobrevivente 3D Tripo+Mixamo, retratos) e scripts geradores
   (`laboratorio/src/gerar_dados_*.py`).
@@ -69,6 +71,10 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 - **Cuidado:** o ElevenLabs bloqueou o plano gratuito de duas contas por "atividade incomum" (muitas chamadas
   seguidas vindas de servidor/proxy). Só continuar numa conta com **plano pago ativo**, devagar (~1 fala a cada 30 s).
   Não usar conta secundária gratuita para contornar o bloqueio.
+
+## Modos de jogo
+- O modo atual (ondas/sobrevivência) é o foco: deixar redondinho antes de qualquer outro. Depois virão o modo
+  história (com cutscenes) e modos livres. Decisão do Theo em 23/10/2026.
 
 ## Pendências
 1. Terminar as vozes (Hadassa 9, Hanna 80, San 80) quando houver conta paga ativa.

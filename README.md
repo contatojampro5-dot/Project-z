@@ -347,3 +347,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Carros, ambulâncias, caminhões, contêineres, caixas e barreiras de concreto ganharam volume: laterais escuras embaixo e o teto em cima, em perspectiva.
 - O muro de quarentena virou um muro de verdade, com topo, face pichada e concertina, visto de lado conforme o jogador anda.
 - Colisão e jogabilidade iguais. `window.__PZ_FLAT3D=true` no console volta ao visual antigo.
+
+## R33c — tela de História preenchida
+- O botão HISTÓRIA do menu agora mostra a história oficial do jogo (de `docs/historia.md`): os quatro sobreviventes com retrato, idade e um resumo, a cronologia em 7 capítulos (das irmãs até a fuga para a fazenda do Seu João) e o mistério da origem do surto.
+- Só entram fatos já definidos pelo Theo. O modo história completo e as cutscenes vêm depois.
+- Feito em `src/scripts/game/39c-ui_StoryScreen.js` e `src/styles/33-r33c-story.css`. Jogabilidade igual.

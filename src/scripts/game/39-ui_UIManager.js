@@ -568,10 +568,7 @@ class UIManager {
         </section>
       </div><p class="control-tip">Alguns navegadores só reconhecem o gamepad depois de pressionar um botão. No iOS, o suporte depende do navegador e do controle conectado.</p>`;
     } else if(this.modal==='story'){
-      content=`<span class="modal-kicker">PROJECT Z / HISTÓRIA</span><h2>HISTÓRIA<span>.</span></h2>
-        <p>Antônio é o sobrevivente inicial de PROJECT Z. A apresentação narrativa e as histórias dos demais personagens serão detalhadas na próxima etapa desta fase.</p>
-        <div class="about-box"><strong>PERSONAGENS PLANEJADOS</strong><span>ANTÔNIO · HADASSA · SAN · HANNA</span></div>
-        <div class="about-box"><strong>ETAPA ATUAL</strong><span>O menu está funcional. Esta é uma apresentação provisória, sem alterar a história nem criar conteúdo não aprovado.</span></div>`;
+      content=pzStoryMarkup();
     } else if(this.modal==='arsenal'){
       content=`<span class="modal-kicker">PROJECT Z / ARMAMENTOS</span><h2>ARSENAL<span>.</span></h2><p>Consulta rápida das armas existentes. A ficha completa de cada arma será refinada na R13-C6D.</p>
         <div class="record-list">${Object.values(WEAPONS).map(w=>`<div class="record-line"><span>${w.name}</span><strong>${w.magazine} TIROS · ${w.damage} DANO BASE</strong></div>`).join('')}</div>`;

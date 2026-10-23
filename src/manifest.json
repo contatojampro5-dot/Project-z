@@ -31,7 +31,8 @@
     "src/styles/29-c6-post-and-rhythm.css",
     "src/styles/30-atlas-a1-perf.css",
     "src/styles/31-atlas-a7-transitions.css",
-    "src/styles/32-atlas-a9-mobile-fit.css"
+    "src/styles/32-atlas-a9-mobile-fit.css",
+    "src/styles/33-r33c-story.css"
   ],
   "headScripts": [
     "src/scripts/01-embedded-music.js",
@@ -102,6 +103,7 @@
     "src/scripts/game/38b-world_WorldFX.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",
+    "src/scripts/game/39c-ui_StoryScreen.js",
     "src/scripts/game/40-core_Game.js",
     "src/scripts/game/41-main.js"
   ]
