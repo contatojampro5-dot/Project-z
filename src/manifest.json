@@ -32,7 +32,8 @@
     "src/styles/30-atlas-a1-perf.css",
     "src/styles/31-atlas-a7-transitions.css",
     "src/styles/32-atlas-a9-mobile-fit.css",
-    "src/styles/33-r33c-story.css"
+    "src/styles/33-r33c-story.css",
+    "src/styles/34-r41-rain-timer.css"
   ],
   "headScripts": [
     "src/scripts/01-embedded-music.js",
@@ -110,6 +111,8 @@
     "src/scripts/game/38q-rendering_CinemaLife.js",
     "src/scripts/game/38r-core_CinemaSound.js",
     "src/scripts/game/38b-world_WorldFX.js",
+    "src/scripts/game/38s-rendering_RainTimerPuddleSun.js",
+    "src/scripts/game/38t-rendering_Sirens.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",
     "src/scripts/game/39c-ui_StoryScreen.js",

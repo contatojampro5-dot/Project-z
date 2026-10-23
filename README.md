@@ -409,3 +409,8 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Trilha que cresce com a horda:** por baixo da música entra uma camada de tensão: um grave que vai abrindo e um pulso, tipo batida de coração, que acelera conforme chegam mais zumbis. Com chefe na área entra uma nota mais aguda, e a música sobe um pouco no aperto.
 - **Cidade ao longe:** de tempos em tempos toca uma sirene distante, com eco, vindo de um lado ou do outro, e um rádio chiando com vozes picotadas e o bipe de fim de mensagem. Tudo baixinho, como se fosse longe.
 - Segue os botões de som e música das configurações.
+
+## R41 · ATLAS A22 — timer da chuva, sol nas poças e sirenes
+- **Timer da chuva:** embaixo do botão CLIMA aparece quanto falta para começar a chover ("CHUVA EM 1:20 · FORTE/FRACA") ou para a chuva parar ("CHUVA · PARA EM 0:45"), com uma barrinha da força da chuva. Fica amarelo quando falta pouco e azul enquanto chove.
+- **Sol nas poças:** depois da chuva, com o céu aberto, as poças refletem o sol que vem da praia: brilho quente do lado do sol, faíscas piscando na água, ondinhas de luz e um reflexo dourado no fim da tarde. Some na chuva forte, na neblina e à noite.
+- **Sirenes:** viaturas, ambulâncias (SAMU) e o caminhão de bombeiros piscam o giroflex (polícia vermelho/azul, SAMU vermelho/branco, bombeiros vermelho), com brilho no ar e luz colorida no chão em volta; à noite brilha mais e tinge os zumbis perto. Chegando perto, a sirene toca: polícia sobe e desce, SAMU faz os dois tons, bombeiros um uivo mais lento. Fica mais alta quanto mais perto e vem do lado certo. Carro explodido perde a sirene.

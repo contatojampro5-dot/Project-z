@@ -1,0 +1,13 @@
+/* R41 · timer da chuva, logo abaixo do botão CLIMA (posição calculada pelo script) */
+.pz-rain-timer{position:fixed;z-index:12;display:flex;align-items:center;gap:5px;box-sizing:border-box;
+  padding:4px 8px 5px;border:1px solid rgba(150,180,205,.32);border-radius:9px;background:rgba(10,16,22,.84);
+  color:#c9d6e2;font:700 8px/1.15 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.045em;
+  white-space:nowrap;pointer-events:none;flex-wrap:wrap}
+.pz-rain-timer[hidden]{display:none}
+.pz-rain-timer .pz-rain-ico{font-size:12px;color:#8fb6d8}
+.pz-rain-timer .pz-rain-bar{display:block;flex-basis:100%;height:2px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}
+.pz-rain-timer .pz-rain-bar b{display:block;height:100%;width:0;background:#7fb2e0;transition:width .4s}
+.pz-rain-timer.is-raining{border-color:rgba(127,178,224,.6);color:#e3efff}
+.pz-rain-timer.is-raining .pz-rain-ico{color:#b9dcff}
+.pz-rain-timer.is-soon{border-color:rgba(234,183,110,.6);color:#ffe0b0}
+@media(max-width:650px){.pz-rain-timer{font-size:7px;padding:3px 6px 4px}.pz-rain-timer .pz-rain-ico{font-size:10px}}
