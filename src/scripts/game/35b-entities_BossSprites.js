@@ -45,9 +45,9 @@ Boss.prototype.draw=function(ctx,assets){
   }
   ctx.restore();
   ctx.save();
-  if(this.flinch>0)ctx.filter='brightness(1.6)';
   if(this.state==='dash'){ctx.shadowColor='#ffbd7d';ctx.shadowBlur=22;}
-  if(!pzBossBlit(ctx,assets,spec,anim,frame,dir,this.x,this.y))pzBossBlit(ctx,assets,spec,'walk',0,dir,this.x,this.y);
+  pzFlinchGlow(ctx,this.flinch>0?1.6:1,a=>{if(a<1)ctx.shadowBlur=0; // R46: sem ctx.filter
+    if(!pzBossBlit(ctx,assets,spec,anim,frame,dir,this.x,this.y,a))pzBossBlit(ctx,assets,spec,'walk',0,dir,this.x,this.y,a);});
   ctx.restore();
   if(this.slamPulse>0){ctx.save();ctx.strokeStyle='#d0a3fc';ctx.lineWidth=3;ctx.globalAlpha=this.slamPulse/.45;ctx.beginPath();ctx.arc(this.x,this.y,110*(1-this.slamPulse/.45),0,TAU);ctx.stroke();ctx.restore();}
 };

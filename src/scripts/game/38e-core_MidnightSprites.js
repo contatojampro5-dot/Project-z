@@ -15,8 +15,8 @@ if(typeof Midnight!=='undefined'){
     else if(st==='recover'||this.hitStun>0){anim='hit';frame=Math.min(3,Math.floor((this.flinch>0?1-this.flinch/.15:.7)*4));}
     else if(st==='stalk'&&this.animation!=='walk'){anim='idle';frame=Math.floor(this.stride/TAU*A.idle.frames)%A.idle.frames;}
     const dir=pzDir8(this.heading);
-    ctx.save();if(this.flinch>0)ctx.filter='brightness(1.7)';
-    pzBlit(ctx,img,spec,anim,frame,dir,this.x,this.y);ctx.filter='none';
+    ctx.save();
+    pzFlinchGlow(ctx,this.flinch>0?1.7:1,a=>pzBlit(ctx,img,spec,anim,frame,dir,this.x,this.y,a));
     // a lanterna faz a pele rachar em brasa: brilho por cima, proporcional à exposição
     if(this.exposure>.7){ctx.globalCompositeOperation='lighter';const k=Math.min(1,(this.exposure-.7)/2);
       const g=ctx.createRadialGradient(this.x,this.y-18,2,this.x,this.y-18,26);g.addColorStop(0,`rgba(255,120,50,${(.45*k).toFixed(3)})`);g.addColorStop(1,'rgba(255,80,30,0)');

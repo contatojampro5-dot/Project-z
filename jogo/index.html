@@ -7803,6 +7803,12 @@ class Enemy {
   }
 }
 
+// R46: clarão do tiro sem ctx.filter (no iPhone o filtro no canvas é muito lento). brightness(k) = desenhar de novo
+// por cima em modo "lighter" com força k-1 (mesmo resultado nos pixels do sprite).
+function pzFlinchGlow(ctx,k,draw){
+  draw(1);if(!(k>1))return;
+  ctx.save();ctx.globalCompositeOperation='lighter';for(let a=k-1;a>.001;a-=1)draw(Math.min(1,a));ctx.restore();
+}
 // -- src/entities/InfectedSprites.js --
 const PZ_ENTITY_SCALE=.85; // A11: tamanho visual de personagens e infectados (colisão não muda)
 // ATLAS A5 · etapa 1 · Afrodite + Ares + Hefesto
@@ -7876,7 +7882,7 @@ Enemy.prototype.draw=function(ctx,assets){
   const mut=pzMutation(this);
   if(this.crawling&&mut==='legless'&&spec.legless){const li=assets.get(spec.legless.key);
     if(li&&li.width){const f=Math.floor(this.stride/TAU*8)%8;const row=this._sv*spec.legless.rowsPer+f;const c=spec.cell;const dir=pzDir8(this.heading);
-      ctx.save();if(this.flinch>0)ctx.filter='brightness(1.7)';ctx.drawImage(li,dir*c.w,row*c.h,c.w,c.h,Math.round(this.x-c.cx),Math.round(this.y+24-c.ground),c.w,c.h);ctx.filter='none';ctx.restore();return;}}
+      ctx.save();const ga=ctx.globalAlpha;pzFlinchGlow(ctx,this.flinch>0?1.7:1,a=>{ctx.globalAlpha=ga*a;ctx.drawImage(li,dir*c.w,row*c.h,c.w,c.h,Math.round(this.x-c.cx),Math.round(this.y+24-c.ground),c.w,c.h);});ctx.restore();return;}}
   const alt=pzSheetFor(spec,this._sv,mut,assets);
   if(this.crawling){anim='crawl';frame=Math.floor(this.stride/TAU*spec.anims.crawl.frames)%spec.anims.crawl.frames;}
   else if(this.flinch>0||this.hitStun>0){anim='hit';const k=this.flinch>0?1-this.flinch/.15:.6;frame=Math.floor(k*spec.anims.hit.frames);}
@@ -7887,12 +7893,12 @@ Enemy.prototype.draw=function(ctx,assets){
   else{frame=Math.floor(this.stride/TAU*spec.anims.walk.frames)%spec.anims.walk.frames;}
   const dir=pzDir8(anim==='attack'&&this.kind==='spitter'&&this._spitA!=null?this._spitA:this.heading);
   ctx.save();
-  if(this.flinch>0)ctx.filter='brightness(1.7)';
   // A folha já traz sombra, rosto, olhos e mãos; o recuo do tiro continua vindo do jogo.
   const reaction=this.flinch>0?Math.sin((this.flinch/.15)*Math.PI):0;
-  if(alt&&alt.anims[anim])pzBlit(ctx,alt.img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2,1,alt.anims);
-  else pzBlit(ctx,img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2);
-  ctx.filter='none';ctx.restore();
+  pzFlinchGlow(ctx,this.flinch>0?1.7:1,a=>{
+    if(alt&&alt.anims[anim])pzBlit(ctx,alt.img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2,a,alt.anims);
+    else pzBlit(ctx,img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2,a);});
+  ctx.restore();
 };
 
 // Morte: guarda o corpo com a animação de queda e evita o cadáver genérico antigo para esse inimigo.
@@ -8149,9 +8155,9 @@ Boss.prototype.draw=function(ctx,assets){
   }
   ctx.restore();
   ctx.save();
-  if(this.flinch>0)ctx.filter='brightness(1.6)';
   if(this.state==='dash'){ctx.shadowColor='#ffbd7d';ctx.shadowBlur=22;}
-  if(!pzBossBlit(ctx,assets,spec,anim,frame,dir,this.x,this.y))pzBossBlit(ctx,assets,spec,'walk',0,dir,this.x,this.y);
+  pzFlinchGlow(ctx,this.flinch>0?1.6:1,a=>{if(a<1)ctx.shadowBlur=0; // R46: sem ctx.filter
+    if(!pzBossBlit(ctx,assets,spec,anim,frame,dir,this.x,this.y,a))pzBossBlit(ctx,assets,spec,'walk',0,dir,this.x,this.y,a);});
   ctx.restore();
   if(this.slamPulse>0){ctx.save();ctx.strokeStyle='#d0a3fc';ctx.lineWidth=3;ctx.globalAlpha=this.slamPulse/.45;ctx.beginPath();ctx.arc(this.x,this.y,110*(1-this.slamPulse/.45),0,TAU);ctx.stroke();ctx.restore();}
 };
@@ -9385,19 +9391,21 @@ class Q04Environment {
     ctx.save();
     // Soft blue-bluegray ambient, NOT the old 55% opaque nighttime filter.
     if(env.dark>.001){
-      ctx.fillStyle=`rgba(21,41,72,${(.12*env.dark).toFixed(3)})`;
-      ctx.fillRect(0,0,w,h);
-      ctx.fillStyle=`rgba(2,10,22,${(.065*env.dark).toFixed(3)})`;
-      ctx.fillRect(0,0,w,h);
+      // R46: as duas camadas escuras viraram uma só, com a mesma cor final (a sobre b = uma camada equivalente)
+      {const a1=.12*env.dark,a2=.065*env.dark,a=1-(1-a1)*(1-a2),m=(c1,c2)=>Math.round((c1*a1*(1-a2)+c2*a2)/a);
+       ctx.fillStyle=`rgba(${m(21,2)},${m(41,10)},${m(72,22)},${a.toFixed(4)})`;ctx.fillRect(0,0,w,h);}
       // Low-level cool skylight restores blue midtones without flattening detail.
       ctx.globalCompositeOperation='screen';
-      ctx.fillStyle=`rgba(61,104,160,${(.032*env.dark).toFixed(3)})`;
-      ctx.fillRect(0,0,w,h);
       // Moonlight enters from the UPPER-RIGHT (beach side), but stays restrained.
+      // R46: a luz azul fraca do céu (tela cheia em "screen") foi somada dentro deste degradê: screen de duas
+      // camadas = uma camada só com 1-(1-a)(1-b). Mesmo resultado, uma pintura de tela a menos.
+      const sky=[61,104,160].map(c=>c/255*.032*env.dark);
+      const stop=(rgb,al)=>{const S=rgb.map((c,i)=>sky[i]+(1-sky[i])*c/255*al),A=Math.max(1e-6,...S);
+        return `rgba(${S.map(v=>Math.round(v/A*255)).join(',')},${A.toFixed(4)})`;};
       const moonWash=ctx.createLinearGradient(w*1.02,-8,w*.34,h*.92);
-      moonWash.addColorStop(0,`rgba(196,220,255,${(.09*env.dark).toFixed(3)})`);
-      moonWash.addColorStop(.28,`rgba(142,177,236,${(.05*env.dark).toFixed(3)})`);
-      moonWash.addColorStop(.76,'rgba(96,132,201,0)');
+      moonWash.addColorStop(0,stop([196,220,255],.09*env.dark));
+      moonWash.addColorStop(.28,stop([142,177,236],.05*env.dark));
+      moonWash.addColorStop(.76,stop([96,132,201],0));
       ctx.fillStyle=moonWash;ctx.fillRect(0,0,w,h);
       ctx.globalCompositeOperation='source-over';
       // Darken the beach specifically at night, rather than lifting it with the city.
@@ -9517,7 +9525,11 @@ class Q04Environment {
       ctx.fillStyle=near;ctx.beginPath();ctx.arc(p.x,p.y,92*camera.zoom,0,Math.PI*2);ctx.fill();
       ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
     }
-    if(env.fog>.03){ctx.fillStyle=`rgba(145,171,189,${(env.fog*.07*weatherMul).toFixed(3)})`;ctx.fillRect(0,0,w,h);}
+    // R46: névoa e "tempo fechado" da chuva (38o) eram duas camadas seguidas; agora uma só, com a mesma cor final
+    {const fa=env.fog>.03?env.fog*.07*weatherMul:0,ra=(env.wet>.08&&typeof PZ_RAIN!=='undefined'&&typeof pzRainDraw==='function')?.10*env.wet:0;
+     if(typeof PZ_RAIN!=='undefined')PZ_RAIN.darkDone=ra>0;
+     if(fa>0||ra>0){const a=1-(1-fa)*(1-ra),m=(c1,c2)=>Math.round((c1*fa*(1-ra)+c2*ra)/a);
+       ctx.fillStyle=`rgba(${m(145,60)},${m(171,74)},${m(189,92)},${a.toFixed(4)})`;ctx.fillRect(0,0,w,h);}}
     if(env.wet>.08&&!(typeof pzRainDraw==='function'&&pzRainDraw(ctx,viewport,run,camera,env,weatherMul))){ /* R37: chuva nova em 38o */
       ctx.strokeStyle=`rgba(190,212,230,${(.14+env.wet*.30).toFixed(3)})`;ctx.lineWidth=1.2;
       const count=Math.min(190,Math.floor(w*h/7800*env.wet*weatherMul)),shift=t*330;
@@ -10615,9 +10627,11 @@ class CombatScene {
     if(diag.fx!==false)r.worldFX?.drawGlow(ctx,g.camera);
     PZ_LIGHTMAP.drawAfter(ctx,viewport,r,g.camera);
     pzDrawThreatIndicators(ctx,viewport,r,g.camera);
+    // R46: esse degradê de cima/baixo virou camada da placa de vídeo (fundo do .pz-post, 38w) quando ela está ativa
+    if(!(typeof pzEdgeOnPost==='function'&&pzEdgeOnPost())){
     const grad=ctx.createLinearGradient(0,0,0,viewport.height);
     grad.addColorStop(0,'rgba(3,17,25,.26)');grad.addColorStop(.38,'rgba(3,17,25,0)');grad.addColorStop(1,'rgba(3,17,25,.12)');
-    ctx.fillStyle=grad;ctx.fillRect(0,0,viewport.width,viewport.height);
+    ctx.fillStyle=grad;ctx.fillRect(0,0,viewport.width,viewport.height);}
     r.killFeedback?.drawHUD(ctx,viewport.width,viewport.height);
     if(r.hitPulse>0){ctx.fillStyle=`rgba(231,85,88,${r.hitPulse*.28})`;ctx.fillRect(0,0,viewport.width,viewport.height);}
     // Q.05.7: sinais distintos de absorção, quebra, cura e recarga, sem interferir no dano.
@@ -10653,8 +10667,8 @@ if(typeof Midnight!=='undefined'){
     else if(st==='recover'||this.hitStun>0){anim='hit';frame=Math.min(3,Math.floor((this.flinch>0?1-this.flinch/.15:.7)*4));}
     else if(st==='stalk'&&this.animation!=='walk'){anim='idle';frame=Math.floor(this.stride/TAU*A.idle.frames)%A.idle.frames;}
     const dir=pzDir8(this.heading);
-    ctx.save();if(this.flinch>0)ctx.filter='brightness(1.7)';
-    pzBlit(ctx,img,spec,anim,frame,dir,this.x,this.y);ctx.filter='none';
+    ctx.save();
+    pzFlinchGlow(ctx,this.flinch>0?1.7:1,a=>pzBlit(ctx,img,spec,anim,frame,dir,this.x,this.y,a));
     // a lanterna faz a pele rachar em brasa: brilho por cima, proporcional à exposição
     if(this.exposure>.7){ctx.globalCompositeOperation='lighter';const k=Math.min(1,(this.exposure-.7)/2);
       const g=ctx.createRadialGradient(this.x,this.y-18,2,this.x,this.y-18,26);g.addColorStop(0,`rgba(255,120,50,${(.45*k).toFixed(3)})`);g.addColorStop(1,'rgba(255,80,30,0)');
@@ -12795,14 +12809,17 @@ function pzRainDraw(ctx,viewport,run,camera,env,weatherMul){
   PZ_RAIN.lastWet=wet;PZ_RAIN.lastDraw=performance.now();
   ctx.save();
   // leve escurecida e tom azul-acinzentado do tempo fechado
-  ctx.fillStyle=`rgba(60,74,92,${(.10*wet).toFixed(3)})`;ctx.fillRect(0,0,w,h);
+  if(PZ_RAIN.darkDone)PZ_RAIN.darkDone=false; // R46: já foi junto com a névoa (38-core)
+  else{ctx.fillStyle=`rgba(60,74,92,${(.10*wet).toFixed(3)})`;ctx.fillRect(0,0,w,h);}
   // cortinas de chuva passando com o vento
-  {const t=performance.now()*.001,ang=Math.atan2(1,PZ_WIND.x*.45);
+  // R46: as cortinas são degradês macios; vão para a tela pequena do ar (38w) quando ela existe
+  {const t=performance.now()*.001,ang=Math.atan2(1,PZ_WIND.x*.45),cx0=ctx;
+   ctx=(typeof pzAirCtx==='function'&&pzAirCtx(viewport))||ctx;
    ctx.save();ctx.translate(w/2,h/2);ctx.rotate(ang-Math.PI/2);
    for(let i=0;i<3;i++){const L=Math.hypot(w,h),off=((t*(60+i*25)*(.5+PZ_WIND.strength)+i*L/3)%(L*1.4))-L*.7,bw=L*(.18+.08*i);
      const g=ctx.createLinearGradient(off-bw,0,off+bw,0);g.addColorStop(0,'rgba(200,214,228,0)');g.addColorStop(.5,`rgba(200,214,228,${(.05*wet*weatherMul).toFixed(3)})`);g.addColorStop(1,'rgba(200,214,228,0)');
      ctx.fillStyle=g;ctx.fillRect(off-bw,-L,bw*2,L*2);}
-   ctx.restore();}
+   ctx.restore();ctx=cx0;}
   // gotas: do mundo para a tela; agrupadas em 3 camadas pela altura (espessura/brilho)
   const S=(p)=>({x:(p.x-camera.x)*zoom+w/2,y:(p.y-camera.y)*zoom+h/2});
   const gust=PZ_WIND.strength,wx=PZ_WIND.x*95*gust,wy=PZ_WIND.y*95*gust;
@@ -12823,7 +12840,7 @@ function pzRainDraw(ctx,viewport,run,camera,env,weatherMul){
   }
   // cabeça das gotas mais próximas brilha um pouco
   ctx.fillStyle=`rgba(235,243,250,${(.25+.3*wet).toFixed(3)})`;
-  for(const d of layers[2]){const a=S(pz3dP(d.x,d.y,d.z));ctx.fillRect(a.x-.8,a.y-.8,1.6,1.6);}
+  ctx.beginPath();for(const d of layers[2]){const a=S(pz3dP(d.x,d.y,d.z));ctx.rect(a.x-.8,a.y-.8,1.6,1.6);}ctx.fill(); // R46: um pedido só para todas as cabeças
   // respingos: anel que abre + gotinhas que pulam
   ctx.lineWidth=Math.max(.7,zoom*.6);
   for(const c of PZ_RAIN.crowns){
@@ -14087,6 +14104,99 @@ function pzAmbCarsOn(run){
    }catch(e){}
    return r;
  };}
+// -- src/rendering/PerfAir.js (38w) --
+// R46 · Hefesto — desempenho no celular (iPhone 11) sem mudar o visual.
+// As camadas "macias" do ar — as duas névoas do cinema, a névoa do mapa de luz e as cortinas da chuva —
+// eram pintadas uma por uma na tela inteira, na resolução cheia (até 4 telas cheias por quadro, só de névoa).
+// Como são manchas e degradês bem suaves, dá no mesmo pintar todas numa tela pequena (40% do tamanho) e
+// colar essa tela uma vez só, ampliada e suavizada. Resultado visual igual; custo de 1 tela em vez de 4.
+// window.__PZ_NO_AIRBUF=true volta ao jeito antigo (para comparar).
+const PZ_AIR={cv:null,cx:null,s:.4,dirty:false,lightFog:false};
+function pzAirCtx(viewport){
+  if(window.__PZ_NO_AIRBUF)return null;
+  const s=PZ_AIR.s,W=Math.max(8,Math.ceil(viewport.width*s)),H=Math.max(8,Math.ceil(viewport.height*s));
+  if(!PZ_AIR.cv||PZ_AIR.cv.width!==W||PZ_AIR.cv.height!==H){
+    PZ_AIR.cv=document.createElement('canvas');PZ_AIR.cv.width=W;PZ_AIR.cv.height=H;PZ_AIR.cx=PZ_AIR.cv.getContext('2d');PZ_AIR.dirty=false;
+  }
+  const c=PZ_AIR.cx;
+  if(!PZ_AIR.dirty){c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.globalCompositeOperation='source-over';c.clearRect(0,0,W,H);PZ_AIR.dirty=true;}
+  c.setTransform(s,0,0,s,0,0);c.globalAlpha=1;c.globalCompositeOperation='source-over';
+  return c;
+}
+function pzAirFlush(ctx,viewport){
+  if(!PZ_AIR.dirty)return;PZ_AIR.dirty=false;
+  ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.imageSmoothingEnabled=true;
+  try{ctx.imageSmoothingQuality='low';}catch(e){}
+  ctx.drawImage(PZ_AIR.cv,0,0,viewport.width,viewport.height);
+  ctx.restore();
+}
+
+// névoa do cinema (38p) + névoa do mapa de luz (38a) vão para a tela pequena; a cortina da chuva (38o) já foi.
+{
+  const _cineFog=pzCinemaFog,_lightFog=PzLightMap.prototype.drawFog;
+  pzCinemaFog=function(ctx,viewport,run,camera,env){
+    const air=pzAirCtx(viewport);
+    if(!air){return _cineFog(ctx,viewport,run,camera,env);}
+    try{
+      _cineFog(air,viewport,run,camera,env);
+      // a névoa do mapa de luz, com a mesma regra de quando ela aparece (38f drawLux)
+      PZ_AIR.lightFog=false;
+      const LM=PZ_LIGHTMAP,q=LM.quality(),e=Q04_ENVIRONMENT.get(run.elapsed||0,true);
+      if(!(window.__PZ_DIAG&&!window.__PZ_DIAG.light)&&!window.__PZ_OLD_LIGHT&&(q==='high'||(q!=='low'&&Math.max(e.fog||0,e.dark*.55)>.28))){
+        air.save();_lightFog.call(LM,air,viewport,camera,e);air.restore();PZ_AIR.lightFog=true;
+      }
+    }finally{pzAirFlush(ctx,viewport);}
+  };
+  PzLightMap.prototype.drawFog=function(ctx,viewport,camera,env){
+    if(PZ_AIR.lightFog){PZ_AIR.lightFog=false;return;} // já foi junto com a névoa do cinema
+    return _lightFog.call(this,ctx,viewport,camera,env);
+  };
+}
+
+// ---------- camadas da placa de vídeo (CSS) ----------
+// Antes: tinta, divisão de tom e vinheta eram 3 camadas de tela cheia por cima do jogo, e o degradê de cima/baixo era
+// pintado no canvas a cada quadro. Agora as quatro são fundos de UMA camada só (mesma ordem, mesmas cores).
+// O grão do filme passa a andar com "transform" (a placa só desloca a imagem) em vez de repintar 8 vezes por segundo.
+(function(){
+  const st=document.createElement('style');
+  st.textContent=`.pz-post.pz-merged{background:
+  radial-gradient(ellipse at center,transparent 42%,rgba(var(--pz-vig-rgb,0,0,0),var(--pz-vig,.3)) 100%),
+  linear-gradient(180deg,var(--pz-split-top,transparent) 0%,transparent 46%,transparent 58%,var(--pz-split-bot,transparent) 100%),
+  linear-gradient(var(--pz-tint,transparent),var(--pz-tint,transparent)),
+  linear-gradient(180deg,rgba(3,17,25,.26) 0%,rgba(3,17,25,0) 38%,rgba(3,17,25,.12) 100%)}
+.pz-post.pz-merged.pz-nocine{--pz-split-top:transparent;--pz-split-bot:transparent}
+.pz-post.pz-merged>.pz-post-grade,.pz-post.pz-merged>.pz-post-split,.pz-post.pz-merged>.pz-post-vignette{display:none!important}
+.pz-post.pz-merged>.pz-post-grain{inset:-64px;animation:pzGrainT .5s steps(4) infinite;will-change:transform}
+@keyframes pzGrainT{0%{transform:translate(0,0)}25%{transform:translate(-37px,21px)}50%{transform:translate(53px,-44px)}75%{transform:translate(-18px,-63px)}100%{transform:translate(0,0)}}
+@media (prefers-reduced-motion:reduce){.pz-post.pz-merged>.pz-post-grain{animation:none}}
+.app[data-scene="field"] #game-canvas{animation-fill-mode:backwards!important}`;
+  document.head.appendChild(st);
+})();
+function pzEdgeOnPost(){
+  const el=typeof PZ_POST!=='undefined'&&PZ_POST.el;
+  return !!(el&&el.isConnected&&el.classList.contains('pz-merged')&&el.style.display!=='none'&&!window.__PZ_NO_AIRBUF);
+}
+{const _up=PzPost.prototype.update;
+ PzPost.prototype.update=function(env,quality,reduced){
+   const r=_up.call(this,env,quality,reduced);
+   if(this.el){this.el.classList.toggle('pz-merged',!window.__PZ_NO_AIRBUF);this.el.classList.toggle('pz-nocine',!!window.__PZ_NO_CINEMA);}
+   return r;
+ };}
+
+// ---------- sem engasgo ao andar pelo mapa ----------
+// A cor da lataria de cada carro 3D era medida (leitura de pixel do canvas) na primeira vez que o carro aparecia.
+// No iPhone essa leitura trava o quadro. Agora todas as medidas são feitas no começo da partida, de uma vez.
+if(typeof pzCarDrawables==='function'&&typeof pzCar3DSprite==='function'){
+  const _pzCarDrw=pzCarDrawables;
+  pzCarDrawables=function(){
+    const run=window.__projectZGame?.scenes?.current?.run;
+    if(run&&!run.__pzCarsWarm&&run.destructibles){
+      run.__pzCarsWarm=true;
+      for(const o of run.destructibles.objects){if(o.kind!=='vehicle')continue;const p=pzCar3DParams(o);if(p)try{pzCar3DSprite(p);}catch(e){}}
+    }
+    return _pzCarDrw.apply(this,arguments);
+  };
+}
 // R31: retrato novo do infectado quando existe; senão, o desenho antigo.
 function pzBestArt(d){return ASSETS['best_'+d.id]||ASSETS[d.sprite];}
 // -- src/ui/UIManager.js --
@@ -15690,6 +15800,6 @@ try {
 
 // G318_VISUALS: 8-directions x 4-frame enemy atlases, occluded north-pointing guns.
 </script>
-<div id="cronos-c4-version" aria-label="Versão do jogo">PROJECT Z · R45 · ATLAS A25</div>
+<div id="cronos-c4-version" aria-label="Versão do jogo">PROJECT Z · R46 · ATLAS A26</div>
 </body>
 </html>

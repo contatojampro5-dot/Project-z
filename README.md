@@ -443,3 +443,12 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Comandos padrão:** analógico esquerdo anda, analógico direito mira, RT/R2 atira, X/Quadrado recarrega, Y/Triângulo troca a arma, RB/R1 granada, LB/L1 cura, LT/L2 escudo, B/Círculo habilidade (e voltar nos menus), A/Cruz confirma e usa, SELECT abre a mochila, START pausa. D-pad ou analógico navegam nos menus, na escolha da trilha, nas evoluções e na mochila.
 - **Mochila no controle:** depois de apertar A num espaço (ou no ✕ de jogar fora), o cursor continua no mesmo lugar em vez de voltar para o começo.
 - **Dica na tela:** com o controle ligado, a dica do teclado some e fica só a dos botões do controle (antes as duas se sobrepunham).
+
+## R46 · ATLAS A26 — mais leve no celular (sem mudar o visual)
+- **Névoa e cortinas da chuva:** as duas névoas do cinema, a névoa do mapa de luz e as cortinas de chuva eram pintadas uma por uma na tela inteira. Como são manchas bem macias, agora são pintadas juntas numa tela pequena e coladas uma vez só, ampliadas. Mesmo visual, bem menos trabalho para o celular.
+- **Camadas juntas:** a tinta de cinema, a divisão de tom, a vinheta e o degradê de cima/baixo viraram uma camada só da placa de vídeo (antes eram três camadas mais uma pintura por quadro). O grão do filme anda sem repintar a tela.
+- **Noite e chuva:** camadas escuras seguidas viraram uma só com a mesma cor final (a noite, a névoa com o "tempo fechado" da chuva e a luz azul do céu dentro do brilho da lua).
+- **Filtro esquecido:** a tela do jogo ficava com um filtro de brilho ligado depois da animação de entrada (no iPhone isso pesa em todo quadro). Saiu.
+- **Clarão do tiro nos zumbis:** feito sem filtro de canvas (lento no iPhone), com o mesmo brilho.
+- **Sem engasgo ao andar:** a cor de cada carro 3D era medida quando ele aparecia pela primeira vez (isso trava um quadro no iPhone). Agora é medida no começo da partida.
+- No teste (tela de iPhone 11 deitado, 1792×828), o quadro ficou cerca de 20–30% mais leve de dia, até 33% com chuva e 7–15% à noite.

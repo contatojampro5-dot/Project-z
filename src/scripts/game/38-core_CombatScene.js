@@ -311,19 +311,21 @@ class Q04Environment {
     ctx.save();
     // Soft blue-bluegray ambient, NOT the old 55% opaque nighttime filter.
     if(env.dark>.001){
-      ctx.fillStyle=`rgba(21,41,72,${(.12*env.dark).toFixed(3)})`;
-      ctx.fillRect(0,0,w,h);
-      ctx.fillStyle=`rgba(2,10,22,${(.065*env.dark).toFixed(3)})`;
-      ctx.fillRect(0,0,w,h);
+      // R46: as duas camadas escuras viraram uma só, com a mesma cor final (a sobre b = uma camada equivalente)
+      {const a1=.12*env.dark,a2=.065*env.dark,a=1-(1-a1)*(1-a2),m=(c1,c2)=>Math.round((c1*a1*(1-a2)+c2*a2)/a);
+       ctx.fillStyle=`rgba(${m(21,2)},${m(41,10)},${m(72,22)},${a.toFixed(4)})`;ctx.fillRect(0,0,w,h);}
       // Low-level cool skylight restores blue midtones without flattening detail.
       ctx.globalCompositeOperation='screen';
-      ctx.fillStyle=`rgba(61,104,160,${(.032*env.dark).toFixed(3)})`;
-      ctx.fillRect(0,0,w,h);
       // Moonlight enters from the UPPER-RIGHT (beach side), but stays restrained.
+      // R46: a luz azul fraca do céu (tela cheia em "screen") foi somada dentro deste degradê: screen de duas
+      // camadas = uma camada só com 1-(1-a)(1-b). Mesmo resultado, uma pintura de tela a menos.
+      const sky=[61,104,160].map(c=>c/255*.032*env.dark);
+      const stop=(rgb,al)=>{const S=rgb.map((c,i)=>sky[i]+(1-sky[i])*c/255*al),A=Math.max(1e-6,...S);
+        return `rgba(${S.map(v=>Math.round(v/A*255)).join(',')},${A.toFixed(4)})`;};
       const moonWash=ctx.createLinearGradient(w*1.02,-8,w*.34,h*.92);
-      moonWash.addColorStop(0,`rgba(196,220,255,${(.09*env.dark).toFixed(3)})`);
-      moonWash.addColorStop(.28,`rgba(142,177,236,${(.05*env.dark).toFixed(3)})`);
-      moonWash.addColorStop(.76,'rgba(96,132,201,0)');
+      moonWash.addColorStop(0,stop([196,220,255],.09*env.dark));
+      moonWash.addColorStop(.28,stop([142,177,236],.05*env.dark));
+      moonWash.addColorStop(.76,stop([96,132,201],0));
       ctx.fillStyle=moonWash;ctx.fillRect(0,0,w,h);
       ctx.globalCompositeOperation='source-over';
       // Darken the beach specifically at night, rather than lifting it with the city.
@@ -443,7 +445,11 @@ class Q04Environment {
       ctx.fillStyle=near;ctx.beginPath();ctx.arc(p.x,p.y,92*camera.zoom,0,Math.PI*2);ctx.fill();
       ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
     }
-    if(env.fog>.03){ctx.fillStyle=`rgba(145,171,189,${(env.fog*.07*weatherMul).toFixed(3)})`;ctx.fillRect(0,0,w,h);}
+    // R46: névoa e "tempo fechado" da chuva (38o) eram duas camadas seguidas; agora uma só, com a mesma cor final
+    {const fa=env.fog>.03?env.fog*.07*weatherMul:0,ra=(env.wet>.08&&typeof PZ_RAIN!=='undefined'&&typeof pzRainDraw==='function')?.10*env.wet:0;
+     if(typeof PZ_RAIN!=='undefined')PZ_RAIN.darkDone=ra>0;
+     if(fa>0||ra>0){const a=1-(1-fa)*(1-ra),m=(c1,c2)=>Math.round((c1*fa*(1-ra)+c2*ra)/a);
+       ctx.fillStyle=`rgba(${m(145,60)},${m(171,74)},${m(189,92)},${a.toFixed(4)})`;ctx.fillRect(0,0,w,h);}}
     if(env.wet>.08&&!(typeof pzRainDraw==='function'&&pzRainDraw(ctx,viewport,run,camera,env,weatherMul))){ /* R37: chuva nova em 38o */
       ctx.strokeStyle=`rgba(190,212,230,${(.14+env.wet*.30).toFixed(3)})`;ctx.lineWidth=1.2;
       const count=Math.min(190,Math.floor(w*h/7800*env.wet*weatherMul)),shift=t*330;
@@ -1541,9 +1547,11 @@ class CombatScene {
     if(diag.fx!==false)r.worldFX?.drawGlow(ctx,g.camera);
     PZ_LIGHTMAP.drawAfter(ctx,viewport,r,g.camera);
     pzDrawThreatIndicators(ctx,viewport,r,g.camera);
+    // R46: esse degradê de cima/baixo virou camada da placa de vídeo (fundo do .pz-post, 38w) quando ela está ativa
+    if(!(typeof pzEdgeOnPost==='function'&&pzEdgeOnPost())){
     const grad=ctx.createLinearGradient(0,0,0,viewport.height);
     grad.addColorStop(0,'rgba(3,17,25,.26)');grad.addColorStop(.38,'rgba(3,17,25,0)');grad.addColorStop(1,'rgba(3,17,25,.12)');
-    ctx.fillStyle=grad;ctx.fillRect(0,0,viewport.width,viewport.height);
+    ctx.fillStyle=grad;ctx.fillRect(0,0,viewport.width,viewport.height);}
     r.killFeedback?.drawHUD(ctx,viewport.width,viewport.height);
     if(r.hitPulse>0){ctx.fillStyle=`rgba(231,85,88,${r.hitPulse*.28})`;ctx.fillRect(0,0,viewport.width,viewport.height);}
     // Q.05.7: sinais distintos de absorção, quebra, cura e recarga, sem interferir no dano.

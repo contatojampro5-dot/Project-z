@@ -1,3 +1,9 @@
+// R46: clarão do tiro sem ctx.filter (no iPhone o filtro no canvas é muito lento). brightness(k) = desenhar de novo
+// por cima em modo "lighter" com força k-1 (mesmo resultado nos pixels do sprite).
+function pzFlinchGlow(ctx,k,draw){
+  draw(1);if(!(k>1))return;
+  ctx.save();ctx.globalCompositeOperation='lighter';for(let a=k-1;a>.001;a-=1)draw(Math.min(1,a));ctx.restore();
+}
 // -- src/entities/InfectedSprites.js --
 const PZ_ENTITY_SCALE=.85; // A11: tamanho visual de personagens e infectados (colisão não muda)
 // ATLAS A5 · etapa 1 · Afrodite + Ares + Hefesto
@@ -71,7 +77,7 @@ Enemy.prototype.draw=function(ctx,assets){
   const mut=pzMutation(this);
   if(this.crawling&&mut==='legless'&&spec.legless){const li=assets.get(spec.legless.key);
     if(li&&li.width){const f=Math.floor(this.stride/TAU*8)%8;const row=this._sv*spec.legless.rowsPer+f;const c=spec.cell;const dir=pzDir8(this.heading);
-      ctx.save();if(this.flinch>0)ctx.filter='brightness(1.7)';ctx.drawImage(li,dir*c.w,row*c.h,c.w,c.h,Math.round(this.x-c.cx),Math.round(this.y+24-c.ground),c.w,c.h);ctx.filter='none';ctx.restore();return;}}
+      ctx.save();const ga=ctx.globalAlpha;pzFlinchGlow(ctx,this.flinch>0?1.7:1,a=>{ctx.globalAlpha=ga*a;ctx.drawImage(li,dir*c.w,row*c.h,c.w,c.h,Math.round(this.x-c.cx),Math.round(this.y+24-c.ground),c.w,c.h);});ctx.restore();return;}}
   const alt=pzSheetFor(spec,this._sv,mut,assets);
   if(this.crawling){anim='crawl';frame=Math.floor(this.stride/TAU*spec.anims.crawl.frames)%spec.anims.crawl.frames;}
   else if(this.flinch>0||this.hitStun>0){anim='hit';const k=this.flinch>0?1-this.flinch/.15:.6;frame=Math.floor(k*spec.anims.hit.frames);}
@@ -82,12 +88,12 @@ Enemy.prototype.draw=function(ctx,assets){
   else{frame=Math.floor(this.stride/TAU*spec.anims.walk.frames)%spec.anims.walk.frames;}
   const dir=pzDir8(anim==='attack'&&this.kind==='spitter'&&this._spitA!=null?this._spitA:this.heading);
   ctx.save();
-  if(this.flinch>0)ctx.filter='brightness(1.7)';
   // A folha já traz sombra, rosto, olhos e mãos; o recuo do tiro continua vindo do jogo.
   const reaction=this.flinch>0?Math.sin((this.flinch/.15)*Math.PI):0;
-  if(alt&&alt.anims[anim])pzBlit(ctx,alt.img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2,1,alt.anims);
-  else pzBlit(ctx,img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2);
-  ctx.filter='none';ctx.restore();
+  pzFlinchGlow(ctx,this.flinch>0?1.7:1,a=>{
+    if(alt&&alt.anims[anim])pzBlit(ctx,alt.img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2,a,alt.anims);
+    else pzBlit(ctx,img,spec,anim,frame,dir,this.x+this.hitDirX*reaction*2,this.y+this.hitDirY*reaction*2,a);});
+  ctx.restore();
 };
 
 // Morte: guarda o corpo com a animação de queda e evita o cadáver genérico antigo para esse inimigo.

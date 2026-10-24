@@ -117,6 +117,7 @@
     "src/scripts/game/38u-world_SpitWeatherAmmo.js",
     "src/scripts/game/38v-data_ambientFiles.js",
     "src/scripts/game/38v-core_AmbientLife.js",
+    "src/scripts/game/38w-rendering_PerfAir.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",
     "src/scripts/game/39c-ui_StoryScreen.js",

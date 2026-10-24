@@ -57,14 +57,17 @@ function pzRainDraw(ctx,viewport,run,camera,env,weatherMul){
   PZ_RAIN.lastWet=wet;PZ_RAIN.lastDraw=performance.now();
   ctx.save();
   // leve escurecida e tom azul-acinzentado do tempo fechado
-  ctx.fillStyle=`rgba(60,74,92,${(.10*wet).toFixed(3)})`;ctx.fillRect(0,0,w,h);
+  if(PZ_RAIN.darkDone)PZ_RAIN.darkDone=false; // R46: já foi junto com a névoa (38-core)
+  else{ctx.fillStyle=`rgba(60,74,92,${(.10*wet).toFixed(3)})`;ctx.fillRect(0,0,w,h);}
   // cortinas de chuva passando com o vento
-  {const t=performance.now()*.001,ang=Math.atan2(1,PZ_WIND.x*.45);
+  // R46: as cortinas são degradês macios; vão para a tela pequena do ar (38w) quando ela existe
+  {const t=performance.now()*.001,ang=Math.atan2(1,PZ_WIND.x*.45),cx0=ctx;
+   ctx=(typeof pzAirCtx==='function'&&pzAirCtx(viewport))||ctx;
    ctx.save();ctx.translate(w/2,h/2);ctx.rotate(ang-Math.PI/2);
    for(let i=0;i<3;i++){const L=Math.hypot(w,h),off=((t*(60+i*25)*(.5+PZ_WIND.strength)+i*L/3)%(L*1.4))-L*.7,bw=L*(.18+.08*i);
      const g=ctx.createLinearGradient(off-bw,0,off+bw,0);g.addColorStop(0,'rgba(200,214,228,0)');g.addColorStop(.5,`rgba(200,214,228,${(.05*wet*weatherMul).toFixed(3)})`);g.addColorStop(1,'rgba(200,214,228,0)');
      ctx.fillStyle=g;ctx.fillRect(off-bw,-L,bw*2,L*2);}
-   ctx.restore();}
+   ctx.restore();ctx=cx0;}
   // gotas: do mundo para a tela; agrupadas em 3 camadas pela altura (espessura/brilho)
   const S=(p)=>({x:(p.x-camera.x)*zoom+w/2,y:(p.y-camera.y)*zoom+h/2});
   const gust=PZ_WIND.strength,wx=PZ_WIND.x*95*gust,wy=PZ_WIND.y*95*gust;
@@ -85,7 +88,7 @@ function pzRainDraw(ctx,viewport,run,camera,env,weatherMul){
   }
   // cabeça das gotas mais próximas brilha um pouco
   ctx.fillStyle=`rgba(235,243,250,${(.25+.3*wet).toFixed(3)})`;
-  for(const d of layers[2]){const a=S(pz3dP(d.x,d.y,d.z));ctx.fillRect(a.x-.8,a.y-.8,1.6,1.6);}
+  ctx.beginPath();for(const d of layers[2]){const a=S(pz3dP(d.x,d.y,d.z));ctx.rect(a.x-.8,a.y-.8,1.6,1.6);}ctx.fill(); // R46: um pedido só para todas as cabeças
   // respingos: anel que abre + gotinhas que pulam
   ctx.lineWidth=Math.max(.7,zoom*.6);
   for(const c of PZ_RAIN.crowns){
