@@ -452,3 +452,13 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Clarão do tiro nos zumbis:** feito sem filtro de canvas (lento no iPhone), com o mesmo brilho.
 - **Sem engasgo ao andar:** a cor de cada carro 3D era medida quando ele aparecia pela primeira vez (isso trava um quadro no iPhone). Agora é medida no começo da partida.
 - No teste (tela de iPhone 11 deitado, 1792×828), o quadro ficou cerca de 20–30% mais leve de dia, até 33% com chuva e 7–15% à noite.
+
+## R47 · Prévia em Godot — Prólogo "Dia Zero"
+- **Projeto novo em Godot 4.3** na pasta `godot-preview/` (o jogo do navegador não mudou). É uma prévia de 6–10 minutos do primeiro dia do surto, seguindo `docs/historia.md`.
+- **Jogar no navegador:** https://contatojampro5-dot.github.io/Project-z/jogo-godot/ (versão Web exportada em `jogo-godot/`).
+- **Abertura:** as fotos aéreas da cidade ao pôr do sol, com o rádio falando dos idosos internados e dos boatos sobre a vacina.
+- **Capítulo 1 · Hannah:** professores que não vieram, celular sem bateria com 14 chamadas perdidas da Hadassa, a batida de carro e a avenida em caos (multidão correndo para os dois lados, carros batendo, pegando fogo e explodindo, infectados mordendo gente que levanta depois). Ela corre para o hospital.
+- **Capítulo 2 · Antônio:** as câmeras do mercado mostram o ataque às funcionárias; o coração dispara e você controla a respiração; elas levantam; ele baixa o portão de aço, sobe no telhado, vê a Hannah indo para o hospital e a Hadassa indo para os infectados, escolhe um objeto (extintor, rodo ou pé de cabra) e enfrenta o corredor.
+- **Capítulo 3 · Fuga:** engavetamento com fogo e a horda fechando o caminho do hospital, multidão saindo do estádio, helicóptero e jatos passando, e a subida da trilha até a casa no alto do morro.
+- **Proposta para decidir** (pendente no documento): o objeto do Antônio e como o coração dele entra no jogo (bpm na tela, fôlego, respiração). Detalhes em `godot-preview/README.md`.
+- Reaproveita as folhas de sprite da Hannah, do Antônio, da Hadassa e dos infectados comum e corredor, além dos sons e das músicas do jogo. Respeita as regras: sem tremor de tela, marcas fictícias, prédios de 3–5 andares, tamanhos de personagem.

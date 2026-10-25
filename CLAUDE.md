@@ -109,6 +109,16 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   seguidas vindas de servidor/proxy). Só continuar numa conta com **plano pago ativo**, devagar (~1 fala a cada 30 s).
   Não usar conta secundária gratuita para contornar o bloqueio.
 
+## Prévia em Godot (R47) — `godot-preview/`
+- Projeto Godot 4.3 separado (renderizador Compatibility), prólogo "Dia Zero" em 3 capítulos (Hannah → Antônio → fuga
+  para o morro) seguindo `docs/historia.md`. Tudo em código: `scripts/main.gd` é o diretor (cenas, falas, objetivos).
+- Versão Web exportada em `jogo-godot/` (GitHub Pages: `/Project-z/jogo-godot/`). Exportar de novo depois de mudar algo:
+  `godot --headless --path godot-preview --export-release "Web" ../jogo-godot/index.html` (modelos Web 4.3 instalados).
+- Testes: `-- --autotest` (joga sozinho até o fim, "[autotest] OK") e `-- --rotas` (caminhos livres, "TUDO OK").
+  Capturas: `xvfb-run godot --path godot-preview --rendering-driver opengl3 -- --autotest --shots=PASTA`.
+- Propostas ainda não decididas pelo Theo: objeto do Antônio (jogador escolhe extintor/rodo/pé de cabra) e coração
+  do Antônio no gameplay (bpm, fôlego, respiração). San não aparece (entrada pendente).
+
 ## Modos de jogo
 - O modo atual (ondas/sobrevivência) é o foco: deixar redondinho antes de qualquer outro. Depois virão o modo
   história (com cutscenes) e modos livres. Decisão do Theo em 23/10/2026.
