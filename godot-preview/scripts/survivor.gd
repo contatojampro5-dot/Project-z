@@ -218,13 +218,5 @@ func _draw() -> void:
 			var b := hand + tip_dir * 22
 			draw_line(a, b, Color("b51f1f"), 9)
 			draw_line(b, b + tip_dir * 4, Color("2a2a2a"), 5)
-		"rodo":
-			var b2 := hand + tip_dir * 40
-			draw_line(hand, b2, Color("c9a44a"), 3)
-			draw_line(b2 - tip_dir.orthogonal() * 12, b2 + tip_dir.orthogonal() * 12, Color("2a6ad0"), 5)
-		"pe_de_cabra":
-			var b3 := hand + tip_dir * 32
-			draw_line(hand, b3, Color("3a3d42"), 4)
-			draw_line(b3, b3 + tip_dir.rotated(1.6) * 7, Color("3a3d42"), 4)
 	if swing_t >= 0.0 and swing_t < 0.2:
 		draw_arc(Vector2(0, -22), 50, heading - 1.0, heading + 1.0, 12, Color(1, 1, 1, 0.35 * (1.0 - swing_t / 0.2)), 4)

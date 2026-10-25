@@ -116,8 +116,8 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   `godot --headless --path godot-preview --export-release "Web" ../jogo-godot/index.html` (modelos Web 4.3 instalados).
 - Testes: `-- --autotest` (joga sozinho até o fim, "[autotest] OK") e `-- --rotas` (caminhos livres, "TUDO OK").
   Capturas: `xvfb-run godot --path godot-preview --rendering-driver opengl3 -- --autotest --shots=PASTA`.
-- Propostas ainda não decididas pelo Theo: objeto do Antônio (jogador escolhe extintor/rodo/pé de cabra) e coração
-  do Antônio no gameplay (bpm, fôlego, respiração). San não aparece (entrada pendente).
+- Decidido pelo Theo (25/10): objeto do Antônio = **extintor** (cânone); coração = só bpm na tela (mais lento acima de
+  150, fôlego volta devagar), **sem minijogo de respiração**. San não aparece (entrada pendente).
 
 ## Modos de jogo
 - O modo atual (ondas/sobrevivência) é o foco: deixar redondinho antes de qualquer outro. Depois virão o modo

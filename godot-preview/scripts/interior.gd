@@ -1,19 +1,17 @@
 extends Node2D
 class_name MercadoInterior
 ## Dentro do mercado do Antônio: prateleiras, depósito, mesa das câmeras, escada do telhado,
-## portão de aço da frente e os objetos improvisados perto da porta dos fundos.
+## portão de aço da frente e o extintor perto da porta dos fundos.
 
 const R := Rect2(1780, 2120, 760, 300)
 const GATE := Rect2(2080, 2112, 160, 18)
 const DESK := Vector2(2470, 2262)
 const LADDER := Vector2(2500, 2392)
 const BACKDOOR := Vector2(2190, 2440)
-const ITEMS := {"extintor": Vector2(2090, 2385), "rodo": Vector2(2150, 2370), "pe_de_cabra": Vector2(2250, 2385)}
-const ITEM_NAMES := {"extintor": "Extintor", "rodo": "Rodo", "pe_de_cabra": "Pé de cabra"}
+const EXTINTOR := Vector2(2150, 2378)   # objeto do Antônio contra o corredor (cânone: extintor)
 
 var gate := 0.0           # 0 aberto, 1 fechado
 var items_visible := true
-var taken := ""
 var monitor_on := true
 var _t := 0.0
 
@@ -74,19 +72,9 @@ func _draw() -> void:
 		var n := int(16 * gate)
 		for k in n:
 			draw_line(Vector2(g.position.x + k * 10, g.position.y), Vector2(g.position.x + k * 10, g.end.y), Color("6b7076"), 2)
-	# objetos improvisados
+	# extintor na parede, perto da porta dos fundos
 	if items_visible:
-		for id in ITEMS:
-			if id == taken:
-				continue
-			var p: Vector2 = ITEMS[id]
-			var pulse := 0.6 + 0.4 * sin(_t * 4.0)
-			draw_arc(p, 18, 0, TAU, 20, Color(1.8, 1.5, 0.6, pulse), 2)
-			match id:
-				"extintor":
-					draw_rect(Rect2(p - Vector2(5, 12), Vector2(10, 22)), Color("b51f1f"))
-				"rodo":
-					draw_line(p + Vector2(-14, 10), p + Vector2(12, -10), Color("c9a44a"), 3)
-					draw_line(p + Vector2(8, -16), p + Vector2(18, -4), Color("2a6ad0"), 5)
-				"pe_de_cabra":
-					draw_line(p + Vector2(-12, 8), p + Vector2(12, -8), Color("3a3d42"), 4)
+		var p := EXTINTOR
+		draw_arc(p, 18, 0, TAU, 20, Color(1.8, 1.5, 0.6, 0.6 + 0.4 * sin(_t * 4.0)), 2)
+		draw_rect(Rect2(p - Vector2(5, 12), Vector2(10, 22)), Color("b51f1f"))
+		draw_rect(Rect2(p - Vector2(3, 15), Vector2(6, 4)), Color("2a2a2a"))

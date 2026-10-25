@@ -34,19 +34,19 @@ corredor atacando a Hadassa e a fuga para o morro. O jogo do navegador (`src/`, 
 | --- | --- | --- |
 | Abertura | — | Suas fotos aéreas da cidade ao pôr do sol, com o rádio falando dos idosos internados e dos boatos sobre a vacina. |
 | Capítulo 1 · Faculdade 17:40 | Hannah | Os professores não vieram. Ela carrega o celular e vê **14 chamadas perdidas da Hadassa**. Colegas comentam que parentes passaram mal. Um carro bate no ônibus, ela vai até o portão e a avenida vira um caos. Ela corre rumo ao hospital. |
-| Capítulo 2 · Mercado 17:52 | Antônio | No depósito, ele vê pelas câmeras os infectados atacando as duas funcionárias. O coração dispara e você controla a respiração. Elas levantam transformadas. Ele baixa o portão, sobe no telhado e vê a cidade, a Hannah correndo para o hospital e a Hadassa indo direto para um grupo de infectados. Ele pega algo para se defender e enfrenta o **corredor**. |
+| Capítulo 2 · Mercado 17:52 | Antônio | No depósito, ele vê pelas câmeras os infectados atacando as duas funcionárias. O coração dispara e ele se obriga a respirar. Elas levantam transformadas. Ele baixa o portão, sobe no telhado e vê a cidade, a Hannah correndo para o hospital e a Hadassa indo direto para um grupo de infectados. Ele pega o **extintor** e enfrenta o **corredor**. |
 | Capítulo 3 · Fuga 18:10 | Antônio + Hadassa | A caminho do hospital, um engavetamento com fogo e a horda fecham a V1. Eles fogem pela V2, passam pela multidão saindo do estádio, veem o helicóptero que não para e os jatos, e sobem a trilha até a casa no alto do morro. Final: a cidade queimando à noite e "continua...". |
 
 ### O que é cânone e o que é proposta minha
 
-Segui o que está como **[Definido]** em `docs/historia.md`. Onde o documento deixa em aberto, eu fiz
-uma proposta que **ainda precisa da sua decisão**, Theo:
+Segui o que está como **[Definido]** em `docs/historia.md`. Decisões do Theo (25/10/2026):
 
-1. **O objeto que o Antônio usa contra o corredor** (pendente no documento): o jogador escolhe entre
-   **extintor, rodo ou pé de cabra**. Dá para ver de qual você gosta mais e fixar um.
-2. **Como a condição cardíaca do Antônio afeta o gameplay** (pendente): batimentos na tela (bpm). Correr
-   e ficar perto de infectados aceleram o coração; acima de 150 ele fica mais lento e o fôlego volta
-   devagar. Na cena das câmeras tem um minijogo de respiração.
+1. **O objeto do Antônio contra o corredor é o extintor** (registrado em `docs/historia.md`).
+2. **Coração do Antônio:** batimentos na tela (bpm). Correr e ficar perto de infectados aceleram o
+   coração; acima de 150 ele fica mais lento e o fôlego volta devagar. **Sem minijogo de respiração.**
+
+Propostas minhas que ainda podem mudar:
+
 3. **Como o Antônio sabe que a Hannah foi para o hospital**: ele a vê do telhado, passando pela avenida
    (a mesma corrida do capítulo 1).
 4. **O desencontro das irmãs**: a Hannah vai para o hospital pela calçada de cima da avenida, enquanto a

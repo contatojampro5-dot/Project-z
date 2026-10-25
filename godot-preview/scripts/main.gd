@@ -4,7 +4,6 @@ extends Node2D
 ## a Hadassa → fuga para o morro.
 
 static var act := 0                 # 0 = abertura, 1 = Hannah, 2 = Antônio, 3 = fuga
-static var weapon_choice := "extintor"
 
 var auto := false                   # --autotest: o jogo se joga sozinho (para testar)
 var shots_dir := ""
@@ -511,7 +510,7 @@ func _check_routes() -> void:
 	var routes := {
 		"cap1": [Vector2(2210, 1090), Vector2(2026, 1165), Vector2(2350, 1455), Vector2(2120, 1555), Vector2(1730, 1560)],
 		"cap2": [Vector2(2400, 2290), MercadoInterior.DESK + Vector2(0, 34), Vector2(2160, 2152), MercadoInterior.LADDER,
-			MercadoInterior.ITEMS["extintor"], MercadoInterior.ITEMS["rodo"], MercadoInterior.ITEMS["pe_de_cabra"], Vector2(1960, 2690)],
+			MercadoInterior.EXTINTOR, Vector2(1960, 2690)],
 		"cap3": [Vector2(2050, 2680), Vector2(1585, 2480), Vector2(3135, 2675), Vector2(3135, 1560), Vector2(3135, 800),
 			Vector2(3300, 600), Vector2(3560, 110), Vector2(3860, -360), World.SUMMIT],
 	}
@@ -792,8 +791,10 @@ func _act2() -> void:
 	cam_follow = antonio
 	cam_zoom = 1.65
 	Building.focus = antonio
-	await _breathing()
+	# o coração dispara; ele se apoia na mesa e respira (sem minijogo, decisão do Theo)
+	create_tween().tween_property(antonio, "heart", 118.0, 6.0)
 	await line("Antônio", "Respira, Antônio. Igual no quartel. Quatro segundos.")
+	await line("Antônio", "Puxa... segura... solta.", 2.6)
 	# elas levantam
 	Building.focus = null
 	hud.cctv.visible = true
@@ -835,27 +836,6 @@ func _act2() -> void:
 	await _save_hadassa()
 	next_act(3)
 
-func _breathing() -> void:
-	hud.breath.visible = true
-	hud.breath_value = 0.0
-	var cycles := 0
-	while cycles < 3 and is_inside_tree():
-		hud.breath_phase = "in"
-		while hud.breath_value < 1.0:
-			await get_tree().process_frame
-			var d := get_process_delta_time()
-			if Input.is_action_pressed("pular") or auto:
-				hud.breath_value += d / 1.5
-			else:
-				hud.breath_value = max(0.0, hud.breath_value - d * 0.3)
-		hud.breath_phase = "out"
-		while hud.breath_value > 0.0:
-			await get_tree().process_frame
-			if not Input.is_action_pressed("pular") or auto:
-				hud.breath_value -= get_process_delta_time() / 1.7
-		cycles += 1
-		antonio.heart = max(90.0, antonio.heart - 26.0)
-	hud.breath.visible = false
 
 func _roof_scene() -> void:
 	player_input_enabled = false
@@ -932,30 +912,12 @@ var _rescue_runner: Zombie = null
 
 func _save_hadassa() -> void:
 	player_input_enabled = true
-	hud.objective("Pegue alguma coisa para se defender")
+	hud.objective("Pegue o extintor perto da porta dos fundos")
 	interior.items_visible = true
-	var chosen := ""
-	while chosen == "" and is_inside_tree():
-		await get_tree().process_frame
-		if auto:
-			chosen = weapon_choice
-			break
-		var txt := ""
-		for id in MercadoInterior.ITEMS:
-			if antonio.position.distance_to(MercadoInterior.ITEMS[id]) < 38:
-				txt = "[E] Pegar: " + MercadoInterior.ITEM_NAMES[id]
-				if Input.is_action_just_pressed("interagir"):
-					chosen = id
-		hud.show_prompt(txt)
-		hud.waypoint = MercadoInterior.ITEMS["rodo"]
-	hud.show_prompt("")
-	hud.waypoint = null
-	weapon_choice = chosen
-	antonio.weapon = chosen
-	interior.taken = chosen
+	await interact(MercadoInterior.EXTINTOR, 40, "Pegar o extintor")
+	antonio.weapon = "extintor"
 	interior.items_visible = false
-	await line("Antônio", {"extintor": "Extintor. Quinze anos de bombeiro pra chegar nisso.",
-		"rodo": "Um rodo. Sério, Antônio? Um RODO.", "pe_de_cabra": "Pé de cabra. Isso. Isso serve."}[chosen])
+	await line("Antônio", "Extintor. Quinze anos de bombeiro pra chegar nisso.")
 	hud.objective("Salve a Hadassa!  (F ou clique para golpear)")
 	hud.set_hint("F / clique: golpear\nShift: correr\nE: se soltar")
 	audio.music("musica_fuga", -13)
@@ -990,7 +952,7 @@ func _save_hadassa() -> void:
 func _setup_act3() -> void:
 	_apply_day(0.55)
 	antonio = spawn_survivor("antonio", Vector2(2050, 2680))
-	antonio.weapon = weapon_choice
+	antonio.weapon = "extintor"
 	set_player(antonio)
 	antonio.heading = PI
 	hadassa = spawn_survivor("hadassa", Vector2(2000, 2700))

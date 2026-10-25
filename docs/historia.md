@@ -155,9 +155,8 @@ cânone.
 **23. Primeiro confronto com um corredor** *\[Definido\]*
 
 > Um infectado muito rápido — um zumbi corredor — persegue Hadassah.
-> Antônio grita para ela correr e ataca a criatura com um objeto
-> improvisado até ela parar de se mover. O objeto exato ainda não foi
-> confirmado.
+> Antônio grita para ela correr e ataca a criatura com um **extintor**
+> até ela parar de se mover. *(Extintor confirmado pelo Theo em 25/10/2026.)*
 
 **24. A busca por Hannah** *\[Parcial\]*
 
@@ -344,8 +343,8 @@ silhueta marcante.
 - Fechar os trajetos exatos que levam ao desencontro das irmãs e à
   subida da montanha.
 
-- Escolher o objeto que Antônio usa contra o corredor. O extintor foi
-  apenas uma sugestão, não uma decisão confirmada.
+- ~~Escolher o objeto que Antônio usa contra o corredor.~~ **Decidido
+  (25/10/2026): extintor.**
 
 - Criar o passado, as habilidades e a entrada de Sen na história.
 
@@ -356,7 +355,9 @@ silhueta marcante.
   do Seu João.
 
 - Definir como a condição cardíaca de Antônio afeta a história e o
-  gameplay.
+  gameplay. *(Parcial, 25/10/2026: no gameplay
+  entram só os batimentos na tela — correr e infectados perto aceleram, acima de 150 bpm ele fica
+  mais lento e o fôlego volta devagar. Sem minijogo de respiração.)*
 
 - Desenvolver o sistema de múltiplas bases e como ele se integra à
   narrativa.

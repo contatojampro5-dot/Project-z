@@ -1,7 +1,7 @@
 extends CanvasLayer
 class_name Hud
 ## Interface do prólogo: objetivo, legendas com retrato, cartões de lugar/hora, faixas de cinema,
-## celular da Hannah, câmera de segurança do mercado, luta para se soltar, respiração do Antônio e pausa.
+## celular da Hannah, câmera de segurança do mercado, luta para se soltar e pausa.
 
 const SPEAKERS := {
 	"Hannah": {"color": Color("e8a35a"), "face": "hannah"},
@@ -43,13 +43,10 @@ var cctv: ColorRect
 var cctv_label: Label
 var gauges: Control
 var marker: Control
-var breath: Control
 var photo: TextureRect
 var pause_panel: PanelContainer
 var end_box: VBoxContainer
 var waypoint = null
-var breath_value := 0.0
-var breath_phase := ""
 var skip_line := false
 var _faces := {}
 
@@ -189,12 +186,6 @@ void fragment() {
 	gauges.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	gauges.draw.connect(_draw_gauges)
 	root.add_child(gauges)
-	breath = Control.new()
-	breath.set_anchors_preset(Control.PRESET_FULL_RECT)
-	breath.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	breath.draw.connect(_draw_breath)
-	breath.visible = false
-	root.add_child(breath)
 	# legenda
 	sub_panel = PanelContainer.new()
 	sub_panel.add_theme_stylebox_override("panel", _panel_style())
@@ -454,8 +445,6 @@ func toggle_pause(on: bool) -> void:
 func _process(delta: float) -> void:
 	marker.queue_redraw()
 	gauges.queue_redraw()
-	if breath.visible:
-		breath.queue_redraw()
 	var p: Survivor = main.player
 	if p and p.has_heart and p.heart > 135 and p.alive:
 		var k: float = clamp((p.heart - 135.0) / 45.0, 0.0, 1.0)
@@ -507,12 +496,3 @@ func _draw_gauges() -> void:
 		gauges.draw_string(font_bold, hp + Vector2(20, 8), "%d bpm" % int(p.heart), HORIZONTAL_ALIGNMENT_LEFT, -1, 22, hc)
 		if p.heart > 150:
 			gauges.draw_string(font_ui, hp + Vector2(-8, -22), "coração disparado — pare de correr para acalmar", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("ffb3a8"))
-
-func _draw_breath() -> void:
-	var c := breath.size * Vector2(0.5, 0.45)
-	breath.draw_circle(c, 120, Color(0, 0, 0, 0.45))
-	breath.draw_arc(c, 120, 0, TAU, 64, Color("e8b10d"), 3)
-	breath.draw_circle(c, 20 + 98 * breath_value, Color(0.9, 0.75, 0.3, 0.35))
-	var txt := "SEGURE ESPAÇO — puxe o ar" if breath_phase == "in" else "SOLTE — solte o ar devagar"
-	var w := font_title.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 30).x
-	breath.draw_string(font_title, c + Vector2(-w * 0.5, 175), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("ece6d6"))
