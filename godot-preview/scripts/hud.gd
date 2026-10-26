@@ -19,6 +19,8 @@ var main: Node = null
 var font_title: Font
 var font_ui: Font
 var font_bold: Font
+var card_bg: TextureRect
+var font_label: Font     # rótulos curtos (OBJETIVO, nomes, FÔLEGO): Syne espaçada
 var root: Control
 var vignette: TextureRect
 var red: ColorRect
@@ -49,20 +51,40 @@ var end_box: VBoxContainer
 var waypoint = null
 var skip_line := false
 var _faces := {}
+var _vozes := {}          # texto da fala -> arquivo de voz (ElevenLabs)
+var voz: AudioStreamPlayer
 
 func setup(m: Node) -> Hud:
 	main = m
 	layer = 10
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	font_title = load("res://assets/fonts/titulo.ttf")
+	# letras (Afrodite): Instrument Serif nos títulos de cinema, Syne nos rótulos, Manrope no texto
+	font_title = _espacada(load("res://assets/fonts/titulo.ttf"), 2)
 	font_ui = load("res://assets/fonts/texto.ttf")
 	font_bold = load("res://assets/fonts/texto-bold.ttf")
+	font_label = _espacada(load("res://assets/fonts/rotulo.ttf"), 3)
 	root = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 	_build()
+	voz = AudioStreamPlayer.new()
+	voz.volume_db = 2.0
+	add_child(voz)
+	var f := FileAccess.open("res://assets/audio/vozes/falas.json", FileAccess.READ)
+	if f:
+		var tab: Dictionary = JSON.parse_string(f.get_as_text())
+		for id in tab:
+			var arq := "res://assets/audio/vozes/%s.mp3" % id
+			if ResourceLoader.exists(arq):
+				_vozes[tab[id][1]] = arq
 	return self
+
+func _espacada(f: Font, px: int) -> FontVariation:
+	var v := FontVariation.new()
+	v.base_font = f
+	v.spacing_glyph = px
+	return v
 
 func _label(text: String, font: Font, size: int, color := Color("ece6d6")) -> Label:
 	var l := Label.new()
@@ -163,7 +185,7 @@ void fragment() {
 	obj_box = VBoxContainer.new()
 	obj_box.position = Vector2(28, 24)
 	obj_box.add_theme_constant_override("separation", 0)
-	obj_box.add_child(_label("OBJETIVO", font_title, 22, Color("e8b10d")))
+	obj_box.add_child(_label("OBJETIVO", font_label, 15, Color("e8b10d")))
 	obj_text = _label("", font_bold, 22)
 	obj_box.add_child(obj_text)
 	obj_box.visible = false
@@ -206,7 +228,7 @@ void fragment() {
 	hb.add_child(sub_face)
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 2)
-	sub_name = _label("", font_title, 24)
+	sub_name = _label("", font_label, 16)
 	sub_text = _label("", font_ui, 23)
 	sub_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	sub_text.custom_minimum_size = Vector2(520, 0)
@@ -232,7 +254,7 @@ void fragment() {
 	struggle_box.anchor_right = 0.5
 	struggle_box.anchor_top = 0.62
 	struggle_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	var st := _label("SE SOLTA! Aperte E sem parar", font_title, 34, Color("ff6b5b"))
+	var st := _label("SE SOLTA! Aperte E sem parar", font_label, 26, Color("ff6b5b"))
 	st.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	struggle_box.add_child(st)
 	struggle_bar = ProgressBar.new()
@@ -279,13 +301,36 @@ void fragment() {
 	card_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	card_box.grow_vertical = Control.GROW_DIRECTION_BOTH
 	card_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	card_title = _label("", font_title, 78, Color("ece6d6"))
+	card_title = _label("", font_title, 70, Color("ece6d6"))
 	card_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	card_sub = _label("", font_bold, 24, Color("e8b10d"))
+	card_sub = _label("", font_label, 17, Color("e8b10d"))
 	card_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	card_box.add_child(card_title)
 	card_box.add_child(card_sub)
 	card_box.modulate.a = 0.0
+	# faixa escura e macia por trás do título (lê bem sobre qualquer cena)
+	card_bg = TextureRect.new()
+	var gt_card := GradientTexture2D.new()
+	var gr_card := Gradient.new()
+	gr_card.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
+	gr_card.colors = PackedColorArray([Color(0, 0, 0, 0), Color(0, 0, 0, 0.78), Color(0, 0, 0, 0)])
+	gt_card.gradient = gr_card
+	gt_card.fill_from = Vector2(0, 0)
+	gt_card.fill_to = Vector2(0, 1)
+	gt_card.width = 4
+	gt_card.height = 128
+	card_bg.texture = gt_card
+	card_bg.stretch_mode = TextureRect.STRETCH_SCALE
+	card_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	card_bg.anchor_left = 0.0
+	card_bg.anchor_right = 1.0
+	card_bg.anchor_top = 0.5
+	card_bg.anchor_bottom = 0.5
+	card_bg.offset_top = -120
+	card_bg.offset_bottom = 120
+	card_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card_bg.modulate.a = 0.0
+	root.add_child(card_bg)
 	root.add_child(card_box)
 	# fim
 	end_box = VBoxContainer.new()
@@ -312,7 +357,7 @@ func _build_pause() -> void:
 	pause_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 10)
-	vb.add_child(_label("PAUSADO", font_title, 54, Color("e8b10d")))
+	vb.add_child(_label("Pausado", font_title, 60, Color("e8b10d")))
 	for b in [["Continuar", "continue"], ["Recomeçar capítulo", "restart"], ["Pular capítulo", "skip"], ["Começar do início", "begin"]]:
 		var btn := Button.new()
 		btn.text = b[0]
@@ -361,11 +406,19 @@ func set_hint(text: String) -> void:
 
 func card(title: String, sub: String, hold := 2.6) -> void:
 	card_title.text = title
-	card_sub.text = sub
+	card_sub.text = sub.to_upper()
+	# o título de cinema cabe sempre na tela (encolhe se for comprido)
+	var tam := 70
+	var larg: float = get_viewport().get_visible_rect().size.x - 120.0
+	while tam > 36 and font_title.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, tam).x > larg:
+		tam -= 4
+	card_title.label_settings.font_size = tam
 	var tw := create_tween()
 	tw.tween_property(card_box, "modulate:a", 1.0, 0.8)
+	tw.parallel().tween_property(card_bg, "modulate:a", 1.0, 0.8)
 	tw.tween_interval(hold)
 	tw.tween_property(card_box, "modulate:a", 0.0, 0.8)
+	tw.parallel().tween_property(card_bg, "modulate:a", 0.0, 0.8)
 	await tw.finished
 
 func _face(id: String) -> Texture2D:
@@ -390,6 +443,12 @@ func say(who: String, text: String, dur := -1.0) -> void:
 	sub_panel.visible = true
 	if dur < 0:
 		dur = clamp(1.4 + text.length() * 0.055, 2.0, 6.0)
+	# voz gravada (ElevenLabs): toca junto e a legenda espera a fala acabar
+	if _vozes.has(text) and not main.auto:
+		var st: AudioStream = load(_vozes[text])
+		voz.stream = st
+		voz.play()
+		dur = max(dur * 0.6, st.get_length() + 0.35)
 	if main.auto:
 		dur = 0.25
 	skip_line = false
@@ -398,6 +457,8 @@ func say(who: String, text: String, dur := -1.0) -> void:
 		await get_tree().process_frame
 		if not get_tree().paused:
 			t += get_process_delta_time()
+	if skip_line:
+		voz.stop()
 	sub_panel.visible = false
 
 func show_prompt(text: String) -> void:
@@ -443,25 +504,30 @@ func toggle_pause(on: bool) -> void:
 
 # ------------------------------------------------------------------ desenho
 func _process(delta: float) -> void:
+	if cctv.visible:
+		var seg := int(Time.get_ticks_msec() / 1000) % 60
+		cctv_label.text = "CAM 02 · FRENTE      17:5%d:%02d      ● REC\nMORDIDOS %d   ·   LEVANTARAM %d" % [3 + int(Time.get_ticks_msec() / 60000) % 6, seg, main.mordidos, main.viraram]
 	marker.queue_redraw()
 	gauges.queue_redraw()
-	var p: Survivor = main.player
-	if p and p.has_heart and p.heart > 135 and p.alive:
-		var k: float = clamp((p.heart - 135.0) / 45.0, 0.0, 1.0)
-		red.color.a = k * (0.12 + 0.1 * sin(Time.get_ticks_msec() * 0.012 * (p.heart / 80.0)))
+	var p: Sobrevivente = main.jogador
+	if p and p.tem_coracao and p.bpm > 135 and p.vivo:
+		var k: float = clamp((p.bpm - 135.0) / 45.0, 0.0, 1.0)
+		red.color.a = k * (0.12 + 0.1 * sin(Time.get_ticks_msec() * 0.012 * (p.bpm / 80.0)))
 	else:
 		red.color.a = move_toward(red.color.a, 0.0, delta)
-	if p and p.grabbed_by != null:
+	if p and p.agarrado_por != null:
 		struggle_box.visible = true
-		struggle_bar.value = p.grab_progress
+		struggle_bar.value = p.luta
 	else:
 		struggle_box.visible = false
 
 func _draw_marker() -> void:
 	if waypoint == null or main.cam == null or bars[0].offset_bottom > 10:
 		return
-	var xf: Transform2D = main.get_viewport().get_canvas_transform()
-	var sp: Vector2 = xf * (waypoint as Vector2)
+	var w3: Vector3 = waypoint
+	if main.cam.is_position_behind(w3):
+		return
+	var sp: Vector2 = main.cam.unproject_position(w3) / main.get_viewport().get_visible_rect().size * marker.size
 	var size := marker.size
 	var c := size * 0.5
 	var inside := Rect2(Vector2(40, 40), size - Vector2(80, 80)).has_point(sp)
@@ -480,19 +546,19 @@ func _draw_marker() -> void:
 		marker.draw_colored_polygon(pts, col)
 
 func _draw_gauges() -> void:
-	var p: Survivor = main.player
-	if p == null or not p.controlled or bars[0].offset_bottom > 10 or not main.player_input_enabled:
+	var p: Sobrevivente = main.jogador
+	if p == null or not p.controlado or bars[0].offset_bottom > 10 or not main.controle_livre:
 		return
 	var base := Vector2(30, gauges.size.y - 40)
 	# fôlego
-	gauges.draw_string(font_title, base + Vector2(0, -12), "FÔLEGO", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("c9c3b3"))
+	gauges.draw_string(font_label, base + Vector2(0, -12), "FÔLEGO", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("c9c3b3"))
 	gauges.draw_rect(Rect2(base, Vector2(200, 10)), Color(0, 0, 0, 0.55))
-	gauges.draw_rect(Rect2(base, Vector2(200 * p.stamina, 10)), Color("e8b10d") if p.stamina > 0.25 else Color("d9533f"))
-	if p.has_heart:
-		var beat: float = abs(sin(Time.get_ticks_msec() * 0.001 * PI * p.heart / 60.0))
-		var hc := Color("e05a5a").lerp(Color(2, 0.4, 0.4), clamp((p.heart - 110) / 60.0, 0, 1))
+	gauges.draw_rect(Rect2(base, Vector2(200 * p.folego, 10)), Color("e8b10d") if p.folego > 0.25 else Color("d9533f"))
+	if p.tem_coracao:
+		var beat: float = abs(sin(Time.get_ticks_msec() * 0.001 * PI * p.bpm / 60.0))
+		var hc := Color("e05a5a").lerp(Color(2, 0.4, 0.4), clamp((p.bpm - 110) / 60.0, 0, 1))
 		var hp := base + Vector2(240, 4)
 		gauges.draw_circle(hp, 9 + beat * 3, hc)
-		gauges.draw_string(font_bold, hp + Vector2(20, 8), "%d bpm" % int(p.heart), HORIZONTAL_ALIGNMENT_LEFT, -1, 22, hc)
-		if p.heart > 150:
+		gauges.draw_string(font_bold, hp + Vector2(20, 8), "%d bpm" % int(p.bpm), HORIZONTAL_ALIGNMENT_LEFT, -1, 22, hc)
+		if p.bpm > 150:
 			gauges.draw_string(font_ui, hp + Vector2(-8, -22), "coração disparado — pare de correr para acalmar", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("ffb3a8"))

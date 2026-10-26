@@ -1,487 +1,434 @@
-extends Node2D
-## Diretor do prólogo "Dia Zero". Monta a cidade e roda a abertura e os três capítulos, seguindo a
-## história oficial (docs/historia.md): Hannah na faculdade → Antônio no mercado → corredor atacando
-## a Hadassa → fuga para o morro.
+extends Node3D
+## Diretor do prólogo "Dia Zero" (Zeus). Segue a história oficial (docs/historia.md):
+## Hannah espera a banca do TCC → batida → a avenida vira caos → ela corre para o hospital.
+## Antônio vê pelas câmeras o ataque às funcionárias, baixa o portão, vê tudo do telhado e salva a
+## Hadassa do corredor com o extintor. Os dois fogem da horda até a casa no alto do morro.
 
-static var act := 0                 # 0 = abertura, 1 = Hannah, 2 = Antônio, 3 = fuga
+static var capitulo := 0          # 0 = abertura, 1 = Hannah, 2 = Antônio, 3 = fuga
 
-var auto := false                   # --autotest: o jogo se joga sozinho (para testar)
-var shots_dir := ""
-var world: World
-var decals: Decals
-var interior: MercadoInterior
-var entities: Node2D
-var cam: Camera2D
-var tint: CanvasModulate
+var auto := false                 # --autotest: o jogo se joga sozinho (para testar)
+var pasta_fotos := ""
+var amb: Ambiente
+var cidade: Cidade
+var col: Colisao
+var efeitos: Node3D
+var cam: CameraZ
 var hud: Hud
-var audio: GameAudio
-var mercado: Building
-var player: Survivor = null
-var hannah: Survivor = null
-var antonio: Survivor = null
-var hadassa: Survivor = null
-var survivors: Array = []
-var civilians: Array = []
-var zombies: Array = []
-var cars: Array = []
-var lamp_lights: Array = []
-var flee_point := Vector2.INF
-var player_input_enabled := false
-var cam_follow: Node2D = null
-var cam_zoom := 1.1
-var cam_offset := Vector2.ZERO
-var _grid := {}
-const GRID := 96.0
-var _caught := false
-var _ending := false
-var _clock := 0.0
-var _day := 0.0
+var audio: SomZ
+var jogador: Sobrevivente = null
+var hannah: Sobrevivente = null
+var antonio: Sobrevivente = null
+var hadassa: Sobrevivente = null
+var sobreviventes: Array = []
+var civis: Array = []
+var infectados: Array = []
+var carros: Array = []
+var fuga := Vector3.INF
+var controle_livre := false
+var _pego := false
+var _fim := false
+var _luzes: Array[OmniLight3D] = []
+var _luz_t := 0.0
+var _marcas: Array = []
+var _estudantes: Array = []
+var _funcionarias: Array = []
+var _corredor: Infectado = null
+var mordidos := 0                 # contágio: quantos foram mordidos e quantos já viraram
+var viraram := 0
+const MAX_INFECTADOS := 120       # acima disso, some o infectado mais longe da câmera (leveza)
 
 func _ready() -> void:
 	randomize()
 	var args := OS.get_cmdline_user_args()
 	auto = "--autotest" in args
 	for a in args:
-		if a.begins_with("--shots="):
-			shots_dir = a.substr(8)
+		if a.begins_with("--fotos="):
+			pasta_fotos = a.substr(8)
 	if auto:
 		Engine.time_scale = 2.5
-		print("[autotest] capítulo ", act)
-	_setup_input()
-	audio = GameAudio.new()
-	audio.main = self
+		print("[autotest] capítulo ", capitulo)
+	_entradas()
+	audio = SomZ.new()
+	audio.cena = self
 	add_child(audio)
-	tint = CanvasModulate.new()
-	add_child(tint)
-	world = World.new()
-	add_child(world)
-	decals = Decals.new()
-	add_child(decals)
-	interior = MercadoInterior.new()
-	add_child(interior)
-	entities = Node2D.new()
-	entities.y_sort_enabled = true
-	add_child(entities)
-	cam = Camera2D.new()
+	amb = Ambiente.new()
+	add_child(amb)
+	amb.montar()
+	col = Colisao.new()
+	cidade = Cidade.new()
+	add_child(cidade)
+	cidade.montar(col)
+	efeitos = Node3D.new()
+	add_child(efeitos)
+	cam = CameraZ.new()
 	add_child(cam)
-	cam.make_current()
+	Predio.camera = cam
+	Pessoa.camera = cam
+	for i in 10:
+		var l := OmniLight3D.new()
+		l.light_color = Color(1.0, 0.8, 0.52)
+		l.omni_range = 16.0
+		l.light_energy = 0.0
+		add_child(l)
+		_luzes.append(l)
 	hud = Hud.new()
 	add_child(hud)
 	hud.setup(self)
-	_build_city()
 	if "--rotas" in args:
-		_check_routes()
+		_checar_rotas()
 		return
-	match act:
+	match capitulo:
 		0:
-			_setup_act1()
-			_run_intro_then_act1()
+			_preparar_cap1()
+			_abertura_e_cap1()
 		1:
-			_setup_act1()
-			_act1()
+			_preparar_cap1()
+			_cap1()
 		2:
-			_setup_act2()
-			_act2()
+			_preparar_cap2()
+			_cap2()
 		_:
-			_setup_act3()
-			_act3()
+			_preparar_cap3()
+			_cap3()
 
-func _setup_input() -> void:
-	var keys := {
-		"mover_esq": [KEY_A, KEY_LEFT], "mover_dir": [KEY_D, KEY_RIGHT],
-		"mover_cima": [KEY_W, KEY_UP], "mover_baixo": [KEY_S, KEY_DOWN],
-		"correr": [KEY_SHIFT], "pular": [KEY_SPACE], "interagir": [KEY_E],
-		"atacar": [KEY_F], "pular_fala": [KEY_ENTER, KEY_KP_ENTER], "pausa": [KEY_ESCAPE, KEY_P],
+func _entradas() -> void:
+	var teclas := {
+		"mover_esq": [KEY_A, KEY_LEFT], "mover_dir": [KEY_D, KEY_RIGHT], "mover_cima": [KEY_W, KEY_UP], "mover_baixo": [KEY_S, KEY_DOWN],
+		"correr": [KEY_SHIFT], "pular": [KEY_SPACE], "interagir": [KEY_E], "atacar": [KEY_F],
+		"pular_fala": [KEY_ENTER, KEY_KP_ENTER], "pausa": [KEY_ESCAPE, KEY_P],
 	}
-	var pads := {"pular": JOY_BUTTON_A, "interagir": JOY_BUTTON_X, "atacar": JOY_BUTTON_B,
-		"correr": JOY_BUTTON_RIGHT_SHOULDER, "pausa": JOY_BUTTON_START, "pular_fala": JOY_BUTTON_Y}
-	var axes := {"mover_esq": [JOY_AXIS_LEFT_X, -1.0], "mover_dir": [JOY_AXIS_LEFT_X, 1.0],
-		"mover_cima": [JOY_AXIS_LEFT_Y, -1.0], "mover_baixo": [JOY_AXIS_LEFT_Y, 1.0]}
-	for a in keys:
+	var botoes := {"pular": JOY_BUTTON_A, "interagir": JOY_BUTTON_X, "atacar": JOY_BUTTON_B, "correr": JOY_BUTTON_RIGHT_SHOULDER,
+		"pausa": JOY_BUTTON_START, "pular_fala": JOY_BUTTON_Y}
+	var eixos := {"mover_esq": [JOY_AXIS_LEFT_X, -1.0], "mover_dir": [JOY_AXIS_LEFT_X, 1.0], "mover_cima": [JOY_AXIS_LEFT_Y, -1.0], "mover_baixo": [JOY_AXIS_LEFT_Y, 1.0]}
+	for a in teclas:
 		if InputMap.has_action(a):
 			continue
 		InputMap.add_action(a, 0.25)
-		for k in keys[a]:
+		for k in teclas[a]:
 			var e := InputEventKey.new()
 			e.physical_keycode = k
 			InputMap.action_add_event(a, e)
-		if pads.has(a):
+		if botoes.has(a):
 			var jb := InputEventJoypadButton.new()
-			jb.button_index = pads[a]
+			jb.button_index = botoes[a]
 			InputMap.action_add_event(a, jb)
-		if axes.has(a):
+		if eixos.has(a):
 			var jm := InputEventJoypadMotion.new()
-			jm.axis = axes[a][0]
-			jm.axis_value = axes[a][1]
+			jm.axis = eixos[a][0]
+			jm.axis_value = eixos[a][1]
 			InputMap.action_add_event(a, jm)
 	if InputMap.action_get_events("atacar").filter(func(e): return e is InputEventMouseButton).is_empty():
 		var mb := InputEventMouseButton.new()
 		mb.button_index = MOUSE_BUTTON_LEFT
 		InputMap.action_add_event("atacar", mb)
 
-# ======================================================================= cidade
-func _bld(r: Rect2, floors: int, kind := "generic", label := "", wall := Color("b8b4a8"), roof := Color("9c9a92"), solid := true) -> Building:
-	var b := Building.new().setup(r, floors, kind, label, wall, roof)
-	entities.add_child(b)
-	if solid:
-		world.obstacles.append(r)
-	return b
-
-func _build_city() -> void:
-	Building.focus = null
-	_bld(World.HOSPITAL, 5, "hospital", "HOSPITAL", Color("dcd8cd"), Color("aeaca4"))
-	_bld(World.FAC_N, 4, "faculdade", "FACULDADE", Color("d6d1c3"), Color("a3a199"))
-	_bld(World.FAC_W, 4, "faculdade", "", Color("d6d1c3"), Color("a3a199"))
-	_bld(World.FAC_E, 4, "faculdade", "", Color("d6d1c3"), Color("a3a199"))
-	mercado = _bld(World.MERCADO, 3, "mercado", "MERCADO", Color("d9d4c6"), Color("8f8d86"), false)
-	mercado.hollow = true
-	for r in [Rect2(1780, 2120, 300, 14), Rect2(2240, 2120, 300, 14), Rect2(1780, 2406, 370, 14), Rect2(2230, 2406, 310, 14),
-			Rect2(1780, 2120, 14, 300), Rect2(2526, 2120, 14, 300), Rect2(2290, 2134, 12, 166),
-			Rect2(1830, 2180, 320, 22), Rect2(1830, 2240, 320, 22), Rect2(1830, 2300, 320, 22),
-			Rect2(2330, 2150, 190, 40), Rect2(2330, 2196, 50, 34), Rect2(2430, 2248, 80, 28), Rect2(2232, 2160, 36, 74)]:
-		world.obstacles.append(r)
-	var est := Building.new().setup(Rect2(World.ESTADIO_C - World.ESTADIO_R, World.ESTADIO_R * 2), 3, "estadio", "ESTÁDIO")
-	entities.add_child(est)
-	# prédios residenciais (3 a 5 andares — regra do dono)
-	var tower_walls := [Color("cfc8b8"), Color("b9b2a6"), Color("d8d2c4"), Color("a9a49a"), Color("c4b8a6")]
-	var towers := [Rect2(60, 1900, 300, 200), Rect2(470, 1900, 260, 220), Rect2(840, 1900, 300, 200), Rect2(1210, 1920, 220, 180),
-		Rect2(60, 2280, 280, 230), Rect2(450, 2300, 360, 200), Rect2(920, 2260, 380, 240),
-		Rect2(2640, 2160, 360, 200), Rect2(3290, 1900, 260, 220), Rect2(3650, 1900, 300, 200), Rect2(4050, 1900, 320, 230),
-		Rect2(4460, 1900, 300, 200), Rect2(3290, 2300, 350, 240), Rect2(3800, 2330, 300, 220), Rect2(4250, 2300, 420, 250)]
-	var i := 0
-	for r in towers:
-		_bld(r, 3 + (i * 7) % 3, "generic", "", tower_walls[i % tower_walls.size()], Color("8d8b84").lerp(Color("b3b1a8"), (i % 3) / 2.0))
-		i += 1
-	# casas ao sul da rua de trás
-	var x := 40.0
-	while x < 4700:
-		_bld(Rect2(x, 2790, 130, 100), 2, "casa", "", Color("d8c9b0"), Color("a4513a"))
-		_bld(Rect2(x + 40, 2980, 130, 100), 2, "casa", "", Color("cfc1a5"), Color("a4513a"))
-		x += 175
-	# cidade ao longe (noroeste) e a casa no alto do morro
-	for k in 9:
-		var rr := Rect2(60 + k * 205, 120 + (k % 3) * 120, 170, 160)
-		_bld(rr, 5, "generic", "", Color("a8a69e"), Color("7d7c76"), false)
-	_bld(Rect2(4200, -1360, 130, 90), 2, "casa", "", Color("e2d8c6"), Color("a4513a"))
-	# carros estacionados
-	for k in 12:
-		var cx := 1745.0 + k * 92.0
-		if k % 3 != 1:
-			_parked(Vector2(cx, 1905), PI * 0.5)
-		if k % 4 != 2:
-			_parked(Vector2(cx + 46, 2055), -PI * 0.5)
-	for k in 9:
-		if k % 2 == 0:
-			_parked(Vector2(270 + k * 110, 1350), PI * 0.5)
-	spawn_car(Vector2(700, 1500), 0, "ambulancia")
-	spawn_car(Vector2(860, 1500), 0, "ambulancia")
-	# postes de luz
-	for lp in world.lamps:
-		var l := FX.make_light(self, lp + Vector2(0, 30), Color(1.0, 0.82, 0.55), 0.0, 1.5)
-		l.z_index = 1
-		lamp_lights.append(l)
-
-func _parked(p: Vector2, ang: float) -> void:
-	spawn_car(p, ang)
-
 # ======================================================================= gente e coisas
-func spawn_civ(p: Vector2, calm := true) -> Civilian:
-	var c := Civilian.new().setup(self, calm)
-	c.position = p
-	entities.add_child(c)
-	civilians.append(c)
+func novo_civil(p: Vector3, tipo := "", calmo := true) -> Civil:
+	var c := Civil.new()
+	add_child(c)
+	c.montar(self, tipo, calmo)
+	c.global_position = Vector3(p.x, 0, p.z)
+	c.dir = randf() * TAU
+	civis.append(c)
 	return c
 
-func spawn_zombie(p: Vector2, kind := "comum", variant := -1) -> Zombie:
-	var z := Zombie.new().setup(self, kind, variant)
-	z.position = p
-	z.heading = randf() * TAU
-	entities.add_child(z)
-	zombies.append(z)
+func novo_infectado(p: Vector3, tipo := "comum", variante := "") -> Infectado:
+	var z := Infectado.new()
+	add_child(z)
+	z.montar(self, tipo, variante)
+	z.global_position = Vector3(p.x, Mapa.altura(p.x, p.z), p.z)
+	infectados.append(z)
 	return z
 
-func spawn_car(p: Vector2, ang: float, kind := "carro", col := "") -> Car:
-	var c := Car.new().setup(self, p, ang, kind, col)
-	entities.add_child(c)
-	cars.append(c)
+func novo_carro(p: Vector3, ang: float, tipo := "hatch", cor := "") -> Carro:
+	var c := Carro.new()
+	c.montar(self, tipo, cor)
+	c.position = Vector3(p.x, 0, p.z)
+	c.rotation.y = ang
+	add_child(c)
+	carros.append(c)
 	return c
 
-func spawn_survivor(id: String, p: Vector2) -> Survivor:
-	var s := Survivor.new().setup(self, id)
-	s.position = p
-	entities.add_child(s)
-	survivors.append(s)
-	s.caught.connect(_on_caught)
+func novo_sobrevivente(id: String, p: Vector3, ext := false) -> Sobrevivente:
+	var s := Sobrevivente.new()
+	add_child(s)
+	s.montar(self, id, ext)
+	s.global_position = p
+	sobreviventes.append(s)
+	s.pego.connect(_quando_pego)
 	return s
 
-func set_player(s: Survivor) -> void:
-	if player:
-		player.controlled = false
-	player = s
-	s.controlled = true
-	Building.focus = s
-	cam_follow = s
-	cam.position = s.position
+func controlar(s: Sobrevivente) -> void:
+	if jogador:
+		jogador.controlado = false
+	jogador = s
+	s.controlado = true
+	Predio.foco = s
+	cam.seguir(s, 30.0)
 
-func wreck(p: Vector2, ang: float, burning := true, kind := "carro") -> Car:
-	var c := spawn_car(p, ang, kind)
-	c.state = "crashed"
-	if burning:
-		c.ignite()
+func destroco(p: Vector3, ang: float, pegando_fogo := true, tipo := "hatch") -> Carro:
+	var c := novo_carro(p, ang, tipo)
+	c.estado = "batido"
+	c.corpo.rotation.z = randf_range(-0.06, 0.06)
+	if pegando_fogo:
+		c.pegar_fogo()
+		if randf() < 0.5:
+			c.queimar()
 	else:
-		FX.smoke(c, Vector2(0, -20), 0.7)
+		FX.fumaca(c, Vector3(1.2, 1.0, 0), 0.6, false)
 	return c
 
-func turn_into_zombie(c: Civilian) -> Zombie:
+func virar_infectado(c: Civil) -> Infectado:
 	if not is_instance_valid(c):
 		return null
-	var z := spawn_zombie(c.position, "comum", 2 if c.elderly else -1)
-	z.heading = c.heading
-	z.play("hit", true)
-	z.stun = 1.0
-	civilians.erase(c)
+	var z := novo_infectado(c.global_position, "comum", "paciente" if c.idoso else "")
+	z.dir = c.dir
+	z.tocar("hit", true)
+	z.atordoado = 1.0
+	z.visao = 18.0
+	z.pensa = 1.0
+	viraram += 1
+	audio.gemido(c.global_position, "comum")
+	civis.erase(c)
 	c.queue_free()
+	if infectados.size() > MAX_INFECTADOS:
+		var foco: Vector3 = cam.global_position
+		var longe: Node3D = null
+		var ld := 0.0
+		for o in infectados:
+			if is_instance_valid(o) and o != z and o.alvo_cena == null:
+				var d := _d2(o.global_position, foco)
+				if d > ld:
+					ld = d
+					longe = o
+		if longe:
+			infectados.erase(longe)
+			longe.queue_free()
 	return z
 
-func blood(p: Vector2, amount: float) -> void:
-	decals.add(p + Vector2(randf_range(-6, 6), randf_range(-4, 4)), randf_range(7, 12) + amount * 0.35, Color(0.33, 0.02, 0.03, 0.78))
+func marca(p: Vector3, tam: float, tipo := "sangue") -> void:
+	_marcas.append(FX.mancha(efeitos, p + Vector3(randf_range(-0.3, 0.3), 0, randf_range(-0.3, 0.3)), tam * randf_range(0.8, 1.2), tipo))
+	if _marcas.size() > 160:
+		var m = _marcas.pop_front()
+		if is_instance_valid(m):
+			m.queue_free()
 
-func scorch(p: Vector2, r: float) -> void:
-	decals.add(p, r, Color(0.04, 0.035, 0.03, 0.72))
+func _d2(a: Vector3, b: Vector3) -> float:
+	return (a.x - b.x) * (a.x - b.x) + (a.z - b.z) * (a.z - b.z)
 
-# ----------------------------------------------------------------------- consultas
-func _rebuild_grid() -> void:
-	_grid.clear()
-	for list in [civilians, zombies, survivors]:
-		for a in list:
-			if not is_instance_valid(a):
-				continue
-			var k := Vector2i(floori(a.position.x / GRID), floori(a.position.y / GRID))
-			if not _grid.has(k):
-				_grid[k] = []
-			_grid[k].append(a)
-
-func actors_near(p: Vector2, r: float) -> Array:
+func perto(p: Vector3, r: float) -> Array:
 	var out := []
-	var c0 := Vector2i(floori((p.x - r) / GRID), floori((p.y - r) / GRID))
-	var c1 := Vector2i(floori((p.x + r) / GRID), floori((p.y + r) / GRID))
-	for gx in range(c0.x, c1.x + 1):
-		for gy in range(c0.y, c1.y + 1):
-			var k := Vector2i(gx, gy)
-			if _grid.has(k):
-				for a in _grid[k]:
-					if is_instance_valid(a) and a.position.distance_to(p) <= r:
-						out.append(a)
+	var r2 := r * r
+	for lista in [civis, infectados, sobreviventes]:
+		for a in lista:
+			if is_instance_valid(a) and _d2(a.global_position, p) <= r2:
+				out.append(a)
 	return out
 
-func nearest_zombie(p: Vector2, r: float) -> Zombie:
-	var best: Zombie = null
+func infectado_perto(p: Vector3, r: float) -> Infectado:
+	var best: Infectado = null
 	var bd := r * r
-	for z in zombies:
-		if is_instance_valid(z) and z.alive:
-			var d := p.distance_squared_to(z.position)
+	for z in infectados:
+		if is_instance_valid(z) and z.vivo:
+			var d := _d2(z.global_position, p)
 			if d < bd:
 				bd = d
 				best = z
 	return best
 
-func nearest_human(p: Vector2, r: float) -> Node2D:
-	var best: Node2D = null
+func infectados_perto(p: Vector3, r: float) -> int:
+	var n := 0
+	for z in infectados:
+		if is_instance_valid(z) and z.vivo and _d2(z.global_position, p) < r * r:
+			n += 1
+	return n
+
+func humano_perto(p: Vector3, r: float) -> Node3D:
+	var best: Node3D = null
 	var bd := r * r
-	for c in civilians:
-		if is_instance_valid(c) and (c.state == "calm" or c.state == "panic"):
-			var d := p.distance_squared_to(c.position)
+	for c in civis:
+		if is_instance_valid(c) and c.estado in ["calmo", "panico", "encolhido"]:
+			var d := _d2(c.global_position, p)
 			if d < bd:
 				bd = d
 				best = c
-	for s in survivors:
-		if is_instance_valid(s) and s.alive and s.visible and s.z_index < 20:
-			var d2 := p.distance_squared_to(s.position) * (0.7 if s.controlled else 1.0)
+	for s in sobreviventes:
+		if is_instance_valid(s) and s.vivo and s.visible and not s.get_meta("no_telhado", false):
+			var d2 := _d2(s.global_position, p) * (0.6 if s.controlado else 1.0)
 			if d2 < bd:
 				bd = d2
 				best = s
 	return best
 
-func zombies_near(p: Vector2, r: float) -> int:
-	var n := 0
-	for z in zombies:
-		if is_instance_valid(z) and z.alive and p.distance_squared_to(z.position) < r * r:
-			n += 1
-	return n
-
-# ======================================================================= laço principal
-func _physics_process(delta: float) -> void:
-	_clock += delta
+# ======================================================================= laço
+func _physics_process(_delta: float) -> void:
 	if Engine.get_physics_frames() % 30 == 0:
-		zombies = zombies.filter(func(z): return is_instance_valid(z))
-		civilians = civilians.filter(func(c): return is_instance_valid(c))
-	_rebuild_grid()
-	# separação entre pessoas (ninguém fica em cima de ninguém)
-	for list in [zombies, civilians, survivors]:
-		for a in list:
-			if not is_instance_valid(a) or a.ghost:
+		infectados = infectados.filter(func(z): return is_instance_valid(z))
+		civis = civis.filter(func(c): return is_instance_valid(c))
+		carros = carros.filter(func(c): return is_instance_valid(c))
+	# ninguém fica em cima de ninguém
+	var todos := []
+	for lista in [infectados, civis, sobreviventes]:
+		for a in lista:
+			if not is_instance_valid(a) or a.fantasma or not a.vivo:
 				continue
-			if a is Zombie and not a.alive:
+			if a is Civil and not a.estado in ["calmo", "panico", "encolhido"]:
 				continue
-			if a is Civilian and a.state != "calm" and a.state != "panic":
-				continue
-			for b in actors_near(a.position, 24):
-				if b == a or b.ghost:
-					continue
-				if b is Zombie and not b.alive:
-					continue
-				if b is Civilian and b.state != "calm" and b.state != "panic":
-					continue
-				var d: Vector2 = a.position - b.position
-				var m: float = a.radius + b.radius
-				var l := d.length()
-				if l < m and l > 0.01:
-					var push := d / l * (m - l) * 0.5
-					if not world.blocked(a.position + push, a.radius):
-						a.position += push
+			todos.append(a)
+	var n := todos.size()
+	for i in n:
+		var a: Pessoa = todos[i]
+		for j in range(i + 1, n):
+			var b: Pessoa = todos[j]
+			var dx := a.global_position.x - b.global_position.x
+			var dz := a.global_position.z - b.global_position.z
+			var m := a.raio + b.raio
+			var d2 := dx * dx + dz * dz
+			if d2 < m * m and d2 > 0.0001:
+				var d := sqrt(d2)
+				var e := (m - d) * 0.5 / d
+				a.global_position += Vector3(dx * e, 0, dz * e)
+				b.global_position -= Vector3(dx * e, 0, dz * e)
 
 func _process(delta: float) -> void:
-	if cam_follow and is_instance_valid(cam_follow):
-		var look := Vector2.ZERO
-		if cam_follow is Survivor:
-			look = cam_follow.vel * 0.22
-		cam.position = cam.position.lerp(cam_follow.position + look + cam_offset + Vector2(0, -24), clamp(delta * 4.5, 0, 1))
-	cam.zoom = cam.zoom.lerp(Vector2(cam_zoom, cam_zoom), clamp(delta * 2.2, 0, 1))
-	# camadas de som do ambiente
-	var cc := cam.get_screen_center_position()
-	var nz := zombies_near(cc, 700)
-	audio.set_bed(audio.horde, nz / 10.0, -10.0, delta)
+	var foco := cam.foco if not cam.livre else cam.global_position - cam.global_transform.basis.z * 30.0
+	audio.cama(audio.cama_horda, infectados_perto(foco, 25.0) / 9.0, -8.0, delta)
 	var np := 0
-	for c in civilians:
-		if is_instance_valid(c) and c.state == "panic" and c.position.distance_squared_to(cc) < 640000:
+	for c in civis:
+		if is_instance_valid(c) and c.estado == "panico" and _d2(c.global_position, foco) < 900.0:
 			np += 1
-	audio.set_bed(audio.panic, np / 12.0, -12.0, delta)
-	if player and player.has_heart and player.alive:
-		audio.set_bed(audio.heart, (player.heart - 100.0) / 60.0, -4.0, delta)
-		audio.heart.pitch_scale = clamp(player.heart / 80.0, 0.9, 2.2)
+	audio.cama(audio.cama_multidao, np / 10.0, -6.0, delta)
+	if jogador and jogador.tem_coracao and jogador.vivo:
+		audio.cama(audio.cama_coracao, (jogador.bpm - 100.0) / 60.0, -2.0, delta)
+		audio.cama_coracao.pitch_scale = clamp(jogador.bpm / 80.0, 0.9, 2.2)
 	else:
-		audio.set_bed(audio.heart, 0.0, -4.0, delta)
-
-## Hora do dia: 0 = pôr do sol (como na foto), 1 = noite.
-func set_day(k: float, t := 3.0) -> void:
-	var tw := create_tween()
-	tw.tween_method(_apply_day, _day, k, t)
-
-func _apply_day(k: float) -> void:
-	_day = k
-	var keys := [[0.0, Color(1.0, 0.86, 0.72)], [0.35, Color(0.9, 0.72, 0.64)], [0.6, Color(0.7, 0.62, 0.74)], [1.0, Color(0.4, 0.41, 0.58)]]
-	var col: Color = keys[0][1]
-	for i in keys.size() - 1:
-		if k >= keys[i][0] and k <= keys[i + 1][0]:
-			col = (keys[i][1] as Color).lerp(keys[i + 1][1], (k - keys[i][0]) / (keys[i + 1][0] - keys[i][0]))
-		elif k > keys[i + 1][0]:
-			col = keys[i + 1][1]
-	tint.color = col
-	var e: float = clamp((k - 0.25) / 0.5, 0.0, 1.0) * 1.1
-	for l in lamp_lights:
-		l.energy = e
-	for c in cars:
-		if is_instance_valid(c) and c._head:
-			c._head.energy = 0.4 + e
+		audio.cama(audio.cama_coracao, 0.0, -2.0, delta)
+	# luzes de poste: as 10 mais perto da câmera acendem ao anoitecer
+	_luz_t -= delta
+	if _luz_t <= 0:
+		_luz_t = 0.4
+		var noite: float = Ambiente.noite
+		var ps := cidade.postes.duplicate()
+		ps.sort_custom(func(a, b): return _d2(a, foco) < _d2(b, foco))
+		for i in _luzes.size():
+			if i < ps.size():
+				_luzes[i].global_position = ps[i]
+				_luzes[i].light_energy = 2.4 * noite
+	# buraco de visão dos prédios: posição do personagem na tela
+	if jogador and is_instance_valid(jogador) and not cam.is_position_behind(jogador.global_position):
+		var vp := get_viewport()
+		var esc := Vector2(vp.size) / vp.get_visible_rect().size
+		RenderingServer.global_shader_parameter_set("foco_tela", cam.unproject_position(jogador.global_position + Vector3(0, 1.0, 0)) * esc)
+		RenderingServer.global_shader_parameter_set("raio_tela", 150.0 * esc.y * clamp(30.0 / max(cam.distancia, 8.0), 0.6, 2.2))
+	# paredes da sala do TCC abaixam quando a Hannah está dentro (como no Zomboid)
+	for c in cidade.cortes:
+		var f: Node3D = Predio.foco
+		var dentro: bool = f != null and is_instance_valid(f) and c[1].has_point(Vector2(f.global_position.x, f.global_position.z))
+		c[0].scale.y = move_toward(c[0].scale.y, 0.3 if dentro else 1.0, delta * 2.0)
+	for r in cidade.refletores:
+		r.light_energy = 1.2 + 2.0 * Ambiente.noite
 
 # ======================================================================= ajudantes do roteiro
-func wait(t: float) -> void:
+func esperar(t: float) -> void:
 	if auto:
-		t = min(t, 0.35)
+		t = min(t, 0.3)
 	var e := 0.0
 	while e < t and is_inside_tree():
 		await get_tree().process_frame
 		if not get_tree().paused:
 			e += get_process_delta_time()
 
-func wait_until(cond: Callable, timeout := 8.0) -> void:
+func esperar_ate(cond: Callable, limite := 8.0) -> void:
 	var e := 0.0
-	while not cond.call() and e < timeout and is_inside_tree():
+	while not cond.call() and e < limite and is_inside_tree():
 		await get_tree().process_frame
 		if not get_tree().paused:
 			e += get_process_delta_time()
 
-func line(who: String, text: String, dur := -1.0) -> void:
-	await hud.say(who, text, dur)
+func fala(quem: String, txt: String, dur := -1.0) -> void:
+	await hud.say(quem, txt, dur)
 
-func reach(p: Vector2, r := 60.0) -> void:
-	hud.waypoint = p
+func chegar(p: Vector3, r := 3.0) -> void:
+	hud.waypoint = p + Vector3(0, 1.0, 0)
 	var e := 0.0
-	while is_instance_valid(player) and player.position.distance_to(p) > r and is_inside_tree():
+	while is_instance_valid(jogador) and _d2(jogador.global_position, p) > r * r and is_inside_tree():
 		await get_tree().process_frame
 		e += get_process_delta_time()
-		if auto and e > 0.5 and not _caught:
-			player.position = p
+		if auto and e > 0.5 and not _pego:
+			jogador.global_position = Vector3(p.x, Mapa.altura(p.x, p.z), p.z)
 	hud.waypoint = null
 
-func interact(p: Vector2, r: float, text: String, hold := 0.0) -> void:
-	hud.waypoint = p
+func usar(p: Vector3, r: float, txt: String, segurar := 0.0) -> void:
+	hud.waypoint = p + Vector3(0, 1.0, 0)
 	while is_inside_tree():
 		await get_tree().process_frame
 		if auto:
-			player.position = p + Vector2(0, 2)
+			jogador.global_position = Vector3(p.x, 0, p.z + 0.4)
 			break
-		var near := player.position.distance_to(p) < r and player_input_enabled
-		hud.show_prompt("[E] " + text if near else "")
-		if near and Input.is_action_just_pressed("interagir"):
-			if hold <= 0.0:
+		var perto_ := _d2(jogador.global_position, p) < r * r and controle_livre
+		hud.show_prompt("[E] " + txt if perto_ else "")
+		if perto_ and Input.is_action_just_pressed("interagir"):
+			if segurar <= 0.0:
 				break
 			var h := 0.0
-			while Input.is_action_pressed("interagir") and h < hold:
+			while Input.is_action_pressed("interagir") and h < segurar:
 				await get_tree().process_frame
 				h += get_process_delta_time()
-				hud.show_prompt("[E] %s  %d%%" % [text, int(h / hold * 100)])
-			if h >= hold:
+				hud.show_prompt("[E] %s  %d%%" % [txt, int(h / segurar * 100)])
+			if h >= segurar:
 				break
 	hud.show_prompt("")
 	hud.waypoint = null
 
-## Começo de cena: tira o controle e solta o jogador se um infectado estiver agarrando.
-func cutscene() -> void:
-	player_input_enabled = false
-	if player:
-		player.vel = Vector2.ZERO
-		if player.grabbed_by != null:
-			var z: Node = player.grabbed_by
-			player.grabbed_by = null
-			player.grab_cooldown = 2.0
+func cena() -> void:
+	## começo de cena: tira o controle e solta o jogador se estiver agarrado
+	controle_livre = false
+	if jogador:
+		jogador.vel = Vector3.ZERO
+		if jogador.agarrado_por != null:
+			var z: Node = jogador.agarrado_por
+			jogador.agarrado_por = null
+			jogador.luta_espera = 2.0
 			if is_instance_valid(z):
-				z.shoved((z.position - player.position).normalized(), 2.0)
+				z.empurrado((z.global_position - jogador.global_position).normalized() * 9.0, 2.0)
 
-func cam_to(p: Vector2, zoom: float, t: float) -> void:
-	cam_follow = null
-	var tw := create_tween().set_parallel()
-	tw.tween_property(cam, "position", p, t).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(self, "cam_zoom", zoom, t).set_trans(Tween.TRANS_SINE)
-
-func shot(name: String) -> void:
-	if shots_dir == "":
+func camera_lenta(fator: float, t: float) -> void:
+	## câmera lenta curta nos momentos grandes (como no jogo web, R39)
+	if auto:
 		return
-	await get_tree().create_timer(1.6).timeout
+	Engine.time_scale = fator
+	await get_tree().create_timer(t * fator, true, false, true).timeout
+	Engine.time_scale = 1.0
+
+func foto(nome: String) -> void:
+	if pasta_fotos == "":
+		return
+	await get_tree().create_timer(1.4, true, false, true).timeout
 	await RenderingServer.frame_post_draw
 	var img := get_viewport().get_texture().get_image()
 	if img:
-		img.save_png("%s/%d_%s.png" % [shots_dir, act, name])
-		print("[autotest] captura ", name)
+		img.save_png("%s/%d_%s.png" % [pasta_fotos, capitulo, nome])
+		print("[autotest] foto ", nome)
 
-func next_act(n: int) -> void:
+func proximo(n: int) -> void:
 	await hud.fade_to(1.0, 1.2)
-	act = n
+	capitulo = n
+	Engine.time_scale = 2.5 if auto else 1.0
 	get_tree().reload_current_scene()
 
-func _on_caught() -> void:
-	if _caught:
+func _quando_pego() -> void:
+	if _pego:
 		return
-	_caught = true
-	player_input_enabled = false
+	_pego = true
+	controle_livre = false
 	hud.letterbox(true)
-	await wait(1.4)
+	await esperar(1.4)
 	await hud.card("VOCÊ FOI PEGO", "Recomeçando o capítulo...", 1.2)
 	await hud.fade_to(1.0, 0.8)
 	get_tree().reload_current_scene()
 
 func toggle_pause() -> void:
-	if _ending:
+	if _fim:
 		return
 	get_tree().paused = not get_tree().paused
 	hud.toggle_pause(get_tree().paused)
@@ -489,73 +436,35 @@ func toggle_pause() -> void:
 func on_pause_button(id: String) -> void:
 	get_tree().paused = false
 	hud.toggle_pause(false)
+	Engine.time_scale = 1.0
 	match id:
 		"restart":
 			get_tree().reload_current_scene()
 		"skip":
-			act = min(act + 1, 3) if act > 0 else 2
+			capitulo = min(capitulo + 1, 3) if capitulo > 0 else 2
 			get_tree().reload_current_scene()
 		"begin":
-			act = 0
+			capitulo = 0
 			get_tree().reload_current_scene()
 
 func _unhandled_input(e: InputEvent) -> void:
-	if _ending and e.is_action_pressed("pular_fala"):
-		act = 0
+	if _fim and e.is_action_pressed("pular_fala"):
+		capitulo = 0
 		get_tree().reload_current_scene()
 
-# ======================================================================= teste de rotas
-## Confere (busca em grade com a colisão real) se dá para andar entre os pontos de cada capítulo.
-func _check_routes() -> void:
-	var routes := {
-		"cap1": [Vector2(2210, 1090), Vector2(2026, 1165), Vector2(2350, 1455), Vector2(2120, 1555), Vector2(1730, 1560)],
-		"cap2": [Vector2(2400, 2290), MercadoInterior.DESK + Vector2(0, 34), Vector2(2160, 2152), MercadoInterior.LADDER,
-			MercadoInterior.EXTINTOR, Vector2(1960, 2690)],
-		"cap3": [Vector2(2050, 2680), Vector2(1585, 2480), Vector2(3135, 2675), Vector2(3135, 1560), Vector2(3135, 800),
-			Vector2(3300, 600), Vector2(3560, 110), Vector2(3860, -360), World.SUMMIT],
-	}
-	var ok := true
-	for name in routes:
-		if name == "cap2":
-			world.obstacles.append(MercadoInterior.GATE)
-		var pts: Array = routes[name]
-		for i in pts.size() - 1:
-			var good := _walkable(pts[i], pts[i + 1], 11.0)
-			print("[rotas] %s  %s -> %s : %s" % [name, pts[i], pts[i + 1], "OK" if good else "BLOQUEADO"])
-			ok = ok and good
-	print("[rotas] ", "TUDO OK" if ok else "HÁ ROTAS BLOQUEADAS")
-	get_tree().quit(0 if ok else 1)
-
-func _walkable(a: Vector2, b: Vector2, r: float) -> bool:
-	var step := 8.0
-	var start := Vector2i(roundi(a.x / step), roundi(a.y / step))
-	var goal := Vector2i(roundi(b.x / step), roundi(b.y / step))
-	var seen := {start: true}
-	var q: Array[Vector2i] = [start]
-	var head := 0
-	while head < q.size() and head < 400000:
-		var c: Vector2i = q[head]
-		head += 1
-		if (c - goal).length_squared() <= 9:
-			return true
-		for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-			var n: Vector2i = c + d
-			if seen.has(n):
-				continue
-			seen[n] = true
-			if not world.blocked(Vector2(n) * step, r):
-				q.append(n)
-	return false
-
 # ======================================================================= abertura
-func _run_intro_then_act1() -> void:
-	await _intro()
-	act = 1
-	_act1()
+func _abertura_e_cap1() -> void:
+	await _abertura()
+	capitulo = 1
+	_cap1()
 
-func _intro() -> void:
-	player_input_enabled = false
+func _abertura() -> void:
+	controle_livre = false
 	hud.fade.color.a = 1.0
+	hud.letterbox(true, 0.01)
+	await esperar(0.6)
+	await hud.card("ESTE É O DIA EM QUE TUDO ACABOU.", "", 2.4)
+	# a foto aérea do Theo e o rádio
 	hud.photo.texture = load("res://assets/sprites/cidade-aerea.webp")
 	hud.photo.visible = true
 	hud.photo.pivot_offset = hud.root.size * 0.5
@@ -566,540 +475,690 @@ func _intro() -> void:
 	add_child(radio)
 	radio.play()
 	var zoom := create_tween()
-	zoom.tween_property(hud.photo, "scale", Vector2(1.14, 1.14), 22.0)
+	zoom.tween_property(hud.photo, "scale", Vector2(1.12, 1.12), 18.0)
 	await hud.fade_to(0.0, 2.0)
-	shot("abertura")
-	await line("Rádio", "...a Secretaria de Saúde pede calma. O número de idosos internados com febre alta subiu de novo nesta terça...")
-	await line("Rádio", "...nas redes, boatos ligam os casos a um lote de vacina. O ministério nega. Ninguém sabe dizer de onde vem...")
-	await line("Rádio", "...trânsito parado na Celso Garcia. Motoristas relatam acidentes perto do Hospi—")
-	radio.stop()
-	audio.sfx("impact", null, -10)
-	await hud.fade_to(1.0, 0.6)
+	foto("abertura_foto")
+	await fala("Rádio", "...a Secretaria de Saúde pede calma. O número de idosos internados com febre alta subiu de novo nesta terça...")
+	await fala("Rádio", "...nas redes, boatos ligam os casos a um lote de vacina. O ministério nega. Ninguém sabe dizer de onde vem...")
+	# a mesma cidade, agora em 3D: voo baixando do céu até a faculdade
+	await hud.fade_to(1.0, 0.8)
 	zoom.kill()
-	hud.photo.texture = load("res://assets/sprites/cidade-aerea-2.webp")
-	hud.photo.scale = Vector2(1.1, 1.1)
-	create_tween().tween_property(hud.photo, "scale", Vector2.ONE, 9.0)
-	await hud.fade_to(0.0, 1.2)
-	audio.music("musica_final", -14, 3.0)
-	await hud.card("PROJECT Z", "PRÓLOGO  ·  DIA ZERO", 3.0)
-	await hud.fade_to(1.0, 1.0)
 	hud.photo.visible = false
-	cam.position = Vector2(2600, 1300)
-	cam.zoom = Vector2(0.38, 0.38)
-	cam_zoom = 0.38
-	await hud.fade_to(0.0, 1.2)
-	cam_to(hannah.position + Vector2(0, -24), 1.55, 6.0)
-	await wait(6.0)
-	audio.stop_music(2.0)
+	cam.livre = true
+	cam.transform = cam.pose_de(Vector3(150, 0, -60), -70.0, 26.0, 330.0)
+	audio.tocar_musica("musica_final", -14.0, 3.0)
+	await hud.fade_to(0.0, 1.6)
+	foto("abertura_ceu")
+	cam.voar(Vector3(110, 0, -40), -40.0, 34.0, 120.0, 9.0)
+	await fala("Rádio", "...no estádio, o jogo começa às seis, com casa cheia...")
+	await esperar(1.5)
+	radio.stop()
+	await hud.card("PROJECT Z", "PRÓLOGO  ·  DIA ZERO", 2.6)
+	await cam.voar(hannah.global_position + Vector3(0, 1, 0), -45.0, 40.0, 16.0, 4.0).finished
+	audio.parar_musica(2.0)
 
 # ======================================================================= capítulo 1 — Hannah
-var _students: Array = []
+func _preparar_cap1() -> void:
+	amb.aplicar(0.0)
+	hannah = novo_sobrevivente("hannah", Vector3(Mapa.SALA_TCC.position.x + 9, 0, Mapa.SALA_TCC.position.y + 5))
+	hannah.dir = -PI * 0.5
+	controlar(hannah)
+	cam.distancia = 16.0
+	# colegas e alunos no pátio, falando ao celular
+	for p in [Vector3(60, 0, -78), Vector3(63, 0, -77), Vector3(82, 0, -60), Vector3(120, 0, -40), Vector3(124, 0, -41), Vector3(98, 0, -30), Vector3(70, 0, -44)]:
+		var s := novo_civil(p, ["civ_estudante", "civ_estudante2", "civ_jovem", "civ_atendente"].pick_random())
+		s.anim_fixa = "phone" if randf() < 0.6 else ""
+		s.vai_virar = false
+		_estudantes.append(s)
+	# o trânsito normal da avenida e as calçadas cheias
+	for k in 9:
+		var z: float = [-8.6, -5.6][k % 2]
+		var c := novo_carro(Vector3(randf_range(-240, 340), 0, z), PI, ["hatch", "sedan", "hatch", "kombi"].pick_random())
+		c.volta_de = Vector3(350, 0, z)
+		c.alvo = Vector3(-250, 0, z)
+		c.dirigir([c.alvo], randf_range(9, 13), "voltar")
+	for k in 9:
+		var z2: float = [5.6, 8.6][k % 2]
+		var c2 := novo_carro(Vector3(randf_range(-240, 340), 0, z2), 0, ["hatch", "sedan", "hatch", "kombi"].pick_random())
+		c2.volta_de = Vector3(-250, 0, z2)
+		c2.alvo = Vector3(350, 0, z2)
+		c2.dirigir([c2.alvo], randf_range(9, 13), "voltar")
+	var onibus := novo_carro(Vector3(118, 0, 8.6), 0, "onibus")
+	onibus.estado = "parado"
+	_estacionados()
+	for k in 40:
+		novo_civil(Vector3(randf_range(-20, 220), 0, (-14.0 if k % 2 == 0 else 14.0) + randf_range(-1.6, 1.6)))
+	_torcida_no_estadio()
 
-func _setup_act1() -> void:
-	_apply_day(0.0)
-	hannah = spawn_survivor("hannah", Vector2(2210, 1090))
-	hannah.heading = PI * 0.5
-	set_player(hannah)
-	cam_zoom = 1.55
-	for p in [Vector2(2120, 1190), Vector2(2150, 1205), Vector2(2330, 1010), Vector2(2560, 1350), Vector2(2600, 1330), Vector2(2010, 1420)]:
-		var s := spawn_civ(p)
-		_students.append(s)
-	# trânsito normal na avenida
-	for k in 7:
-		var y: float = [1645.0, 1680.0][k % 2]
-		var c := spawn_car(Vector2(randf_range(0, 4800), y), 0)
-		c.traffic_from = Vector2(-120, y)
-		c.drive_to(Vector2(4920, y), randf_range(180, 240))
-	for k in 7:
-		var y2: float = [1765.0, 1800.0][k % 2]
-		var c2 := spawn_car(Vector2(randf_range(0, 4800), y2), PI)
-		c2.traffic_from = Vector2(4920, y2)
-		c2.drive_to(Vector2(-120, y2), randf_range(180, 240))
-	spawn_car(Vector2(2470, 1650), 0, "onibus")
-	# pedestres nas calçadas
-	for k in 26:
-		var side := k % 2 == 0
-		spawn_civ(Vector2(randf_range(1700, 3000), 1560 if side else 1870) + Vector2(0, randf_range(-14, 14)))
+func _estacionados() -> void:
+	var E := Mapa.ESTACIONAMENTO
+	var x := E.position.x + 3.4
+	while x < E.end.x - 2:
+		if randf() < 0.7:
+			novo_carro(Vector3(x, 0, E.position.y + 2.6), PI * 0.5, ["hatch", "sedan", "hatch"].pick_random())
+		if randf() < 0.6:
+			novo_carro(Vector3(x, 0, E.end.y - 2.6), -PI * 0.5, ["hatch", "sedan", "kombi"].pick_random())
+		x += 2.8
+	for p in [Vector3(-90, 0, -40), Vector3(-80, 0, -40)]:
+		novo_carro(p, PI * 0.5, "ambulancia")
+	var x2 := -240.0
+	while x2 < 340:   # carros parados junto à calçada das ruas
+		if randf() < 0.3 and not cidade._no_cruzamento(x2):
+			novo_carro(Vector3(x2, 0, 99.0), 0, ["hatch", "sedan", "kombi"].pick_random())
+		x2 += 9.0
 
-func _act1() -> void:
-	player_input_enabled = false
-	cam_follow = hannah
-	cam_zoom = 1.55
-	if act == 1 and hud.fade.color.a > 0.5:
+func colunas_de_fumaca(n: int) -> void:
+	## a cidade queimando ao longe: colunas de fumaça escura com fogo na base, fora do mapa
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 99 + n
+	for k in n:
+		var a := rng.randf() * TAU
+		var p := Vector3(140, 0, -60) + Vector3(cos(a) * rng.randf_range(300, 420), 0, sin(a) * rng.randf_range(260, 380))
+		var raiz := Node3D.new()
+		raiz.position = p
+		efeitos.add_child(raiz)
+		var col_ := FX.fumaca(raiz, Vector3(0, 4, 0), rng.randf_range(5.0, 8.0), true)
+		col_.lifetime = 16.0
+		col_.gravity = Vector3(2.0, 2.2, 0.6)
+		FX.luz(raiz, Vector3(0, 6, 0), Color(1.0, 0.45, 0.15), 6.0, 60.0)
+
+func _torcida_no_estadio() -> void:
+	var som := Node3D.new()
+	som.position = Vector3(Mapa.ESTADIO_C.x, 8, Mapa.ESTADIO_C.y)
+	add_child(som)
+	audio.loop_em("estadio", som, 2.0, 200.0)
+
+func _cap1() -> void:
+	controle_livre = false
+	cam.seguir(hannah, 16.0)
+	if capitulo == 1 and hud.fade.color.a > 0.5:
 		hud.fade_to(0.0, 1.0)
-	await hud.card("FACULDADE  ·  17:40", "Hannah, 21 anos  ·  dia da apresentação do TCC")
-	await line("Hannah", "Banca marcada pras cinco. Já são quase seis.")
-	await line("Hannah", "Nem professor, nem grupo. Vou apresentar o TCC pros pombos.")
-	await line("Hannah", "E o celular morreu. Claro que morreu.")
-	player_input_enabled = true
+	hud.letterbox(false)
+	await hud.card("FACULDADE INTEGRADA DO PARI  ·  17:40", "Hannah, 21 anos  ·  dia da apresentação do TCC")
+	await fala("Hannah", "Banca marcada pras cinco. Já são quase seis.")
+	await fala("Hannah", "Nem professor, nem grupo. Vou apresentar o TCC pras cadeiras.")
+	await fala("Hannah", "E o celular morreu. Claro que morreu.")
+	controle_livre = true
 	hud.set_hint("WASD / setas: andar\nE: interagir\nEsc: pausa")
-	hud.objective("Carregue o celular na tomada do banco")
-	await interact(Vector2(2026, 1165), 48, "Carregar o celular")
-	player_input_enabled = false
-	hannah.vel = Vector2.ZERO
-	audio.sfx("celular", null, -2)
-	await wait(0.7)
-	audio.sfx("celular", null, -2)
+	hud.objective("Carregue o celular na tomada da parede")
+	await usar(Mapa.TOMADA + Vector3(1.0, 0, 0), 1.8, "Carregar o celular")
+	cena()
+	hannah.anim_fixa = "look"
+	audio.som("celular", null, -2.0)
+	await esperar(0.7)
+	audio.som("celular", null, -2.0)
 	hud.show_phone([["Hadassa · 14 chamadas perdidas", true], ["Hadassa: Hannah atende", false],
 		["Hadassa: tá um caos aqui no hospital", false], ["Hadassa: fica onde você tá. eu vou te buscar", false]])
-	shot("celular")
-	await line("Hannah", "Quatorze chamadas? A Hadassa nunca liga quatorze vezes.")
-	if _students.size() >= 2:
-		_students[0].say("Minha vó passou mal... tô indo pro hospital!", 4)
-		_students[0].go_to(Vector2(2350, 1500), 200)
-		_students[1].say("Meu pai também. Levaram ele agora!", 4)
-		_students[1].go_to(Vector2(2380, 1520), 190)
-	await wait(2.6)
+	cam.voar(hannah.global_position + Vector3(0, 1.2, 0), -60.0, 30.0, 7.0, 2.0)
+	foto("celular")
+	await fala("Hannah", "Quatorze chamadas? A Hadassa nunca liga quatorze vezes.")
+	if _estudantes.size() >= 2:
+		_estudantes[0].dizer("Minha vó passou mal... tô indo pro hospital!", 4)
+		_estudantes[0].ir(Vector3(100, 0, -24), 4.0)
+		_estudantes[1].dizer("Meu pai também. Levaram ele agora!", 4)
+		_estudantes[1].ir(Vector3(102, 0, -26), 3.6)
+	await esperar(2.0)
 	hud.hide_phone()
-	_first_crash()
-	await wait(0.5)
-	await line("Hannah", "Que barulho foi esse?!")
-	player_input_enabled = true
-	hud.objective("Vá até o portão da faculdade")
-	await reach(Vector2(2350, 1455), 60)
+	hannah.anim_fixa = ""
+	# a batida lá fora
+	_primeira_batida()
+	await esperar(0.6)
+	await fala("Hannah", "Que barulho foi esse?!")
+	cam.voltar(hannah, 26.0)
+	controle_livre = true
+	hud.objective("Saia da sala e vá até o portão da faculdade")
+	await chegar(Vector3(100, 0, -23), 3.0)
 	# a cidade vira um caos
-	cutscene()
+	cena()
 	hud.letterbox(true)
-	_chaos_act1()
-	cam_to(Vector2(2300, 1700), 0.95, 2.5)
-	set_day(0.12, 6.0)
-	await wait(2.6)
-	shot("caos")
-	await line("Alguém", "Ele mordeu ela! Ele MORDEU ela!")
-	await line("Hannah", "...Gente?")
-	await line("Hannah", "Hadassa. Hospital. Agora.")
+	_caos_cap1()
+	colunas_de_fumaca(3)
+	amb.passar(0.15, 20.0)
+	await cam.voar(Vector3(104, 0, 2), -20.0, 24.0, 46.0, 3.0).finished
+	foto("caos")
+	await fala("Alguém", "Ele mordeu ela! Ele MORDEU ela!")
+	var heli := Aeronave.new()
+	add_child(heli)
+	heli.montar(self, "heli", [Vector3(-80, 38, -40), Vector3(110, 32, 0), Vector3(380, 40, 30)], 26.0)
+	await fala("Hannah", "...Gente?")
+	await fala("Hannah", "Hadassa. Hospital. Agora.")
 	hud.letterbox(false)
-	cam_follow = hannah
-	cam_zoom = 1.4
-	player_input_enabled = true
-	audio.music("musica_fuga", -14)
-	hud.objective("Corra para o hospital: siga pela calçada para o oeste")
+	cam.voltar(hannah, 30.0)
+	controle_livre = true
+	audio.tocar_musica("musica_fuga", -12.0)
+	hud.objective("Corra para o Hospital São Crispim: siga pela Av. dos Tecelões para o oeste")
 	hud.set_hint("Shift: correr\nEspaço: pular carros e barreiras\nE: se soltar se te agarrarem")
-	await reach(Vector2(2120, 1555), 90)
-	_ambush()
-	await reach(Vector2(1730, 1560), 80)
-	cutscene()
-	await line("Hannah", "Aguenta, Hadassa. Tô chegando.")
-	next_act(2)
+	await chegar(Vector3(70, 0, -14), 4.0)
+	_emboscada()
+	await chegar(Vector3(14, 0, -14), 4.0)
+	cena()
+	cam.voar(hannah.global_position + Vector3(0, 1, 0), -100.0, 22.0, 18.0, 2.5)
+	await fala("Hannah", "Aguenta, Hadassa. Tô chegando.")
+	# o pronto-socorro (dá para entrar: o prédio some e aparece o saguão, como no Zomboid)
+	var cida := _preparar_ps()
+	cam.voltar(hannah, 26.0)
+	controle_livre = true
+	hud.objective("Entre no pronto-socorro do São Crispim e procure a Hadassa")
+	await chegar(Mapa.HOSP_PS + Vector3(0, 0, -8.5), 3.0)
+	cena()
+	hud.letterbox(true)
+	await cam.voar(Vector3(-72, 0, -57), -40.0, 42.0, 26.0, 2.0).finished
+	foto("pronto_socorro")
+	await fala("Hannah", "HADASSA! Alguém viu a enfermeira Hadassa?!")
+	await fala("Enfermeiro", "A Hadassa? Saiu faz meia hora! Foi atrás da irmã, lá na faculdade!")
+	await fala("Hannah", "Na faculdade... Ela foi me buscar. E eu vim pra cá.")
+	# a idosa da maca convulsiona e levanta: a cadeia do contágio começa dentro do PS
+	cida.vai_virar = true
+	cida.virar_em = Civil.TEMPO_CONVULSAO
+	cida.estado = "virando"
+	cida.tocar("death", true)
+	await fala("Enfermeiro", "Dona Cida? Dona Cida, fica deitada... DONA CIDA!", 3.0)
+	await esperar_ate(func(): return viraram >= 1, 5.0)
+	foto("ps_contagio")
+	await esperar(2.2)
+	await fala("Hannah", "Não. Não, não, não. Eu preciso sair daqui!", 2.4)
+	hud.letterbox(false)
+	cam.voltar(hannah, 22.0)
+	controle_livre = true
+	hud.objective("Saia do hospital!")
+	await chegar(Vector3(-70, 0, -36), 3.0)
+	cena()
+	await fala("Hannah", "Hadassa, onde você tá?!", 2.0)
+	proximo(2)
 
-func _first_crash() -> void:
-	var c := spawn_car(Vector2(3300, 1645), 0, "carro", "1f4e79")
-	c.drive_to(Vector2(2400, 1650), 520)
-	c.arrived_crash_fire = 1.2
+func _preparar_ps() -> Civil:
+	## pacientes esperando, o enfermeiro na recepção e a Dona Cida na maca (a primeira a virar)
+	var enf := novo_civil(Vector3(-70, 0, -60.2), "civ_enfermeiro")
+	enf.dir = PI * 0.5
+	for zr in [-60.25, -56.75, -53.25]:
+		for k in 4:
+			var p := Vector3(randf_range(-60, -36), 0, zr)
+			var c := novo_civil(p, ["civ_idoso", "civ_idosa", "civ_idosa", "civ_executivo", "civ_atendente", "civ_jovem"].pick_random())
+			c.anim_fixa = ["cower", "phone", "idle", "cower"].pick_random()
+			c.dir = -PI * 0.5
+	for p2 in [Vector3(-100, 0, -61), Vector3(-90, 0, -61.5), Vector3(-84, 0, -54)]:
+		var c2 := novo_civil(p2, "civ_idoso")
+		c2.anim_fixa = "cower"
+	var cida := novo_civil(Vector3(-80, 0, -53.6), "civ_idosa")
+	cida.vai_virar = false
+	cida.estado = "caido"
+	cida.tocar("death", true)
+	return cida
 
-func _chaos_act1() -> void:
-	flee_point = Vector2.INF
-	# infectados no meio da multidão
-	for p in [Vector2(2500, 1700), Vector2(2650, 1770), Vector2(2200, 1880), Vector2(2900, 1650), Vector2(2050, 1690), Vector2(2750, 1880), Vector2(3000, 1800)]:
-		spawn_zombie(p, "comum")
-	for k in 16:
-		var c := spawn_civ(Vector2(randf_range(1800, 3100), randf_range(1600, 1900)), false)
-	for c in civilians:
-		if c not in _students:
-			c.panic()
+func _primeira_batida() -> void:
+	var c := novo_carro(Vector3(240, 0, 5.6), PI, "sedan", "1f4e79")
+	c.dirigir([Vector3(124, 0, 8.0)], 26.0)
+	c.fogo_em = 1.2
+	c.explode_em = 7.0
+	audio.som("grito", Vector3(120, 0, 10), 0.0)
+
+func _caos_cap1() -> void:
+	fuga = Vector3.INF
+	for p in [Vector3(130, 0, 4), Vector3(150, 0, 9), Vector3(96, 0, 14), Vector3(170, 0, -6), Vector3(80, 0, 6), Vector3(140, 0, 16), Vector3(186, 0, 12), Vector3(60, 0, -12)]:
+		novo_infectado(p, "comum")
+	for k in 26:
+		novo_civil(Vector3(randf_range(40, 200), 0, randf_range(-14, 16)), "", false)
+	for c in civis:
+		if c not in _estudantes:
+			c.panico()
 	# o trânsito para: batidas em sequência
 	var k2 := 0
-	for car in cars:
-		if car.traffic_from != null:
-			car.traffic_from = null
-			var ahead: Vector2 = car.position + Vector2.from_angle(car.angle) * randf_range(120, 420)
-			ahead.x = clamp(ahead.x, 60, 4740)
-			car.drive_to(ahead, car.speed)
-			car.arrived_crash_fire = randf_range(1.5, 6.0) if k2 % 2 == 0 else -1.0
-			car.arrived_explode = randf_range(5.0, 12.0) if k2 % 3 == 0 else -1.0
+	for car in carros:
+		if car.estado == "andando":
+			var frente: Vector3 = car.global_position + car.global_transform.basis.x * randf_range(10, 40)
+			frente.x = clamp(frente.x, -240, 340)
+			car.dirigir([frente], car.vel)
+			car.fogo_em = randf_range(1.5, 6.0) if k2 % 2 == 0 else -1.0
+			car.explode_em = randf_range(5.0, 12.0) if k2 % 3 == 0 else -1.0
 			k2 += 1
-	var pol := spawn_car(Vector2(900, 1800), 0, "viatura")
-	pol.siren_sound(true)
-	pol.drive_to(Vector2(2120, 1795), 360)
-	pol.arrived_crash_fire = -1.0
+	var pol := novo_carro(Vector3(-60, 0, 8.6), 0, "viatura")
+	pol.sirene(true)
+	pol.dirigir([Vector3(90, 0, 9.0)], 20.0)
+	pol.fogo_em = -1.0
 
-func _ambush() -> void:
-	var c := spawn_car(Vector2(900, 1650), 0, "carro", "d4a017")
-	c.drive_to(Vector2(1960, 1575), 560)
-	c.arrived_crash_fire = 2.0
-	c.arrived_explode = 9.0
-	var z := spawn_zombie(Vector2(1880, 1520), "comum", 1)
-	z.sight = 500
+func _emboscada() -> void:
+	var c := novo_carro(Vector3(-60, 0, -8.6), 0, "hatch", "d4a017")
+	c.dirigir([Vector3(30, 0, -8.6), Vector3(48, 0, -13.5)], 24.0)
+	c.fogo_em = 2.0
+	c.explode_em = 9.0
+	var z := novo_infectado(Vector3(42, 0, -15.5), "comum", "executivo")
+	z.visao = 20.0
 
 # ======================================================================= capítulo 2 — Antônio
-var funcionarias: Array = []
-
-func _setup_act2() -> void:
-	_apply_day(0.3)
-	antonio = spawn_survivor("antonio", Vector2(2400, 2290))
-	antonio.heading = 0
-	set_player(antonio)
-	cam_zoom = 1.65
-	var radio := Node2D.new()
-	radio.position = MercadoInterior.DESK
+func _preparar_cap2() -> void:
+	amb.aplicar(0.3)
+	antonio = novo_sobrevivente("antonio", Vector3(116, 0, 53))
+	antonio.dir = -PI * 0.5
+	controlar(antonio)
+	var radio := Node3D.new()
+	radio.position = Mapa.MESA_CAMERAS + Vector3(0, 1, 0)
 	add_child(radio)
-	audio.loop_at("radio", radio, -14)
-	# lá fora: caos já começou
-	for p in [Vector2(2420, 1662), Vector2(2120, 1795), Vector2(3100, 1680), Vector2(1400, 1770), Vector2(2800, 1790)]:
-		wreck(p, randf_range(-0.4, 0.4) + (0.0 if p.y < 1720 else PI), true)
-	for p in [Vector2(1900, 1640), Vector2(2650, 1660), Vector2(3400, 1800)]:
-		wreck(p, randf_range(-0.6, 0.6), false)
+	audio.loop_em("radio", radio, -10.0, 20.0)
+	for p in [Vector3(124, 0, 8), Vector3(90, 0, -8), Vector3(170, 0, 6), Vector3(40, 0, -5), Vector3(150, 0, -8)]:
+		destroco(p, randf_range(-0.4, 0.4) + (0.0 if p.z > 0 else PI), true)
+	destroco(Vector3(118, 0, 8.6), 0.1, true, "onibus")
 	for k in 12:
-		spawn_zombie(Vector2(randf_range(1200, 3300), randf_range(1600, 1850)))
+		novo_infectado(Vector3(randf_range(20, 220), 0, randf_range(-14, 14)))
 	for k in 22:
-		spawn_civ(Vector2(randf_range(1200, 3300), randf_range(1560, 1880)), false)
-	for p in [Vector2(2110, 2070), Vector2(2190, 2082)]:
-		var f := spawn_civ(p)
-		f.shirt = Color("b8232a")
-		f.pants = Color("2a3140")
-		f.elderly = false
-		f.will_turn = false
-		f.speed = 160
-		funcionarias.append(f)
+		novo_civil(Vector3(randf_range(20, 220), 0, randf_range(-14, 16)), "", false)
+	_estacionados()
+	colunas_de_fumaca(6)
+	for p in [Vector3(94, 0, 37.5), Vector3(100, 0, 37.0)]:
+		var f := novo_civil(p, "civ_funcionaria")
+		f.vai_virar = false
+		f.dir = -PI * 0.5
+		_funcionarias.append(f)
+	# clientes no estacionamento e na calçada do mercado (a cadeia do contágio passa por eles)
+	for p in [Vector3(80, 0, 30), Vector3(86, 0, 34), Vector3(104, 0, 33), Vector3(112, 0, 28), Vector3(92, 0, 27), Vector3(118, 0, 34), Vector3(76, 0, 24), Vector3(99, 0, 21)]:
+		var cl := novo_civil(p, ["civ_idosa", "civ_idoso", "civ_atendente", "civ_executivo", "civ_jovem", "civ_estudante"].pick_random())
+		cl.anim_fixa = "phone" if randf() < 0.4 else ""
+	_torcida_no_estadio()
 
-func _act2() -> void:
-	player_input_enabled = false
-	cam_follow = antonio
+func _cap2() -> void:
+	controle_livre = false
+	# abre na fachada: a faixa vermelha, o hortifrúti, as funcionárias na porta
+	Predio.foco = null
+	cam.livre = true
+	cam.transform = cam.pose_de(Vector3(98, 3, 40), 172.0, 14.0, 30.0)
 	hud.fade_to(0.0, 1.0)
-	await hud.card("MERCADO  ·  17:52", "Antônio, 27 anos  ·  ex-sargento bombeiro, dono do mercado")
-	await line("Antônio", "Arroz, feijão, óleo... quem compra tanto óleo numa terça?")
-	await line("Rádio", "...hospitais da Zona Leste operam com lotação máxima. A orientação é evitar...")
-	await line("Antônio", "Lotação máxima. E eu aqui contando lata de óleo.")
-	audio.scream(Vector2(2150, 2060), true)
-	await line("Antônio", "...Que gritaria é essa lá na frente?")
-	player_input_enabled = true
+	cam.voar(Vector3(98, -1.5, 38), 150.0, 20.0, 30.0, 4.5)
+	await esperar(1.2)
+	foto("mercado_fachada")
+	await hud.card("MERCADO DO ANTÔNIO  ·  17:52", "Antônio, 27 anos  ·  ex-sargento bombeiro")
+	Predio.foco = antonio
+	await cam.voltar(antonio, 16.0)
+	await fala("Antônio", "Arroz, feijão, óleo... quem compra tanto óleo numa terça?")
+	await fala("Rádio", "...hospitais da Zona Leste operam com lotação máxima. A orientação é evitar...")
+	await fala("Antônio", "Lotação máxima. E eu aqui contando lata de óleo.")
+	audio.grito(Vector3(96, 0, 37), true)
+	await fala("Antônio", "...Que gritaria é essa lá na frente?")
+	controle_livre = true
 	hud.set_hint("WASD / setas: andar\nE: interagir\nEsc: pausa")
 	hud.objective("Olhe as câmeras de segurança")
-	await interact(MercadoInterior.DESK + Vector2(0, 34), 50, "Ver as câmeras")
-	player_input_enabled = false
-	antonio.vel = Vector2.ZERO
+	await usar(Mapa.MESA_CAMERAS + Vector3(0, 0, 0.6), 2.0, "Ver as câmeras")
+	cena()
 	# câmera de segurança: o ataque às funcionárias
-	Building.focus = null
+	Predio.foco = null
 	hud.letterbox(true, 0.01)
 	hud.cctv.visible = true
-	cam_follow = null
-	cam.position = Vector2(2160, 1990)
-	cam_zoom = 1.7
-	cam.zoom = Vector2(1.7, 1.7)
-	var z1 := spawn_zombie(Vector2(2020, 1890), "comum", 2)
-	var z2 := spawn_zombie(Vector2(2330, 1880), "comum", 0)
-	funcionarias[0].say("Moço? O senhor tá bem?", 3)
-	await wait(1.0)
-	shot("cctv")
-	await wait_until(func(): return funcionarias[0].state == "down", 8)
-	await line("Antônio", "Não... não, não, não...")
-	await wait_until(func(): return funcionarias[1].state == "down", 6)
-	antonio.heart = 172
-	await wait(0.8)
-	hud.cctv.visible = false
-	cam.position = antonio.position
-	cam_follow = antonio
-	cam_zoom = 1.65
-	Building.focus = antonio
-	# o coração dispara; ele se apoia na mesa e respira (sem minijogo, decisão do Theo)
-	create_tween().tween_property(antonio, "heart", 118.0, 6.0)
-	await line("Antônio", "Respira, Antônio. Igual no quartel. Quatro segundos.")
-	await line("Antônio", "Puxa... segura... solta.", 2.6)
-	# elas levantam
-	Building.focus = null
-	hud.cctv.visible = true
-	cam_follow = null
-	cam.position = Vector2(2160, 1990)
-	cam.zoom = Vector2(1.7, 1.7)
-	cam_zoom = 1.7
+	cam.livre = true
+	cam.fov = 64.0
+	cam.transform = cam.pose_de(Vector3(97, 0, 25), 0.0, 40.0, 19.0)
+	# só dois infectados entram no estacionamento. Cada um morde o mais perto e já vai atrás do
+	# próximo; quem foi mordido levanta infectado em 15 segundos. Antônio assiste a cadeia toda.
+	var z1 := novo_infectado(Vector3(84, 0, 22), "comum", "paciente")
+	var z2 := novo_infectado(Vector3(110, 0, 23), "comum", "operario")
 	for z in [z1, z2]:
-		if is_instance_valid(z):
-			z.go_to(Vector2(2150, 1700), 50)
-	await wait(1.0)
-	var r1 := turn_into_zombie(funcionarias[0])
-	await wait(0.9)
-	var r2 := turn_into_zombie(funcionarias[1])
-	for r in [r1, r2]:
-		if r:
-			r.go_to(Vector2(2250 + randf_range(-80, 80), 1660), 45)
-	await line("Antônio", "Elas... levantaram?")
-	await wait(1.6)
+		z.visao = 22.0
+		z.rapidez = 1.9
+	for f in _funcionarias:
+		f.vai_virar = true
+	var t0 := Time.get_ticks_msec()
+	_funcionarias[0].dizer("Moço? O senhor tá bem?", 3)
+	await esperar(1.0)
+	foto("cctv")
+	await esperar_ate(func(): return mordidos >= 1, 10)
+	await fala("Antônio", "Não... não, não, não...")
+	await esperar_ate(func(): return mordidos >= 3, 8)
+	antonio.bpm = 172
+	await fala("Antônio", "Levantou... tá fugindo, sangrando.", 2.6)
+	await fala("Antônio", "E ele já largou ela e foi pro outro. Não para. Não come ninguém. Só morde.", 3.2)
+	foto("cctv_cadeia")
+	hud.cctv.visible = false
+	cam.fov = 30.0
+	cam.seguir(antonio, 12.0)
+	Predio.foco = antonio
+	await fala("Antônio", "Respira, Antônio. Igual no quartel. Quatro segundos.")
+	await fala("Antônio", "Puxa... segura... solta.", 2.6)
+	# de volta à câmera: as mordidas viram infectados
+	Predio.foco = null
+	hud.cctv.visible = true
+	cam.livre = true
+	cam.fov = 64.0
+	cam.transform = cam.pose_de(Vector3(97, 0, 25), 0.0, 40.0, 19.0)
+	await esperar_ate(func(): return viraram >= 1, 16.0)
+	foto("cctv_virou")
+	var seg := (Time.get_ticks_msec() - t0) / 1000.0
+	await fala("Antônio", "Quinze segundos. Contei. Mordeu, quinze segundos, levanta." if seg > 10.0 else "Ela... levantou?", 3.0)
+	await esperar_ate(func(): return viraram >= 3, 8.0)
+	await fala("Antônio", "Dois viram quatro. Quatro viram oito. Essa conta não fecha...", 3.0)
+	await esperar(1.6)
 	hud.cctv.visible = false
 	hud.letterbox(false, 0.3)
-	cam.position = antonio.position
-	cam_follow = antonio
-	Building.focus = antonio
-	for z in [z1, z2, r1, r2]:
-		if is_instance_valid(z):
-			z.move_target = null
-	await line("Antônio", "O portão. O PORTÃO!")
-	player_input_enabled = true
-	hud.objective("Baixe o portão de aço da frente")
-	await interact(Vector2(2160, 2152), 54, "Baixar o portão (segure)", 1.0)
-	audio.sfx("portao", Vector2(2160, 2120), 2)
-	create_tween().tween_property(interior, "gate", 1.0, 1.3)
-	world.obstacles.append(MercadoInterior.GATE)
-	await line("Antônio", "Pronto. Pronto. Ninguém entra, ninguém sai.")
+	cam.fov = 30.0
+	cam.seguir(antonio, 16.0)
+	Predio.foco = antonio
+	await fala("Antônio", "O portão. O PORTÃO!")
+	controle_livre = true
+	hud.objective("Baixe a porta de aço da frente")
+	await usar(Vector3((Mapa.MERCADO_PORTAO.x + Mapa.MERCADO_PORTAO.y) * 0.5, 0, Mapa.MERCADO.position.y + 1.6), 2.2, "Baixar a porta de aço (segure)", 1.0)
+	audio.som("portao", Vector3(98, 2, 40), 4.0)
+	create_tween().tween_property(cidade.portao_mercado, "scale:y", 1.0, 1.3)
+	col.ret(Rect2(Mapa.MERCADO_PORTAO.x, Mapa.MERCADO.position.y - 0.2, Mapa.MERCADO_PORTAO.y - Mapa.MERCADO_PORTAO.x, 0.4))
+	await fala("Antônio", "Pronto. Pronto. Ninguém entra, ninguém sai.")
 	hud.objective("Suba no telhado pela escada do depósito")
-	await interact(MercadoInterior.LADDER, 46, "Subir no telhado")
-	await _roof_scene()
-	await _save_hadassa()
-	next_act(3)
+	await usar(Mapa.ESCADA + Vector3(0, 0, 1.0), 2.0, "Subir no telhado")
+	await _telhado()
+	await _salvar_hadassa()
+	proximo(3)
 
-
-func _roof_scene() -> void:
-	player_input_enabled = false
+func _telhado() -> void:
+	cena()
 	hud.letterbox(true)
 	await hud.fade_to(1.0, 0.5)
-	antonio.position = Vector2(2300, 2140)
-	antonio.sprite.position.y = -mercado.H
-	antonio.z_index = 30
-	antonio.heading = -PI * 0.5
-	mercado.hollow = false
-	Building.focus = null
-	cam.position = Vector2(2200, 1880)
-	cam_zoom = 0.9
-	cam.zoom = Vector2(0.9, 0.9)
-	cam_follow = null
-	set_day(0.42, 8.0)
+	var h := 3 * Predio.ANDAR + 0.05
+	antonio.global_position = Vector3(98, h, 42)
+	antonio.set_meta("no_telhado", true)
+	antonio.dir = -PI * 0.5
+	Predio.foco = null
+	cam.livre = true
+	cam.transform = cam.pose_de(Vector3(97, h + 1.0, 38), 8.0, 14.0, 15.0)
+	amb.passar(0.42, 12.0)
 	await hud.fade_to(0.0, 0.7)
-	var ex: Car = cars.filter(func(c): return is_instance_valid(c) and c.state == "burning").pick_random()
-	if ex:
-		ex.explode()
-	await line("Antônio", "Meu Deus... a cidade inteira.")
+	foto("telhado")
+	await esperar(0.8)
+	cam.voar(Vector3(90, 0, 0), -30.0, 26.0, 70.0, 4.0)
+	var ex: Array = carros.filter(func(c): return is_instance_valid(c) and c.estado == "pegando_fogo")
+	if not ex.is_empty():
+		ex.pick_random().explodir()
+		camera_lenta(0.35, 1.6)
+	await fala("Antônio", "Meu Deus... a cidade inteira.")
 	# ele vê a Hannah passando (ela segue para o hospital, como no capítulo 1)
-	var hn := spawn_survivor("hannah", Vector2(2350, 1565))
-	hn.go_to(Vector2(1200, 1565), 230)
-	shot("telhado")
-	await wait(1.6)
-	await line("Antônio", "Aquela ali... é a irmã da Hadassa? Correndo pro lado do hospital...")
-	# e então a Hadassa
-	hadassa = spawn_survivor("hadassa", Vector2(1250, 1880))
-	hadassa.invulnerable = true
-	hadassa.go_to(Vector2(1590, 1900), 240)
-	cam_to(Vector2(1750, 2250), 0.8, 2.5)
-	var group: Array = []
-	for k in 5:
-		var g := spawn_zombie(Vector2(2050 + k * 40, 2680 + (k % 2) * 30))
-		g.sight = 0.0
-		group.append(g)
-	await line("Antônio", "...Hadassa?")
-	await wait_until(func(): return hadassa.move_target == null, 4)
-	hadassa.go_to(Vector2(1590, 2675), 240)
-	var runner := spawn_zombie(Vector2(1200, 1900), "corredor")
-	runner.go_to(Vector2(1590, 2640), 200)
-	await line("Antônio", "Não, não, não! Por aí não!")
-	await wait_until(func(): return hadassa.move_target == null, 4)
-	hadassa.go_to(Vector2(1960, 2690), 220)
-	await wait(1.2)
+	var hn := novo_sobrevivente("hannah", Vector3(60, 0, -14))
+	hn.ir(Vector3(-30, 0, -14), 5.2)
+	await esperar(1.2)
+	await fala("Antônio", "Aquela ali... é a irmã da Hadassa? Correndo pro lado do hospital...")
+	# e então a Hadassa, que vem do hospital procurando a irmã
+	hadassa = novo_sobrevivente("hadassa", Vector3(-20, 0, 16))
+	hadassa.invencivel = true
+	hadassa.ir(Vector3(4, 0, 18), 5.0)
+	var grupo: Array = []
+	for k in 6:
+		var g := novo_infectado(Vector3(72 + k * 2.4, 0, 100 + (k % 2) * 1.8))
+		g.visao = 0.0
+		grupo.append(g)
+	cam.voar(Vector3(40, 0, 60), -30.0, 30.0, 90.0, 3.0)
+	await fala("Antônio", "...Hadassa?")
+	await esperar_ate(func(): return hadassa.alvo_cena == null, 6)
+	hadassa.ir(Vector3(4, 0, 100), 5.0)
+	var corredor := novo_infectado(Vector3(-24, 0, 18), "corredor")
+	corredor.ir(Vector3(4, 0, 96), 4.6)
+	await fala("Antônio", "Não, não, não! Por aí não!")
+	await esperar_ate(func(): return hadassa.alvo_cena == null, 7)
+	hadassa.ir(Vector3(62, 0, 101), 4.6)
+	await esperar(1.6)
 	if is_instance_valid(hn):
+		sobreviventes.erase(hn)
 		hn.queue_free()
-		survivors.erase(hn)
 	await hud.fade_to(1.0, 0.5)
-	# de volta lá embaixo
-	antonio.sprite.position.y = 0
-	antonio.z_index = 0
-	antonio.position = Vector2(2190, 2392)
-	antonio.heading = -PI * 0.5
-	mercado.hollow = true
-	Building.focus = antonio
-	cam.position = antonio.position
-	cam_follow = antonio
-	cam_zoom = 1.5
-	hadassa.move_target = null
-	hadassa.position = Vector2(1960, 2690)
-	runner.move_target = null
-	runner.position = Vector2(1880, 2700)
-	runner.sight = 900
-	for g in group:
-		g.sight = 380
-		g.speed = 40
-	_rescue_runner = runner
+	# de volta lá embaixo, perto da porta dos fundos
+	antonio.global_position = Mapa.EXTINTOR + Vector3(2.5, 0, -1.0)
+	antonio.set_meta("no_telhado", false)
+	Predio.foco = antonio
+	cam.seguir(antonio, 22.0)
+	hadassa.alvo_cena = null
+	hadassa.global_position = Vector3(64, 0, 101)
+	corredor.alvo_cena = null
+	corredor.global_position = Vector3(58, 0, 101.5)
+	corredor.visao = 60.0
+	for g in grupo:
+		g.visao = 18.0
+		g.rapidez = 0.9
+	_corredor = corredor
 	await hud.fade_to(0.0, 0.5)
 	hud.letterbox(false)
 
-var _rescue_runner: Zombie = null
-
-func _save_hadassa() -> void:
-	player_input_enabled = true
+func _salvar_hadassa() -> void:
+	controle_livre = true
 	hud.objective("Pegue o extintor perto da porta dos fundos")
-	interior.items_visible = true
-	await interact(MercadoInterior.EXTINTOR, 40, "Pegar o extintor")
-	antonio.weapon = "extintor"
-	interior.items_visible = false
-	await line("Antônio", "Extintor. Quinze anos de bombeiro pra chegar nisso.")
+	await usar(Mapa.EXTINTOR, 1.8, "Pegar o extintor")
+	antonio.trocar_para_extintor()
+	audio.som("pancada", antonio.global_position, -4.0)
+	await fala("Antônio", "Extintor. Quinze anos de bombeiro pra chegar nisso.")
 	hud.objective("Salve a Hadassa!  (F ou clique para golpear)")
 	hud.set_hint("F / clique: golpear\nShift: correr\nE: se soltar")
-	audio.music("musica_fuga", -13)
-	var shouted := false
+	audio.tocar_musica("musica_fuga", -11.0)
+	var gritou := false
 	var e := 0.0
-	while is_instance_valid(_rescue_runner) and _rescue_runner.alive and is_inside_tree():
+	while is_instance_valid(_corredor) and _corredor.vivo and is_inside_tree():
 		await get_tree().process_frame
 		e += get_process_delta_time()
-		hud.waypoint = _rescue_runner.position
-		if not shouted and antonio.position.distance_to(hadassa.position) < 360:
-			shouted = true
-			line("Antônio", "HADASSA! CORRE!", 1.6)
+		hud.waypoint = _corredor.global_position + Vector3(0, 2.2, 0)
+		if not gritou and _d2(antonio.global_position, hadassa.global_position) < 22.0 * 22.0:
+			gritou = true
+			fala("Antônio", "HADASSA! CORRE!", 1.6)
 		if auto and e > 1.0:
-			_rescue_runner.die()
+			_corredor.morrer()
 	hud.waypoint = null
-	cutscene()
-	for z in zombies:
-		if is_instance_valid(z) and z.alive and z.position.distance_to(antonio.position) < 500:
-			z.shoved((z.position - antonio.position).normalized(), 3.0)
-			z.sight = 0.0
+	cena()
+	for z in infectados:
+		if is_instance_valid(z) and z.vivo and _d2(z.global_position, antonio.global_position) < 900.0:
+			z.empurrado((z.global_position - antonio.global_position).normalized() * 6.0, 3.0)
+			z.visao = 0.0
 	hud.letterbox(true)
-	hadassa.heading = (antonio.position - hadassa.position).angle()
-	hadassa.go_to(antonio.position + (hadassa.position - antonio.position).normalized() * 50, 120)
-	shot("resgate")
-	await line("Hadassa", "Antônio?!")
-	await line("Antônio", "Eu... eu nem sei o que eu fiz.")
-	await line("Hadassa", "A Hannah! Eu não acho a minha irmã. Ela não atende!")
-	await line("Antônio", "Eu vi ela! Lá de cima. Correndo pro lado do hospital!")
-	await line("Hadassa", "Então é pra lá que a gente vai.")
+	hadassa.olhar(antonio.global_position)
+	hadassa.ir(antonio.global_position + (hadassa.global_position - antonio.global_position).normalized() * 1.6, 2.4)
+	cam.voar((antonio.global_position + hadassa.global_position) * 0.5 + Vector3(0, 1, 0), -80.0, 24.0, 12.0, 2.0)
+	foto("resgate")
+	await fala("Hadassa", "Antônio?!")
+	await fala("Antônio", "Eu... eu nem sei o que eu fiz.")
+	await fala("Hadassa", "A Hannah! Eu não acho a minha irmã. Ela não atende!")
+	await fala("Antônio", "Eu vi ela! Lá de cima. Correndo pro lado do hospital!")
+	await fala("Hadassa", "Então é pra lá que a gente vai.")
 
-# ======================================================================= capítulo 3 — fuga para o morro
-func _setup_act3() -> void:
-	_apply_day(0.55)
-	antonio = spawn_survivor("antonio", Vector2(2050, 2680))
-	antonio.weapon = "extintor"
-	set_player(antonio)
-	antonio.heading = PI
-	hadassa = spawn_survivor("hadassa", Vector2(2000, 2700))
-	hadassa.invulnerable = true
-	hadassa.follow = antonio
-	cam_zoom = 1.35
-	for p in [Vector2(2420, 1662), Vector2(2120, 1795), Vector2(3100, 1680), Vector2(1400, 1770), Vector2(2800, 1790), Vector2(3600, 1650), Vector2(900, 1660)]:
-		wreck(p, randf_range(-0.4, 0.4) + (0.0 if p.y < 1720 else PI), randf() < 0.7)
-	for k in 18:
-		spawn_zombie(Vector2(randf_range(600, 3800), randf_range(1600, 1880)))
-	for k in 5:
-		spawn_zombie(Vector2(randf_range(2300, 3000), randf_range(2650, 2720)))
-	for k in 18:
-		spawn_civ(Vector2(randf_range(800, 3800), randf_range(1560, 1880)), false)
-
-func _act3() -> void:
-	player_input_enabled = false
-	cam_follow = antonio
-	hud.fade_to(0.0, 1.0)
-	await hud.card("AV. CELSO GARCIA  ·  18:10", "Antônio e Hadassa")
-	player_input_enabled = true
-	audio.music("musica_fuga", -12)
-	hud.set_hint("Shift: correr  ·  Espaço: pular\nF / clique: golpear  ·  E: se soltar")
-	hud.objective("Vá para o hospital (oeste, pela V1)")
-	set_day(0.7, 40.0)
-	await reach(Vector2(1585, 2480), 100)
-	# engavetamento e a horda vindo do hospital
-	cutscene()
-	hud.letterbox(true)
-	cam_to(Vector2(1585, 2000), 0.95, 1.6)
-	var bus := spawn_car(Vector2(400, 1650), 0, "onibus")
-	bus.drive_to(Vector2(1520, 1700), 600)
-	bus.arrived_crash_fire = 0.3
-	bus.arrived_explode = 1.4
-	for p in [Vector2(1550, 1890), Vector2(1630, 1905)]:
-		var v := spawn_car(p, randf_range(-0.3, 0.3), "viatura")
-		v.state = "crashed"
-		v.siren_sound(p.x < 1600)
-	world.obstacles.append(Rect2(1500, 1880, 170, 40))
-	var fire_wall := Node2D.new()
-	entities.add_child(fire_wall)
-	for fx in [1520.0, 1585.0, 1650.0]:
-		FX.fire(fire_wall, Vector2(fx, 1900), 1.1)
-	var horde: Array = []
+# ======================================================================= capítulo 3 — a fuga para o morro
+func _preparar_cap3() -> void:
+	amb.aplicar(0.5)
+	antonio = novo_sobrevivente("antonio", Vector3(64, 0, 101), true)
+	controlar(antonio)
+	antonio.dir = PI
+	hadassa = novo_sobrevivente("hadassa", Vector3(66, 0, 102.5))
+	hadassa.invencivel = true
+	hadassa.seguir = antonio
+	for p in [Vector3(124, 0, 8), Vector3(90, 0, -8), Vector3(170, 0, 6), Vector3(40, 0, -5), Vector3(150, 0, -8), Vector3(230, 0, 6), Vector3(-30, 0, -8)]:
+		destroco(p, randf_range(-0.4, 0.4) + (0.0 if p.z > 0 else PI), randf() < 0.75)
+	destroco(Vector3(118, 0, 8.6), 0.1, true, "onibus")
 	for k in 22:
-		var z := spawn_zombie(Vector2(randf_range(1350, 1850), randf_range(1560, 1760)), "comum")
-		horde.append(z)
-	await wait(1.8)
-	shot("engavetamento")
-	await line("Hadassa", "Por aqui não dá!")
-	await line("Antônio", "O morro! Tem uma trilha atrás do estádio!")
-	for z in horde:
-		z.horde = true
-		z.speed *= 1.25
-	hud.letterbox(false)
-	cam_follow = antonio
-	player_input_enabled = true
-	hud.objective("Fuja para o morro: a trilha fica atrás do estádio")
-	await reach(Vector2(3135, 2675), 110)
-	_pursuers(6)
-	await reach(Vector2(3135, 1560), 110)
-	_stadium_burst()
-	var heli := Aircraft.new().setup(self, "heli", [Vector2(2400, 900), Vector2(3300, 1500), Vector2(4300, 2400), Vector2(5400, 3200)], 330)
-	add_child(heli)
-	line("Hadassa", "Ei! AQUI! AQUI EMBAIXO!", 2.2)
-	_pursuers(5, true)
-	await reach(Vector2(3135, 800), 110)
-	line("Antônio", "Eles não vão parar... CORRE!", 1.8)
-	await reach(Vector2(3300, 600), 90)
-	var jet := Aircraft.new().setup(self, "jato", [Vector2(-300, 400), Vector2(2600, 900), Vector2(5600, 1400)], 1200)
-	add_child(jet)
-	_distant_bombs(5)
-	await reach(Vector2(3560, 110), 90)
-	line("Hadassa", "Não para! Não para agora!", 2.0)
-	await reach(Vector2(3860, -360), 100)
-	await reach(World.SUMMIT, 140)
-	await _ending_scene()
-
-func _pursuers(n: int, with_runner := false) -> void:
-	var back := -Vector2.from_angle(player.heading)
-	for k in n:
-		var p: Vector2 = player.position + back * randf_range(650, 800) + back.orthogonal() * randf_range(-250, 250)
-		if world.blocked(p, 12):
-			continue
-		var z := spawn_zombie(p, "corredor" if with_runner and k == 0 else "comum")
-		z.horde = true
-		z.speed *= 1.3 if z.kind == "comum" else 0.9
-
-func _stadium_burst() -> void:
-	flee_point = Vector2(2200, 2200)
-	for k in 34:
-		var p := Vector2(3320 + randf_range(-20, 40), randf_range(820, 1420))
-		var c := spawn_civ(p, false)
-		c.knock = Vector2(-randf_range(150, 300), 0)
+		novo_infectado(Vector3(randf_range(-20, 240), 0, randf_range(-14, 14)))
 	for k in 6:
-		spawn_zombie(Vector2(3360 + randf_range(0, 40), randf_range(850, 1400)))
-	audio.scream(Vector2(3330, 1100), true)
-	audio.sfx("people_04", Vector2(3330, 1100), 4)
+		novo_infectado(Vector3(randf_range(90, 180), 0, randf_range(98, 104)))
+	for k in 18:
+		novo_civil(Vector3(randf_range(-20, 240), 0, randf_range(-14, 16)), "", false)
+	colunas_de_fumaca(10)
+	_torcida_no_estadio()
 
-func _distant_bombs(n: int) -> void:
+func _cap3() -> void:
+	controle_livre = false
+	cam.seguir(antonio, 30.0)
+	hud.fade_to(0.0, 1.0)
+	await hud.card("AV. DOS TECELÕES  ·  18:10", "Antônio e Hadassa")
+	controle_livre = true
+	audio.tocar_musica("musica_fuga", -10.0)
+	hud.set_hint("Shift: correr  ·  Espaço: pular\nF / clique: golpear  ·  E: se soltar")
+	hud.objective("Vá para o hospital (oeste, depois a rua do hospital)")
+	amb.passar(0.72, 60.0)
+	await chegar(Vector3(0, 0, 40), 6.0)
+	# engavetamento e a horda vindo do hospital
+	cena()
+	hud.letterbox(true)
+	cam.voar(Vector3(0, 0, 8), -10.0, 20.0, 42.0, 1.8)
+	var bus := novo_carro(Vector3(-120, 0, 5.6), 0, "onibus")
+	bus.dirigir([Vector3(-6, 0, 4.0)], 30.0)
+	bus.fogo_em = 0.2
+	bus.explode_em = 1.2
+	for p in [Vector3(-2, 0, 16.5), Vector3(3.5, 0, 17.5)]:
+		var v := novo_carro(p, randf_range(-0.4, 0.4) + PI * 0.5, "viatura")
+		v.estado = "batido"
+		v.sirene(p.x < 0)
+	col.ret(Rect2(-5.5, 15.5, 11, 2.0))
+	var parede_fogo := Node3D.new()
+	add_child(parede_fogo)
+	for fx_ in [-4.0, 0.0, 4.0]:
+		FX.fogo(parede_fogo, Vector3(fx_, 0.2, 19.0), 1.2)
+	var horda: Array = []
+	for k in 26:
+		horda.append(novo_infectado(Vector3(randf_range(-30, 30), 0, randf_range(-40, -14))))
+	await esperar(1.6)
+	camera_lenta(0.3, 1.4)
+	foto("engavetamento")
+	await fala("Hadassa", "Por aqui não dá!")
+	await fala("Antônio", "O Morro do Cruzeiro! Tem uma trilha atrás da Arena!")
+	for z in horda:
+		z.horda = true
+		z.rapidez *= 1.25
+	hud.letterbox(false)
+	cam.voltar(antonio, 30.0)
+	controle_livre = true
+	hud.objective("Fuja para o Morro do Cruzeiro: a trilha fica atrás da Arena Fúria")
+	await chegar(Vector3(196, 0, 101), 7.0)
+	_perseguidores(6)
+	await chegar(Vector3(200, 0, -18), 7.0)
+	_saida_do_estadio()
+	var heli := Aeronave.new()
+	add_child(heli)
+	heli.montar(self, "heli", [Vector3(120, 34, -60), Vector3(205, 26, -40), Vector3(320, 34, 60), Vector3(500, 40, 160)], 18.0)
+	heli.alvo_luz = antonio.global_position
+	fala("Hadassa", "Ei! AQUI! AQUI EMBAIXO!", 2.2)
+	_perseguidores(5, true)
+	await chegar(Vector3(200, 0, -110), 7.0)
+	if is_instance_valid(heli):
+		heli.alvo_luz = null
+	fala("Antônio", "Eles não vão parar... CORRE!", 1.8)
+	await chegar(Vector3(212, 0, -158), 5.0)
+	var jato := Aeronave.new()
+	add_child(jato)
+	jato.montar(self, "jato", [Vector3(-320, 70, -260), Vector3(120, 55, -120), Vector3(560, 70, 40)], 120.0)
+	_bombas_longe(5)
+	await chegar(Vector3(236, 0, -200), 4.0)
+	fala("Hadassa", "Não para! Não para agora!", 2.0)
+	await chegar(Vector3(258, 0, -240), 4.0)
+	await chegar(Vector3(Mapa.TOPO.x, 0, Mapa.TOPO.y), 8.0)
+	await _final()
+
+func _perseguidores(n: int, com_corredor := false) -> void:
+	var tras := -Vector3(cos(jogador.dir), 0, sin(jogador.dir))
 	for k in n:
-		get_tree().create_timer(1.0 + k * 1.3, false).timeout.connect(func():
-			var p := Vector2(randf_range(100, 1700), randf_range(-1300, 400))
-			FX.explosion(entities, p, 2.2)
-			audio.sfx("explosion_01", p, 8, 0.2))
+		var p := jogador.global_position + tras * randf_range(28, 36) + tras.cross(Vector3.UP) * randf_range(-10, 10)
+		if col.bloqueado(Vector2(p.x, p.z), 0.4):
+			continue
+		var z := novo_infectado(p, "corredor" if com_corredor and k == 0 else "comum")
+		z.horda = true
+		z.rapidez *= 1.35 if z.tipo == "comum" else 0.9
 
-func _ending_scene() -> void:
-	cutscene()
-	_ending = false
+func _saida_do_estadio() -> void:
+	## a multidão sai do estádio pelos portões do oeste, com infectados no meio (Guerra Mundial Z)
+	fuga = Vector3(120, 0, 30)
+	for k in 46:
+		var p := Vector3(Mapa.ESTADIO_C.x - Mapa.ESTADIO_R.x - 2 - randf_range(0, 6), 0, Mapa.ESTADIO_C.y + randf_range(-30, 30))
+		var c := novo_civil(p, ["civ_torcedor", "civ_torcedora", "civ_torcedor", "civ_jovem", "civ_policial"].pick_random(), false)
+		c.empurrado(Vector3(-randf_range(4, 8), 0, randf_range(-1, 1)), 0.2)
+	for k in 7:
+		novo_infectado(Vector3(Mapa.ESTADIO_C.x - Mapa.ESTADIO_R.x - 3, 0, Mapa.ESTADIO_C.y + randf_range(-25, 25)))
+	audio.grito(Vector3(215, 0, -80), true)
+	audio.som("multidao", Vector3(215, 0, -80), 8.0)
+
+func _bombas_longe(n: int) -> void:
+	for k in n:
+		get_tree().create_timer(1.0 + k * 1.4, false).timeout.connect(func():
+			var p := Vector3(randf_range(-240, 60), 0, randf_range(-320, -170))
+			p.y = Mapa.altura(p.x, p.z)
+			FX.explosao(efeitos, p, 3.2)
+			FX.fogo(efeitos, p, 2.5)
+			audio.som("explosao", p, 16.0, 0.2))
+
+func _final() -> void:
+	cena()
 	hud.objective("")
 	hud.set_hint("")
 	hud.letterbox(true)
-	for z in zombies:
-		if is_instance_valid(z) and z.alive:
-			z.horde = false
-			z.sight = 0.0
-			z.target = null
-			if z.position.y < 600:
-				z.go_to(Vector2(3300, 700), 40)
-	antonio.go_to(World.SUMMIT + Vector2(-60, 10), 110)
-	hadassa.follow = null
-	hadassa.go_to(World.SUMMIT + Vector2(-10, 30), 110)
-	audio.music("musica_final", -10, 3.0)
-	set_day(1.0, 8.0)
-	cam_to(Vector2(3000, 700), 0.32, 8.0)
+	for z in infectados:
+		if is_instance_valid(z) and z.vivo:
+			z.horda = false
+			z.visao = 0.0
+			z.alvo = null
+			if Mapa.no_morro(z.chao2()):
+				z.ir(Vector3(210, 0, -150), 1.0)
+	antonio.ir(Vector3(Mapa.TOPO.x - 3, 0, Mapa.TOPO.y + 7), 1.6)
+	hadassa.seguir = null
+	hadassa.ir(Vector3(Mapa.TOPO.x - 1, 0, Mapa.TOPO.y + 8), 1.6)
+	audio.tocar_musica("musica_final", -8.0, 3.0)
+	amb.passar(1.0, 10.0)
+	var ytopo := Mapa.altura(Mapa.TOPO.x, Mapa.TOPO.y)
+	cam.voar(Vector3(Mapa.TOPO.x, ytopo + 1, Mapa.TOPO.y + 8), -170.0, 14.0, 12.0, 3.0)
+	await esperar(3.5)
 	# a cidade queimando lá embaixo
-	for k in 14:
-		var p := Vector2(randf_range(200, 4600), randf_range(700, 3000))
-		if world.on_road(p):
-			FX.fire(entities, p, randf_range(1.2, 2.0))
-	_distant_bombs(8)
-	var heli2 := Aircraft.new().setup(self, "heli", [Vector2(400, 2600), Vector2(2400, 1700), Vector2(5200, 900)], 300)
+	var acesos := 0
+	while acesos < 22:
+		var p := Vector3(randf_range(-200, 330), 0.2, randf_range(-140, 140))
+		if Mapa.na_rua(Vector2(p.x, p.z)):
+			FX.fogo(efeitos, p, randf_range(2.2, 3.6))
+			acesos += 1
+	for pr in cidade.predios.slice(0, 40):
+		if randf() < 0.3 and is_instance_valid(pr):
+			pr.mat.set_shader_parameter("queimado", 0.6)
+			FX.fogo(efeitos, Vector3(pr.ret.get_center().x, pr.andares * 3.0, pr.ret.get_center().y), 2.6)
+	amb.neblina = 0.5
+	_bombas_longe(8)
+	var heli2 := Aeronave.new()
 	add_child(heli2)
-	await wait(5.0)
-	shot("final")
-	await line("Hadassa", "A Hannah tá lá embaixo, Antônio.")
-	await line("Antônio", "Eu sei.")
-	await line("Antônio", "A gente vai achar ela. Eu prometo.")
-	await line("Hadassa", "...Vou cobrar.")
-	await wait(1.5)
+	heli2.montar(self, "heli", [Vector3(-200, 40, 120), Vector3(100, 36, 0), Vector3(420, 40, -60)], 22.0)
+	await fala("Hadassa", "A Hannah tá lá embaixo, Antônio.")
+	cam.voar(Vector3(120, 0, -20), -175.0, 18.0, 260.0, 9.0)
+	await fala("Antônio", "Eu sei.")
+	await fala("Antônio", "A gente vai achar ela. Eu prometo.")
+	await fala("Hadassa", "...Vou cobrar.")
+	await esperar(3.0)
+	foto("final")
 	hud.show_end([["PROJECT Z", 104, true, Color("e8b10d")], ["PRÓLOGO  ·  DIA ZERO", 28, false],
 		[" ", 14, false], ["Hannah — sozinha, a caminho do hospital.", 23, false],
 		["San — ninguém sabe onde ele está.", 23, false], [" ", 14, false], ["CONTINUA...", 44, true],
 		[" ", 20, false], ["Enter: jogar de novo", 18, false, Color("9a958a")]])
-	_ending = true
+	_fim = true
 	if auto:
-		await wait(0.5)
-		shot("fim")
+		await esperar(0.5)
+		foto("fim")
+		await get_tree().create_timer(2.0, true, false, true).timeout
 		print("[autotest] OK — prólogo completo")
 		get_tree().quit(0)
+
+# ======================================================================= teste de rotas
+func _checar_rotas() -> void:
+	var rotas := {
+		"cap1": [Vector3(33, 0, -95), Mapa.TOMADA + Vector3(1.0, 0, 0), Vector3(100, 0, -23), Vector3(70, 0, -14), Vector3(14, 0, -14),
+			Mapa.HOSP_PS + Vector3(0, 0, -8.5), Vector3(-70, 0, -36)],
+		"cap2": [Vector3(116, 0, 53), Mapa.MESA_CAMERAS + Vector3(0, 0, 0.6), Vector3(98, 0, 41.6), Mapa.ESCADA + Vector3(0, 0, 1.0), Mapa.EXTINTOR, Vector3(64, 0, 101)],
+		"cap3": [Vector3(64, 0, 101), Vector3(0, 0, 40), Vector3(196, 0, 101), Vector3(200, 0, -18), Vector3(200, 0, -110), Vector3(212, 0, -158),
+			Vector3(236, 0, -200), Vector3(258, 0, -240), Vector3(Mapa.TOPO.x, 0, Mapa.TOPO.y)],
+	}
+	var ok := true
+	for nome in rotas:
+		var pts: Array = rotas[nome]
+		for i in pts.size() - 1:
+			var bom := _andavel(Vector2(pts[i].x, pts[i].z), Vector2(pts[i + 1].x, pts[i + 1].z))
+			print("[rotas] %s  %s -> %s : %s" % [nome, pts[i], pts[i + 1], "OK" if bom else "BLOQUEADO"])
+			ok = ok and bom
+	print("[rotas] ", "TUDO OK" if ok else "HÁ ROTAS BLOQUEADAS")
+	get_tree().quit(0 if ok else 1)
+
+func _andavel(a: Vector2, b: Vector2) -> bool:
+	var passo := 0.5
+	var caixa := Rect2(a, Vector2.ZERO).expand(b).grow(60.0)
+	var ini := Vector2i(roundi(a.x / passo), roundi(a.y / passo))
+	var fim := Vector2i(roundi(b.x / passo), roundi(b.y / passo))
+	var visto := {ini: true}
+	var fila: Array[Vector2i] = [ini]
+	var i := 0
+	while i < fila.size():
+		var c: Vector2i = fila[i]
+		i += 1
+		if (c - fim).length_squared() <= 16:
+			return true
+		for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n: Vector2i = c + d
+			if visto.has(n):
+				continue
+			visto[n] = true
+			var w := Vector2(n) * passo
+			if caixa.has_point(w) and not col.bloqueado(w, 0.32):
+				fila.append(n)
+	return false

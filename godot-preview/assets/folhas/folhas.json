@@ -1,0 +1,1025 @@
+{
+ "operario": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "idle": {
+    "frames": 6,
+    "fps": 6,
+    "loop": true
+   },
+   "attack": {
+    "frames": 7,
+    "fps": 12,
+    "loop": false
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "death": {
+    "frames": 9,
+    "fps": 10,
+    "loop": false
+   }
+  }
+ },
+ "executivo": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 6,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "attack": {
+    "frames": 7,
+    "fps": 12,
+    "loop": false
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "death": {
+    "frames": 9,
+    "fps": 10,
+    "loop": false
+   }
+  }
+ },
+ "paciente": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 6,
+    "loop": true
+   },
+   "attack": {
+    "frames": 7,
+    "fps": 12,
+    "loop": false
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "death": {
+    "frames": 9,
+    "fps": 10,
+    "loop": false
+   }
+  }
+ },
+ "atleta": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 9,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 15,
+    "loop": true
+   },
+   "attack": {
+    "frames": 7,
+    "fps": 14,
+    "loop": false
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "death": {
+    "frames": 9,
+    "fps": 10,
+    "loop": false
+   }
+  }
+ },
+ "civ_executivo": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_atendente": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_estudante": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_estudante2": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_idoso": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_idosa": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_pedreiro": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_motoboy": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_torcedor": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_torcedora": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_enfermeiro": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_funcionaria": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_policial": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_jovem": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_hanna": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "look": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_hadassa": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "look": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_antonio": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "cower": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "flee": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "phone": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "look": {
+    "frames": 4,
+    "fps": 4,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   }
+  }
+ },
+ "civ_antonio_ext": {
+  "cell": {
+   "w": 128,
+   "h": 128,
+   "ground": 108
+  },
+  "anims": {
+   "idle": {
+    "frames": 6,
+    "fps": 5,
+    "loop": true
+   },
+   "walk": {
+    "frames": 8,
+    "fps": 9,
+    "loop": true
+   },
+   "hit": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false
+   },
+   "run": {
+    "frames": 8,
+    "fps": 13,
+    "loop": true
+   },
+   "death": {
+    "frames": 10,
+    "fps": 9,
+    "loop": false
+   },
+   "swing": {
+    "frames": 6,
+    "fps": 16,
+    "loop": false
+   }
+  }
+ }
+}

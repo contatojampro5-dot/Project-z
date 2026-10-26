@@ -1,20 +1,21 @@
-# PROJECT Z — Prólogo "Dia Zero" (prévia em Godot)
+# PROJECT Z — Prólogo "Dia Zero" (Godot 4.7, cidade 3D)
 
-Uma prévia curta, de 6 a 10 minutos, do **primeiro dia do surto** na Zona Leste, feita no **Godot 4.3**.
-Ela segue a história oficial (`docs/historia.md`): a Hannah na faculdade, o Antônio no mercado, o
-corredor atacando a Hadassa e a fuga para o morro. O jogo do navegador (`src/`, `jogo/`) não foi mexido.
+O **primeiro dia do surto** na Zona Leste, feito no **Godot 4.7**: uma cidade 3D com câmera alta e inclinada
+no estilo Project Zomboid, pôr do sol que vira noite, multidão em pânico, carros batendo e explodindo,
+helicóptero com holofote e a fuga até a casa no alto do morro. Segue a história oficial (`docs/historia.md`).
+O jogo do navegador (`src/`, `jogo/`) não foi mexido.
 
 - **Jogar no navegador:** https://contatojampro5-dot.github.io/Project-z/jogo-godot/
-  (na primeira vez baixa uns 10 MB; clique na tela para o som começar)
-- **Abrir no Godot:** veja o passo a passo abaixo.
+  (na primeira vez baixa uns 15 MB; clique na tela para o som começar)
+- **Abrir no Godot:** passo a passo abaixo.
 
 ## Como abrir no Godot (passo a passo)
 
-1. Baixe o **Godot 4.3** (versão "Standard", não precisa da .NET): https://godotengine.org/download/archive/4.3-stable/
-2. Descompacte e abra o programa. Não precisa instalar nada.
-3. Na tela de projetos, clique em **Importar** e escolha o arquivo `godot-preview/project.godot`.
+1. Baixe o **Godot 4.7** (versão "Standard"): https://godotengine.org/download/archive/4.7.2-stable/
+2. Descompacte e abra o programa (não precisa instalar).
+3. Na tela de projetos, clique em **Importar** e escolha `godot-preview/project.godot`.
 4. Clique em **Importar e editar**. Na primeira vez o Godot leva um tempinho preparando as imagens.
-5. Aperte **F5** (ou o botão ▶ no canto de cima) para jogar.
+5. Aperte **F5** (ou o ▶ lá em cima) para jogar.
 
 ## Controles
 
@@ -24,7 +25,7 @@ corredor atacando a Hadassa e a fuga para o morro. O jogo do navegador (`src/`, 
 | Correr | Shift | RB |
 | Pular carros e barreiras | Espaço | A |
 | Interagir / se soltar de um infectado | E (aperte várias vezes para se soltar) | X |
-| Golpear (Antônio) | F ou clique | B |
+| Golpear com o extintor (Antônio) | F ou clique | B |
 | Pular fala | Enter | Y |
 | Pausa (recomeçar ou pular capítulo) | Esc ou P | Start |
 
@@ -32,79 +33,98 @@ corredor atacando a Hadassa e a fuga para o morro. O jogo do navegador (`src/`, 
 
 | Parte | Quem | O que acontece |
 | --- | --- | --- |
-| Abertura | — | Suas fotos aéreas da cidade ao pôr do sol, com o rádio falando dos idosos internados e dos boatos sobre a vacina. |
-| Capítulo 1 · Faculdade 17:40 | Hannah | Os professores não vieram. Ela carrega o celular e vê **14 chamadas perdidas da Hadassa**. Colegas comentam que parentes passaram mal. Um carro bate no ônibus, ela vai até o portão e a avenida vira um caos. Ela corre rumo ao hospital. |
-| Capítulo 2 · Mercado 17:52 | Antônio | No depósito, ele vê pelas câmeras os infectados atacando as duas funcionárias. O coração dispara e ele se obriga a respirar. Elas levantam transformadas. Ele baixa o portão, sobe no telhado e vê a cidade, a Hannah correndo para o hospital e a Hadassa indo direto para um grupo de infectados. Ele pega o **extintor** e enfrenta o **corredor**. |
-| Capítulo 3 · Fuga 18:10 | Antônio + Hadassa | A caminho do hospital, um engavetamento com fogo e a horda fecham a V1. Eles fogem pela V2, passam pela multidão saindo do estádio, veem o helicóptero que não para e os jatos, e sobem a trilha até a casa no alto do morro. Final: a cidade queimando à noite e "continua...". |
+| Abertura | — | "Este é o dia em que tudo acabou." A sua foto aérea com o rádio falando dos idosos internados e dos boatos da vacina, e depois a mesma cidade em 3D, com um voo do céu até a faculdade. |
+| Cap. 1 · Faculdade 17:40 | Hannah | Ela está **dentro da sala do TCC**, com o slide "Guerra, defesa e o desenvolvimento científico e tecnológico de um país". Os professores não vieram. Ela carrega o celular e vê 14 chamadas perdidas da Hadassa. Colegas no pátio falam dos parentes que passaram mal. Um carro bate no ônibus, ela vai até o portão e a avenida vira caos, com um helicóptero passando. Depois corre para o hospital, **entra no pronto-socorro** e descobre que a Hadassa saiu para buscá-la na faculdade. A Dona Cida, na maca, convulsiona e levanta, e o contágio começa ali dentro. Ela foge. |
+| Cap. 2 · Mercado 17:52 | Antônio | Abre na fachada do mercado. No depósito, ele vê pela **câmera de segurança** só dois infectados entrando no estacionamento, e a cadeia do contágio: eles mordem as funcionárias e os clientes um atrás do outro, e cada mordido levanta infectado em 15 segundos (o contador da câmera mostra quantos foram mordidos e quantos já levantaram). O coração dispara (bpm) e ele se obriga a respirar. Elas levantam transformadas. Ele baixa a porta de aço, sobe no telhado e vê tudo: a Hannah indo para o hospital e a Hadassa indo para os infectados. Pega o **extintor** e enfrenta o corredor. |
+| Cap. 3 · Fuga 18:10 | Antônio + Hadassa | O engavetamento com explosão e câmera lenta, mais a horda, fecham o caminho do hospital. Eles fogem pela avenida, a multidão sai do estádio com infectados no meio, o helicóptero ilumina e não para, jatos passam baixo e há bombardeios ao longe. Eles sobem a trilha. Final no topo: a cidade queimando à noite e "continua...". |
 
-### O que é cânone e o que é proposta minha
+## Como foi feito
 
-Segui o que está como **[Definido]** em `docs/historia.md`. Decisões do Theo (25/10/2026):
+- **Contágio (a regra do Theo)**: quem é mordido ou agarrado vira infectado em **15 segundos**. A pessoa cai
+  com a mordida, levanta e continua fugindo machucada (cada vez mais devagar, e a pele vai ficando
+  cinza-esverdeada), nos últimos 3 segundos desaba tremendo e levanta infectada. O infectado morde e já larga:
+  vai atrás do próximo mais perto e ignora quem já foi mordido. Dois infectados viram quatro, depois oito...
+  (`scripts/civil.gd`, `scripts/infectado.gd`; limite de 120 infectados no mapa, para ficar leve).
+- **Lugares com cara própria e com interior**:
+  - **Arena Fúria** (do time fictício Fúria Leste F.C.): costelas de concreto inclinadas, vidro escuro com as lajes do saguão,
+    faixa de LED vermelha, cobertura branca em balanço, arquibancada em dois anéis (torcida vermelha e preta e
+    o setor visitante azul), camarotes acesos, telão e, no oeste, os portões com catracas, bilheterias,
+    carrinhos de comida com guarda-sol, grades da polícia, bandeiras e faixas da torcida.
+  - **Mercado do Antônio**: faixa vermelha e amarela nas fachadas, toldo listrado do hortifrúti com caixotes
+    de fruta, cartazes de oferta escritos à mão, gaiola de botijão, galões de água, moto de entrega, carrinhos,
+    mesinha de plástico, doca de mercadorias nos fundos, porta de aço que desenrola do rolo. Por dentro: piso
+    quadriculado, gôndolas cheias, caixas, geladeira de bebidas acesa, açougue e o depósito.
+  - **Hospital Municipal São Crispim**: o saguão do pronto-socorro é de verdade, com recepção, cadeiras de espera, boxes de triagem
+    com cortina, macas, soro e cadeira de rodas.
+  - **Faculdade Integrada do Pari**: a ala norte tem corredor com armários e mural e salas de aula com lousa e carteiras (dá
+    para entrar pelas portas do pátio); a ala oeste tem a sala do TCC.
+  - **Nomes inventados** (nada de nome real): Av. dos Tecelões, R. São Crispim, R. das Torcidas, R. do Cruzeiro,
+    R. dos Armazéns e o Morro do Cruzeiro, com placas azuis nas esquinas.
+  - Ao entrar, o prédio some e as paredes de dentro abaixam (como no Zomboid).
 
-1. **O objeto do Antônio contra o corredor é o extintor** (registrado em `docs/historia.md`).
-2. **Coração do Antônio:** batimentos na tela (bpm). Correr e ficar perto de infectados aceleram o
-   coração; acima de 150 ele fica mais lento e o fôlego volta devagar. **Sem minijogo de respiração.**
+- **Cidade 3D por código** (`scripts/cidade.gd`, `scripts/predio.gd`): avenida com canteiro arborizado,
+  faixas e semáforos, calçada "mapa de SP", prédios de 3 a 5 andares com fachada de reboco, pastilha ou
+  tijolo à vista, janelas com grade, ar-condicionado, varal, lojas no térreo com porta de aço pichada,
+  marquise e toldo, telhados com caixa d'água azul, postes de concreto com a fiação emaranhada, orelhões,
+  bancas, pontos de ônibus, caçambas, casas de telha, estádio iluminado e o morro em relevo com mata.
+- **Estilo Zomboid**: câmera alta na diagonal, os personagens vistos de cima a ~38°. Quando um prédio
+  esconde o personagem, abre um **buraco de visão** só em volta dele. Quando ele entra num prédio (a sala
+  do TCC, o mercado), o prédio some e as paredes internas abaixam.
+- **Personagens**: gerados no motor do laboratório do jogo (`laboratorio/src/civis.js` +
+  `laboratorio/src/export_civ.js`), com a mesma arte da Hannah e do Antônio. São 14 moradores (executivo,
+  estudantes, idosos, pedreiro, motoboy, torcedores, enfermeiro, policial, as funcionárias do mercado),
+  Hannah, Antônio e Hadassa sem arma, o Antônio com o extintor e os infectados comum e corredor. As poses
+  são: parado olhando em volta, andar, correr, fugir com os braços para cima, se encolher, falar no
+  celular, levar golpe e cair.
+- **Texturas** geradas por `ferramentas/gerar_texturas.py`, com marcas fictícias (Casas do Brás, Drogaria
+  Sé, Parada 24h, Banco Tietê...).
+- **Efeitos** (`scripts/fx.gd`): fogo animado que ilumina as paredes, fumaça preta em coluna, brasas,
+  explosão com bola de fogo, clarão, faíscas, destroços e onda de choque, vidro estilhaçando, sangue e
+  queimado no chão, colunas de fumaça no horizonte e câmera lenta nos momentos grandes. **Sem tremor de
+  tela** (regra do dono).
+- **Luz**: sol baixo e dourado com sombra longa e sombra azulada, que vira noite. As janelas acendem, os
+  postes acendem perto da câmera, há giroflex nas viaturas, refletores no estádio e o holofote do
+  helicóptero.
+- **Vozes (ElevenLabs)**: os 4 boletins do rádio (com filtro de rádio AM), 4 falas da Hannah e 1 do
+  Antônio. O resto aparece só em legenda: o ElevenLabs bloqueou o plano gratuito por "atividade incomum"
+  no meio da gravação. Para completar, é preciso uma conta com plano pago ativo. A lista das falas e dos
+  ids está em `assets/audio/vozes/falas.json`; um arquivo `<id>.mp3` novo entra sozinho.
 
-Propostas minhas que ainda podem mudar:
-
-3. **Como o Antônio sabe que a Hannah foi para o hospital**: ele a vê do telhado, passando pela avenida
-   (a mesma corrida do capítulo 1).
-4. **O desencontro das irmãs**: a Hannah vai para o hospital pela calçada de cima da avenida, enquanto a
-   Hadassa vem do hospital pelo outro lado procurando por ela.
-5. **Ambiente de "Guerra Mundial Z"**: multidão saindo do estádio, helicóptero que não para e jatos
-   passando. Fica só no fundo, sem explicar a origem do surto (que continua misteriosa).
-6. **O San não aparece**, porque a entrada dele na história ainda está pendente. No final só aparece
-   "San — ninguém sabe onde ele está".
-
-## Regras do projeto que a prévia respeita
-
-- Sem tremor de tela: as explosões usam clarão de luz.
-- Marcas fictícias (só "HOSPITAL", "FACULDADE", "MERCADO", "ESTÁDIO").
-- Prédios de 3 a 5 andares, translúcidos só quando o personagem passa atrás.
-- Personagens e infectados 15% menores, e sobreviventes um pouco maiores que os zumbis.
-- Leve: renderizador **Compatibility** (o mais leve do Godot, roda em PC fraco e no navegador), cidade e
-  pessoas desenhadas por código e partículas na CPU.
-
-## Arte e som reaproveitados do jogo
-
-- Folhas de sprite em 8 direções de **Hannah, Antônio e Hadassa** (`*_pistol.webp`) e dos infectados
-  **comum** (operário, executivo, paciente) e **corredor** (atleta), as mesmas do jogo web.
-- Retratos nas falas: as fotos que você mandou (a Hadassa enfermeira é a imagem nova) e os retratos do jogo.
-- Sons: fogo, horda, gritos, explosões, infectados e as duas músicas do jogo. A sirene, o coração, o
-  helicóptero, o portão de aço, o rádio e o celular foram gerados por código.
-- Os sprites dos sobreviventes seguram pistola, porque são as folhas que existem. Uma folha sem arma (ou com
-  o objeto improvisado) seria um trabalho para o laboratório depois.
+- **Letras**: Instrument Serif nos títulos de cinema (com uma faixa escura macia por trás), Syne espaçada nos
+  rótulos (OBJETIVO, nomes de quem fala, FÔLEGO) e Manrope nas legendas e no HUD. Todas do Google Fonts (licença
+  OFL), em `assets/fonts/`.
+- **Proporção**: as pessoas têm o tamanho real ao lado de carros, portas e móveis (conferido com uma caixa de
+  1,72 m e uma porta de 2,1 m). A câmera fica um pouco mais perto para compensar.
 
 ## Arquivos
 
 | Arquivo | O que faz |
 | --- | --- |
-| `scripts/main.gd` | Diretor: monta a cidade e roda a abertura e os 3 capítulos (falas, objetivos, eventos) |
-| `scripts/world.gd` | Chão da cidade (ruas, faixas, canteiro, estacionamentos, pátio, morro e trilha) e colisão |
-| `scripts/building.gd` | Prédios em caixa pseudo-3D (fachada + telhado), estádio, placas |
-| `scripts/interior.gd` | Dentro do mercado do Antônio (prateleiras, depósito, câmeras, portão, objetos) |
-| `scripts/actor.gd` | Base de quem anda (sprite em 8 direções, colisão, movimento de cena) |
-| `scripts/survivor.gd` | Hannah, Antônio e Hadassa (correr, pular, se soltar, golpear, coração) |
-| `scripts/zombie.gd` | Infectados comum e corredor |
-| `scripts/civilian.gd` | Pessoas da cidade em pânico (desenhadas por código), que podem ser mordidas e levantar |
-| `scripts/car.gd` | Carros, viaturas, ambulâncias e ônibus: trânsito, batida, fogo e explosão |
-| `scripts/fx.gd`, `shock_ring.gd` | Fogo, fumaça, faíscas, explosões e luzes |
-| `scripts/aircraft.gd` | Helicóptero com holofote e jatos |
-| `scripts/hud.gd` | Legendas com retrato, objetivo, celular, câmera de segurança, pausa e tela final |
-| `scripts/audio.gd` | Sons com posição na cidade, loops e música |
+| `scripts/main.gd` | Diretor: abertura, os 3 capítulos, câmeras de cena, eventos, falas e objetivos |
+| `scripts/mapa.gd` | Planta da cidade em metros (ruas, lugares da história, morro e trilha) |
+| `scripts/cidade.gd` | Monta a cidade 3D inteira |
+| `scripts/predio.gd` | Prédio com fachada, telhado, marquise e o buraco de visão |
+| `scripts/lote.gd` | Junta milhares de peças em poucas malhas (leve) |
+| `scripts/colisao.gd` | Colisão leve no chão (prédios, carros, árvores, trilha do morro) |
+| `scripts/ambiente.gd` | Céu, sol, neblina, cor de cinema, pôr do sol → noite |
+| `scripts/camera.gd` | Câmera estilo Zomboid e os voos de cena |
+| `scripts/pessoa.gd`, `sobrevivente.gd`, `civil.gd`, `infectado.gd` | Gente: sprites em 8 direções no 3D |
+| `scripts/carro.gd` | Hatch, sedã, Kombi, ônibus, viatura e ambulância: trânsito, batida, fogo, explosão |
+| `scripts/aeronave.gd` | Helicóptero com holofote e jatos |
+| `scripts/fx.gd` | Fogo, fumaça, explosões, faíscas, vidro, manchas |
+| `scripts/hud.gd`, `audio.gd` | Legendas com retrato e voz, objetivo, celular, câmera de segurança; sons 3D |
+| `shaders/` | Fachada (atlas + janelas acesas + buraco de visão), chão do morro, sprite das pessoas |
+| `vitrine.tscn` | Fotos da cidade de vários ângulos, incluindo os interiores (teste visual; `--so=nome1,nome2` tira só algumas) |
 
-## Testes (para o Claude ou quem mexer no código)
+## Testes
 
 ```
 # o prólogo se joga sozinho do começo ao fim (deve terminar com "[autotest] OK")
 godot --headless --path godot-preview -- --autotest
-
 # confere se dá para andar entre todos os pontos do roteiro (deve dar "TUDO OK")
 godot --headless --path godot-preview -- --rotas
-
-# capturas de tela de cada momento (precisa de tela; no servidor use xvfb-run)
-xvfb-run godot --path godot-preview --rendering-driver opengl3 -- --autotest --shots=/pasta/das/capturas
-
-# gerar a versão Web em jogo-godot/ (precisa dos modelos de exportação Web do Godot 4.3)
+# fotos de cada momento (precisa de tela; no servidor use xvfb-run)
+xvfb-run godot --path godot-preview --rendering-driver opengl3 -- --autotest --fotos=/pasta
+# versão Web em jogo-godot/ (precisa dos modelos de exportação Web do Godot 4.7.2)
 godot --headless --path godot-preview --export-release "Web" ../jogo-godot/index.html
 ```

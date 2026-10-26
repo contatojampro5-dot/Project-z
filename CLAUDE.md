@@ -109,13 +109,27 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   seguidas vindas de servidor/proxy). Só continuar numa conta com **plano pago ativo**, devagar (~1 fala a cada 30 s).
   Não usar conta secundária gratuita para contornar o bloqueio.
 
-## Prévia em Godot (R47) — `godot-preview/`
-- Projeto Godot 4.3 separado (renderizador Compatibility), prólogo "Dia Zero" em 3 capítulos (Hannah → Antônio → fuga
-  para o morro) seguindo `docs/historia.md`. Tudo em código: `scripts/main.gd` é o diretor (cenas, falas, objetivos).
+## Prévia em Godot (R47/R48) — `godot-preview/`
+- Projeto **Godot 4.7** separado (renderizador Compatibility, cidade 3D estilo Project Zomboid), prólogo "Dia Zero"
+  em 3 capítulos (Hannah → Antônio → fuga para o morro) seguindo `docs/historia.md`. Tudo em código: `scripts/main.gd`
+  é o diretor; `cidade.gd`/`predio.gd` montam a cidade; sprites 8 direções gerados por `laboratorio/src/civis.js` +
+  `export_civ.js` (saída `assets/folhas/`); texturas por `ferramentas/gerar_texturas.py`.
 - Versão Web exportada em `jogo-godot/` (GitHub Pages: `/Project-z/jogo-godot/`). Exportar de novo depois de mudar algo:
-  `godot --headless --path godot-preview --export-release "Web" ../jogo-godot/index.html` (modelos Web 4.3 instalados).
+  `godot --headless --path godot-preview --export-release "Web" ../jogo-godot/index.html` (modelos Web 4.7.2).
 - Testes: `-- --autotest` (joga sozinho até o fim, "[autotest] OK") e `-- --rotas` (caminhos livres, "TUDO OK").
-  Capturas: `xvfb-run godot --path godot-preview --rendering-driver opengl3 -- --autotest --shots=PASTA`.
+  Fotos: `xvfb-run godot --path godot-preview --rendering-driver opengl3 -- --autotest --fotos=PASTA`;
+  cidade/interiores: `res://vitrine.tscn -- --pasta=PASTA [--so=estadio,hospital_dentro]`.
+- **Contágio (regra do Theo, 26/10):** mordido ou agarrado vira infectado em **15 s** (`Civil.TEMPO_VIRAR`): cai, levanta
+  e foge machucado, convulsiona nos últimos 3 s e levanta. O infectado morde, larga e vai atrás do próximo mais perto.
+- **Nomes fictícios dos lugares (pedido do Theo):** Av. dos Tecelões, R. São Crispim, R. das Torcidas, R. do Cruzeiro,
+  R. dos Armazéns, Hospital Municipal São Crispim, Faculdade Integrada do Pari, Arena Fúria (time Fúria Leste F.C.),
+  Morro do Cruzeiro (Trilha do Cruzeiro), Mercado do Antônio. Não usar nomes reais (Celso Garcia, Tatuapé...).
+- Escala: `Pessoa.PX = 0.0148` (pessoa do tamanho real perto de carros/portas; antes 0.0245 = quase o dobro, o Theo
+  reclamou da desproporção) e `CameraZ.ZOOM = 0.75` em todas as distâncias de câmera.
+- Letras do HUD: Instrument Serif (títulos), Syne espaçada (rótulos), Manrope (texto) — pedido do Theo por algo mais sofisticado.
+- Interiores visíveis/acessíveis: saguão do PS, ala norte e sala do TCC da faculdade, mercado (prédio "oco" + `cidade.cortes`).
+- Vozes: falas listadas em `assets/audio/vozes/falas.json` (ids); gravadas só r01–r04, h01–h04, a01 (ElevenLabs bloqueou
+  o plano gratuito). Um `<id>.mp3` novo entra sozinho.
 - Decidido pelo Theo (25/10): objeto do Antônio = **extintor** (cânone); coração = só bpm na tela (mais lento acima de
   150, fôlego volta devagar), **sem minijogo de respiração**. San não aparece (entrada pendente).
 

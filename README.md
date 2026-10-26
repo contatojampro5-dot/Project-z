@@ -462,3 +462,19 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Capítulo 3 · Fuga:** engavetamento com fogo e a horda fechando o caminho do hospital, multidão saindo do estádio, helicóptero e jatos passando, e a subida da trilha até a casa no alto do morro.
 - **R47b — decisões do Theo:** o objeto do Antônio contra o corredor é o **extintor** (agora cânone em `docs/historia.md`) e o coração dele fica só nos batimentos na tela, **sem o minijogo de respiração**.
 - Reaproveita as folhas de sprite da Hannah, do Antônio, da Hadassa e dos infectados comum e corredor, além dos sons e das músicas do jogo. Respeita as regras: sem tremor de tela, marcas fictícias, prédios de 3–5 andares, tamanhos de personagem.
+
+## R48 · Prévia em Godot — cidade 3D, contágio de 15 segundos e lugares com nome
+- **Refeita em 3D no Godot 4.7**, no estilo Project Zomboid: câmera alta na diagonal, pôr do sol que vira noite,
+  prédios de 3 a 5 andares com lojas, marquises, caixas d'água e fiação, avenida com canteiro, e o morro com mata.
+  Personagens novos feitos no motor do laboratório com a mesma arte do jogo (14 moradores, Hannah, Antônio, Hadassa e
+  os infectados).
+- **Contágio:** quem é mordido ou agarrado vira infectado em 15 segundos. A pessoa foge machucada, a pele vai mudando,
+  ela desaba tremendo e levanta. O infectado morde e já corre atrás do próximo mais perto, e o surto se espalha em
+  cadeia. Na câmera de segurança, o Antônio vê dois infectados virarem vários, com o contador de mordidos.
+- **Lugares com cara própria e interior:** Arena Fúria (fachada de costelas, cobertura, LED, telão, portões com
+  catracas, bilheteria e bandeiras), Mercado do Antônio (faixa vermelha, hortifrúti, ofertas, botijões, porta de aço,
+  gôndolas, açougue), saguão do pronto-socorro do Hospital São Crispim (a Hannah entra nele no capítulo 1) e as salas
+  da Faculdade Integrada do Pari.
+- **Nomes inventados** para tudo (Av. dos Tecelões, R. São Crispim, Morro do Cruzeiro...), com placas de rua nas esquinas.
+- **Vozes:** boletins do rádio e as primeiras falas da Hannah e do Antônio no ElevenLabs; o resto fica em legenda até
+  existir uma conta paga (o plano gratuito foi bloqueado por "atividade incomum").
