@@ -489,3 +489,13 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
   mordido) e o **Ch18** (gente que acabou de virar ainda parece gente normal).
 - O ritmo dos passos acompanha a velocidade do corpo, o modelo faz sombra de verdade no chão e, fora da tela, a
   animação não é calculada (para continuar leve no navegador). As texturas foram reduzidas para 1024 px.
+
+## R49c · Prévia em Godot — gente em 3D com movimentos do Mixamo
+- 13 movimentos de gente normal que o Theo baixou (`godot-preview/assets/mixamo/humanos/`): olhar em volta, andar,
+  andar gingando, correr, disparar, andar de costas, agachar, escorregar e cair, se arrastar de costas no chão,
+  deslizar, se contorcer de dor e levantar.
+- O policial vivo virou o **Swat** e o jovem e o motoboy viraram o **Ch18** em 3D (o resto dos civis continua desenho
+  até chegarem mais personagens humanos).
+- O contágio ficou com cara de cinema: a mordida derruba (escorrega e cai), a pessoa se arrasta de costas, levanta
+  e foge mancando, se contorce de dor no chão antes de virar e levanta como zumbi com a mesma cara.
+- O jogo aceita esqueletos do Mixamo com ossos numerados (`mixamorig12_`).

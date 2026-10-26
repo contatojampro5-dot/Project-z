@@ -190,6 +190,8 @@ func virar_infectado(c: Civil) -> Infectado:
 		vv = "policial"
 	elif c.variante in ["civ_atendente", "civ_estudante2", "civ_torcedora", "civ_idosa", "civ_funcionaria"]:
 		vv = "mulher"
+	if c.quem3d != "":
+		vv = "#" + c.quem3d
 	var z := novo_infectado(c.global_position, "comum", vv)
 	z.dir = c.dir
 	if z.modelo:

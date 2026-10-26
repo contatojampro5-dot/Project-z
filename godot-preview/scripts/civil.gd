@@ -21,11 +21,32 @@ var rapidez := 4.2
 var fala: Label3D
 var fala_t := 0.0
 var anim_fixa := ""
+var modelo: Zumbi3D = null
+var quem3d := ""                 # personagem do Mixamo deste civil ("" = desenho do laboratório)
+var _lod_t := 0.0
+## civis que já têm personagem humano do Mixamo (o resto continua desenho até chegarem mais personagens)
+const CIVIS_3D := {"civ_policial": "swat", "civ_jovem": "ch18", "civ_motoboy": "ch18"}
 
 func montar(c: Node, tipo := "", calmo := true) -> Civil:
 	cena = c
 	var t: String = tipo if tipo != "" else TIPOS.pick_random()
-	vestir(t, 0.97)
+	if CIVIS_3D.has(t) and Infectado.USAR_3D:
+		variante = t
+		quem3d = CIVIS_3D[t]
+		modelo = Zumbi3D.new()
+		add_child(modelo)
+		modelo.montar(-1, 0.98, quem3d, "h_idle")
+		sombra = MeshInstance3D.new()
+		var q := QuadMesh.new()
+		q.size = Vector2(0.9, 0.7)
+		sombra.mesh = q
+		sombra.material_override = Pessoa.mat_sombra()
+		sombra.rotation.x = -PI * 0.5
+		sombra.position.y = 0.04
+		sombra.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(sombra)
+	else:
+		vestir(t, 0.97)
 	idoso = t in ["civ_idoso", "civ_idosa"]
 	estado = "calmo" if calmo else "panico"
 	rapidez = randf_range(3.6, 4.8) * (0.62 if idoso else 1.0)
@@ -46,7 +67,7 @@ func mordido(z: Node) -> void:
 	vel = Vector3.ZERO
 	empurrao = (global_position - z.global_position).normalized() * 2.0
 	virar_em = TEMPO_VIRAR
-	tocar("death", true)
+	tocar("mordido", true)
 	cena.mordidos += 1
 	cena.marca(global_position, 1.6, "sangue")
 	cena.audio.grito(global_position, true)
@@ -77,7 +98,8 @@ func _physics_process(delta: float) -> void:
 	if estado in ["caido", "ferido", "virando"] and vai_virar:
 		virar_em -= delta
 		var inf := clampf(1.0 - virar_em / TEMPO_VIRAR, 0.0, 1.0)
-		quadro.set_instance_shader_parameter("infeccao", inf * inf)
+		if quadro:
+			quadro.set_instance_shader_parameter("infeccao", inf * inf)
 		if virar_em <= 0:
 			cena.virar_infectado(self)
 			return
@@ -85,7 +107,7 @@ func _physics_process(delta: float) -> void:
 			estado = "virando"
 			vel = Vector3.ZERO
 			alvo_cena = null
-			tocar("death", true)
+			tocar("convulsao", true)
 			cena.audio.gemido(global_position, "comum")
 		elif estado == "caido" and TEMPO_VIRAR - virar_em > 1.4:
 			estado = "ferido"     # levanta e foge segurando a mordida
@@ -93,8 +115,9 @@ func _physics_process(delta: float) -> void:
 	if estado == "virando":
 		# convulsão: o corpo treme no chão (só o corpo; a tela não treme)
 		var forca := 0.06 * (1.0 - virar_em / TEMPO_CONVULSAO) + 0.02
-		quadro.position.x = randf_range(-forca, forca)
-		quadro.position.z = randf_range(-forca, forca)
+		if quadro:
+			quadro.position.x = randf_range(-forca, forca)
+			quadro.position.z = randf_range(-forca, forca)
 		mover(delta)
 		animar(delta)
 		return
@@ -166,3 +189,62 @@ func _physics_process(delta: float) -> void:
 	else:
 		tocar("idle")
 	animar(delta)
+
+# ------------------------------------------------------------------ corpo 3D (Mixamo): mesmos nomes das folhas
+func tocar(nome: String, reinicia := false) -> void:
+	if modelo == null:
+		match nome:
+			"mordido", "convulsao":
+				nome = "death"
+		super.tocar(nome, reinicia)
+		return
+	if nome == anim and not reinicia:
+		return
+	anim = nome
+	anim_fim = false
+	var n3 := "h_idle"
+	match nome:
+		"walk":
+			n3 = "h_walk" if estado != "ferido" else "h_walk2"
+		"run", "flee":
+			n3 = "h_sprint" if rapidez > 4.5 and estado == "panico" else "h_run"
+		"cower":
+			n3 = "h_crouch"
+		"mordido":
+			n3 = "h_slip"           # a mordida derruba
+		"convulsao":
+			n3 = "h_writhe"         # se contorce no chão antes de virar
+		"death":
+			n3 = "dying"
+		"hit":
+			n3 = "hit"
+	modelo.tocar(n3, reinicia, 0.25)
+
+func animar(delta: float, ritmo_ := 1.0) -> void:
+	if modelo == null:
+		super.animar(delta, ritmo_)
+		return
+	anim_fim = modelo.anim_fim
+	if estado == "caido" and modelo.anim == "h_slip" and modelo.anim_fim:
+		modelo.tocar("h_crawl_back", false, 0.3)   # caído, se arrasta para trás
+	modelo.rotation.y = lerp_angle(modelo.rotation.y, PI * 0.5 - dir, clampf(delta * 8.0, 0.0, 1.0))
+	var v := Vector2(vel.x, vel.z).length()
+	if modelo.anim in ["h_walk", "h_walk2", "h_run", "h_sprint", "h_crawl_back"]:
+		modelo.ritmo(maxf(v, 0.4))
+	elif modelo.anim == "h_crouch":
+		modelo.ap.speed_scale = 0.25    # agachado, tremendo
+	else:
+		modelo.ap.speed_scale = 1.0
+	modelo.position.y = altura_pulo
+	_lod_t -= delta
+	if _lod_t <= 0.0:
+		_lod_t = 0.25
+		var cam: Camera3D = Pessoa.camera
+		var d2 := cam.global_position.distance_squared_to(global_position) if cam else 0.0
+		modelo.ligado(cam == null or (cam.is_position_in_frustum(global_position + Vector3(0, 1, 0)) and d2 < 150.0 * 150.0), d2 > 220.0 * 220.0)
+
+func clarao(t := 0.12) -> void:
+	if modelo:
+		modelo.clarao(t)
+	else:
+		super.clarao(t)

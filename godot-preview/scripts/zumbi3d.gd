@@ -2,7 +2,8 @@ extends Node3D
 class_name Zumbi3D
 ## Infectado em 3D de verdade (como no Project Zomboid): personagens e animações do Mixamo que o Theo baixou
 ## (assets/mixamo/personagens/*.fbx com corpo e textura; assets/mixamo/*.fbx só com o movimento). Se faltar um
-## personagem, monta um corpo feito por código preso nos mesmos ossos.
+## personagem, monta um corpo feito por código preso nos mesmos ossos. Serve também para gente normal (civis): os
+## movimentos "h_*" vêm de assets/mixamo/humanos.
 
 const BASE := "res://assets/mixamo/s_zombie_idle.fbx"
 const PERSONAGENS := ["parasite", "prisoner", "warzombie", "zombiegirl", "copzombie", "yaku"]   # sorteio dos comuns
@@ -20,9 +21,19 @@ const ANIMS := {
 	"hit": ["n_zombie_reaction_hit", false, 0.0], "hit2": ["n_zombie_reaction_hit_2", false, 0.0],
 	"death": ["s_zombie_death", false, 0.0], "dying": ["s_zombie_dying", false, 0.0],
 	"stand_up": ["n_zombie_stand_up", false, 0.0], "agonizing": ["n_zombie_agonizing", true, 0.0],
+	# gente normal (assets/mixamo/humanos): parado olhando em volta, andar, correr, de costas, agachar, escorregar,
+	# arrastar-se de costas no chão, contorcer de dor e levantar
+	"h_idle": ["humanos/h_look_around", true, 0.0], "h_walk": ["humanos/h_walking", true, 0.94],
+	"h_walk2": ["humanos/h_swagger_walk", true, 0.90], "h_walk3": ["humanos/h_walking_2", true, 1.73],
+	"h_run": ["humanos/h_running", true, 4.38], "h_sprint": ["humanos/h_sprint", true, 5.97],
+	"h_back": ["humanos/h_walk_backward", true, 1.53], "h_crouch": ["humanos/h_crouched_sneaking_right", true, 0.0],
+	"h_crawl_back": ["humanos/h_crawl_backwards", true, 0.76], "h_slip": ["humanos/h_slipping", false, 0.0],
+	"h_slide": ["humanos/h_running_slide", false, 0.0], "h_writhe": ["humanos/h_writhing_in_pain", true, 0.0],
+	"h_stand": ["humanos/h_standing_up", false, 0.0],
 }
 const ESPESSURA := 1.22    # corpo mais encorpado (do mesmo porte das pessoas desenhadas)
-const SEM_DESLOCAR := ["walk", "walk2", "walk3", "run", "run2", "crawl", "crawl_run"]   # tira o deslocamento embutido
+const SEM_DESLOCAR := ["walk", "walk2", "walk3", "run", "run2", "crawl", "crawl_run",
+	"h_walk", "h_walk2", "h_walk3", "h_run", "h_sprint", "h_back", "h_crouch", "h_crawl_back", "h_slide"]   # tira o deslocamento embutido
 
 static var _cena: PackedScene = null
 static var _libs := {}
@@ -38,20 +49,23 @@ var anim := ""
 var anim_fim := false
 var _var := 0
 
-static func _biblioteca(fator := 1.0) -> AnimationLibrary:
+static func _biblioteca(fator := 1.0, prefixo := "mixamorig_") -> AnimationLibrary:
 	## fator: quadril do personagem / quadril das animações (o quadril é posição absoluta na animação;
-	## sem ajustar, um personagem mais alto afundaria no chão)
+	## sem ajustar, um personagem mais alto afundaria no chão). prefixo: o Mixamo às vezes numera os ossos
+	## ("mixamorig12_Hips"); as trilhas são renomeadas para o esqueleto de quem vai usar.
 	var chave := snappedf(fator, 0.01)
-	if _libs.has(chave):
-		return _libs[chave]
+	var k_lib := "%s|%s" % [chave, prefixo]
+	if _libs.has(k_lib):
+		return _libs[k_lib]
 	var _lib := AnimationLibrary.new()
-	_libs[chave] = _lib
+	_libs[k_lib] = _lib
 	for nome in ANIMS:
 		var info: Array = ANIMS[nome]
 		var ps: PackedScene = load("res://assets/mixamo/%s.fbx" % info[0])
 		var n := ps.instantiate()
 		var p: AnimationPlayer = n.find_children("*", "AnimationPlayer", true, false)[0]
 		var a: Animation = p.get_animation("mixamo_com").duplicate(true)
+		_renomear(a, prefixo)
 		a.loop_mode = Animation.LOOP_LINEAR if info[1] else Animation.LOOP_NONE
 		if nome in SEM_DESLOCAR:
 			_no_lugar(a)
@@ -61,8 +75,25 @@ static func _biblioteca(fator := 1.0) -> AnimationLibrary:
 		n.free()
 	return _lib
 
+static var _re_osso: RegEx = null
+
+static func _renomear(a: Animation, prefixo: String) -> void:
+	if _re_osso == null:
+		_re_osso = RegEx.create_from_string("mixamorig\\d*_")
+	for i in a.get_track_count():
+		var c := str(a.track_get_path(i))
+		var novo := _re_osso.sub(c, prefixo)
+		if novo != c:
+			a.track_set_path(i, NodePath(novo))
+
+static func _trilha_quadril(a: Animation) -> int:
+	for i in a.get_track_count():
+		if a.track_get_type(i) == Animation.TYPE_POSITION_3D and str(a.track_get_path(i)).ends_with("_Hips"):
+			return i
+	return -1
+
 static func _escalar_quadril(a: Animation, f: float) -> void:
-	var t := a.find_track(NodePath("Skeleton3D:mixamorig_Hips"), Animation.TYPE_POSITION_3D)
+	var t := _trilha_quadril(a)
 	if t < 0:
 		return
 	for i in a.track_get_key_count(t):
@@ -70,7 +101,7 @@ static func _escalar_quadril(a: Animation, f: float) -> void:
 
 static func _no_lugar(a: Animation) -> void:
 	## o quadril anda para frente na animação: tira o avanço (mantém o balanço) para o jogo mover o corpo
-	var t := a.find_track(NodePath("Skeleton3D:mixamorig_Hips"), Animation.TYPE_POSITION_3D)
+	var t := _trilha_quadril(a)
 	if t < 0:
 		return
 	var k := a.track_get_key_count(t)
@@ -84,7 +115,7 @@ static func _no_lugar(a: Animation) -> void:
 		v.z -= (fim.z - ini.z) * f + ini.z
 		a.track_set_key_value(t, i, v)
 
-func montar(variante := -1, escala := 1.0, quem := "") -> Zumbi3D:
+func montar(variante := -1, escala := 1.0, quem := "", inicio := "idle") -> Zumbi3D:
 	## quem: um dos PERSONAGENS do Mixamo ("" = sorteia). Sem o arquivo, usa o corpo feito por código.
 	if quem == "":
 		quem = PERSONAGENS[(variante if variante >= 0 else randi()) % PERSONAGENS.size()]
@@ -96,10 +127,15 @@ func montar(variante := -1, escala := 1.0, quem := "") -> Zumbi3D:
 		add_child(n)
 		esqueleto = n.find_children("*", "Skeleton3D", true, false)[0]
 		ap = n.find_children("*", "AnimationPlayer", true, false)[0]
-		var qd := esqueleto.get_bone_global_rest(esqueleto.find_bone("mixamorig_Hips")).origin.y
-		var topo := esqueleto.find_bone("mixamorig_HeadTop_End")
+		var pref := "mixamorig_"
+		for b in esqueleto.get_bone_count():
+			if esqueleto.get_bone_name(b).ends_with("Hips"):
+				pref = esqueleto.get_bone_name(b).trim_suffix("Hips")
+				break
+		var qd := esqueleto.get_bone_global_rest(esqueleto.find_bone(pref + "Hips")).origin.y
+		var topo := esqueleto.find_bone(pref + "HeadTop_End")
 		var alt := esqueleto.get_bone_global_rest(topo).origin.y if topo >= 0 else qd * 1.85
-		ap.add_animation_library("z", _biblioteca(qd / QUADRIL_ANIM))
+		ap.add_animation_library("z", _biblioteca(qd / QUADRIL_ANIM, pref))
 		n.scale = Vector3.ONE * (ALTURA / alt)
 		for mi in n.find_children("*", "MeshInstance3D", true, false):
 			corpo = mi if corpo == null else corpo
@@ -122,7 +158,7 @@ func montar(variante := -1, escala := 1.0, quem := "") -> Zumbi3D:
 		corpo.skeleton = NodePath("..")
 	scale = Vector3.ONE * escala
 	ap.animation_finished.connect(func(_n): anim_fim = true)
-	tocar("idle")
+	tocar(inicio)
 	ap.seek(randf() * 3.0, true)
 	return self
 

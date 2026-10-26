@@ -35,7 +35,9 @@ func montar(c: Node, t := "comum", variante_ := "") -> Infectado:
 		variante = v
 		modelo = Zumbi3D.new()
 		add_child(modelo)
-		modelo.montar(-1, 1.0, (PERSONAGEM_DE.get(v, Zumbi3D.PERSONAGENS) as Array).pick_random())
+		# "#nome" = personagem exato (o civil 3D que virou continua com a mesma cara)
+		var quem: String = v.substr(1) if v.begins_with("#") else (PERSONAGEM_DE.get(v, Zumbi3D.PERSONAGENS) as Array).pick_random()
+		modelo.montar(-1, 1.0, quem)
 		_sombra_3d()
 	else:
 		if not Pessoa.indice().has(v):
