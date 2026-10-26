@@ -127,6 +127,10 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 - Escala: `Pessoa.PX = 0.0148` (pessoa do tamanho real perto de carros/portas; antes 0.0245 = quase o dobro, o Theo
   reclamou da desproporção) e `CameraZ.ZOOM = 0.75` em todas as distâncias de câmera.
 - Letras do HUD: Instrument Serif (títulos), Syne espaçada (rótulos), Manrope (texto) — pedido do Theo por algo mais sofisticado.
+- **Zumbis 3D (R49):** `scripts/zumbi3d.gd` + `assets/mixamo/` (FBX que o Theo baixou do Mixamo; personagens com corpo
+  em `personagens/`, movimentos sem corpo na raiz). `Infectado.USAR_3D = false` volta aos desenhos. O quadril das
+  animações é reescalado por personagem (`_biblioteca(fator)`) e o avanço embutido é tirado (`_no_lugar`). As PNGs
+  extraídas dos FBX não vão para o Git (o Godot recria). Para civis/heróis em 3D faltam personagens humanos + movimentos.
 - Interiores visíveis/acessíveis: saguão do PS, ala norte e sala do TCC da faculdade, mercado (prédio "oco" + `cidade.cortes`).
 - Vozes: falas listadas em `assets/audio/vozes/falas.json` (ids); gravadas só r01–r04, h01–h04, a01 (ElevenLabs bloqueou
   o plano gratuito). Um `<id>.mp3` novo entra sozinho.

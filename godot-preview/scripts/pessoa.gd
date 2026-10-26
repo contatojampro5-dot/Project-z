@@ -45,6 +45,15 @@ static func indice() -> Dictionary:
 		_indice = JSON.parse_string(f.get_as_text())
 	return _indice
 
+static func mat_sombra() -> StandardMaterial3D:
+	if _sombra_mat == null:
+		_sombra_mat = StandardMaterial3D.new()
+		_sombra_mat.albedo_texture = Predio.tex("brilho.png")
+		_sombra_mat.albedo_color = Color(0, 0, 0, 0.55)
+		_sombra_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_sombra_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	return _sombra_mat
+
 static func _mat_de(tex: Texture2D) -> ShaderMaterial:
 	if not _mats.has(tex):
 		if _shader == null:
@@ -77,13 +86,7 @@ func vestir(v: String, escala := 1.0) -> void:
 		var s := QuadMesh.new()
 		s.size = Vector2(0.85, 0.6) * escala
 		sombra.mesh = s
-		if _sombra_mat == null:
-			_sombra_mat = StandardMaterial3D.new()
-			_sombra_mat.albedo_texture = Predio.tex("brilho.png")
-			_sombra_mat.albedo_color = Color(0, 0, 0, 0.55)
-			_sombra_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-			_sombra_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		sombra.material_override = _sombra_mat
+		sombra.material_override = mat_sombra()
 		sombra.rotation.x = -PI * 0.5
 		sombra.position.y = 0.04
 		sombra.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

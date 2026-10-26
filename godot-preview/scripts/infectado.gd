@@ -1,6 +1,13 @@
 extends Pessoa
 class_name Infectado
-## Infectado comum (operário, executivo, paciente) ou corredor (atleta), refeitos no laboratório.
+## Infectado comum (operário, executivo, paciente) ou corredor (atleta). Desde o R49 é um modelo 3D
+## animado com os movimentos do Mixamo (Zumbi3D); `USAR_3D = false` volta aos desenhos do laboratório.
+
+const USAR_3D := true
+## qual personagem do Mixamo veste cada tipo (o corredor é o Yaku ou a Zombiegirl; a polícia vira o Copzombie)
+const PERSONAGEM_DE := {"operario": ["prisoner", "warzombie"], "executivo": ["copzombie", "warzombie", "parasite"],
+	"paciente": ["parasite", "zombiegirl"], "atleta": ["yaku", "zombiegirl"], "policial": ["copzombie"],
+	"mulher": ["zombiegirl"]}
 
 var tipo := "comum"
 var hp := 2
@@ -14,6 +21,8 @@ var vagar := Vector3.ZERO
 var rapidez := 1.3
 var gemido := 0.0
 var corpo_t := 0.0
+var modelo: Zumbi3D = null
+var _lod_t := 0.0
 
 func montar(c: Node, t := "comum", variante_ := "") -> Infectado:
 	cena = c
@@ -21,13 +30,20 @@ func montar(c: Node, t := "comum", variante_ := "") -> Infectado:
 	var v := variante_
 	if v == "":
 		v = "atleta" if t == "corredor" else ["operario", "executivo", "paciente"].pick_random()
-	vestir(v, 0.93)
+	if USAR_3D:
+		variante = v
+		modelo = Zumbi3D.new()
+		add_child(modelo)
+		modelo.montar(-1, 1.0, (PERSONAGEM_DE.get(v, Zumbi3D.PERSONAGENS) as Array).pick_random())
+		_sombra_3d()
+	else:
+		vestir(v, 0.93)
 	if t == "corredor":
 		rapidez = randf_range(4.4, 4.9)
 		hp = 3
 		visao = 26.0
 	else:
-		rapidez = randf_range(1.0, 1.6)
+		rapidez = randf_range(0.9, 1.5)
 	gemido = randf_range(2, 8)
 	dir = randf() * TAU
 	return self
@@ -98,6 +114,73 @@ func _physics_process(delta: float) -> void:
 	if anim != "hit" or anim_fim:
 		tocar("walk")
 	animar(delta, clamp(vel.length() / (1.4 if tipo == "comum" else 4.0), 0.4, 1.8))
+
+# ------------------------------------------------------------------ corpo 3D (mesmos nomes das folhas)
+func _sombra_3d() -> void:
+	## mancha escura macia no pé (a sombra do sol já vem do modelo; esta ajuda a "pisar" no chão)
+	sombra = MeshInstance3D.new()
+	var q := QuadMesh.new()
+	q.size = Vector2(0.9, 0.7)
+	sombra.mesh = q
+	sombra.material_override = Pessoa.mat_sombra()
+	sombra.rotation.x = -PI * 0.5
+	sombra.position.y = 0.04
+	sombra.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(sombra)
+
+func tocar(nome: String, reinicia := false) -> void:
+	if modelo == null:
+		super.tocar(nome, reinicia)
+		return
+	if nome == anim and not reinicia:
+		return
+	anim = nome
+	anim_fim = false
+	var n3 := nome
+	match nome:
+		"walk":
+			n3 = "run" if tipo == "corredor" else ("walk2" if rapidez < 1.0 else "walk")
+		"attack":
+			n3 = "bite"
+		"death":
+			n3 = "death" if randf() < 0.6 else "dying"
+		"hit":
+			n3 = "hit" if randf() < 0.5 else "hit2"
+	modelo.tocar(n3, reinicia)
+
+func animar(delta: float, ritmo_ := 1.0) -> void:
+	if modelo == null:
+		super.animar(delta, ritmo_)
+		return
+	anim_fim = modelo.anim_fim
+	var alvo_giro := PI * 0.5 - dir
+	modelo.rotation.y = lerp_angle(modelo.rotation.y, alvo_giro, clampf(delta * 8.0, 0.0, 1.0))
+	var v := Vector2(vel.x, vel.z).length()
+	if anim == "walk":
+		modelo.ritmo(v)
+	else:
+		modelo.ap.speed_scale = ritmo_ if anim in ["attack"] else 1.0
+	modelo.position.y = altura_pulo
+	# leveza: fora da tela a animação não é calculada
+	_lod_t -= delta
+	if _lod_t <= 0.0:
+		_lod_t = 0.25
+		var cam: Camera3D = Pessoa.camera
+		var d2 := cam.global_position.distance_squared_to(global_position) if cam else 0.0
+		modelo.ligado(cam == null or (cam.is_position_in_frustum(global_position + Vector3(0, 1, 0)) and d2 < 150.0 * 150.0), d2 > 220.0 * 220.0)
+
+func clarao(t := 0.12) -> void:
+	if modelo:
+		modelo.clarao(t)
+	else:
+		super.clarao(t)
+
+func levantar() -> void:
+	## acabou de virar: levanta do chão com a animação do Mixamo
+	if modelo:
+		modelo.tocar("stand_up", true, 0.05)
+		anim = "stand_up"
+		atordoado = 2.6
 
 func _alcancar(a: Node3D) -> void:
 	if a is Civil:

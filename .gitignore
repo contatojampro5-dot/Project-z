@@ -2,3 +2,5 @@ dist/
 tests/capturas/
 node_modules/
 __pycache__/
+# texturas que o Godot tira de dentro dos FBX do Mixamo ao importar (são recriadas sozinhas)
+godot-preview/assets/mixamo/personagens/*.png

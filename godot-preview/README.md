@@ -40,6 +40,13 @@ O jogo do navegador (`src/`, `jogo/`) não foi mexido.
 
 ## Como foi feito
 
+- **Zumbis 3D do Mixamo** (`scripts/zumbi3d.gd`): os infectados são modelos 3D animados de verdade, como no
+  Project Zomboid. Seis personagens que o Theo baixou do Mixamo (`assets/mixamo/personagens/`: Parasite,
+  Prisoner, Warzombie, Zombiegirl, Copzombie e Yaku) com 21 movimentos dos pacotes "Scary" e "Not So Scary
+  Zombie" (`assets/mixamo/*.fbx`): andar, arrastar, correr, rastejar, morder, morder o pescoço, gritar, levar
+  golpe, cair, morrer e levantar do chão. Quem vira infectado levanta com a animação do Mixamo; o policial vira o
+  zumbi policial. As animações andam no lugar (o jogo move o corpo) e o ritmo acompanha a velocidade. Fora da tela
+  a animação não é calculada. Sem os arquivos, o jogo monta um corpo feito por código nos mesmos ossos.
 - **Contágio (a regra do Theo)**: quem é mordido ou agarrado vira infectado em **15 segundos**. A pessoa cai
   com a mordida, levanta e continua fugindo machucada (cada vez mais devagar, e a pele vai ficando
   cinza-esverdeada), nos últimos 3 segundos desaba tremendo e levanta infectada. O infectado morde e já larga:

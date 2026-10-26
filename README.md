@@ -478,3 +478,12 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Nomes inventados** para tudo (Av. dos Tecelões, R. São Crispim, Morro do Cruzeiro...), com placas de rua nas esquinas.
 - **Vozes:** boletins do rádio e as primeiras falas da Hannah e do Antônio no ElevenLabs; o resto fica em legenda até
   existir uma conta paga (o plano gratuito foi bloqueado por "atividade incomum").
+
+## R49 · Prévia em Godot — zumbis 3D do Mixamo
+- **Infectados em 3D de verdade**, como no Project Zomboid: seis personagens do Mixamo baixados pelo Theo
+  (Parasite, Prisoner, Warzombie, Zombiegirl, Copzombie e Yaku) com os pacotes de movimento "Scary" e "Not So Scary
+  Zombie": andar arrastando, correr, rastejar, morder, morder o pescoço, gritar, levar golpe, morrer e levantar do chão.
+- Quem é mordido levanta com a animação de levantar do Mixamo; o policial vira o zumbi policial e as mulheres viram a
+  Zombiegirl. O corredor é o Yaku ou a Zombiegirl correndo.
+- O ritmo dos passos acompanha a velocidade do corpo, o modelo faz sombra de verdade no chão e, fora da tela, a
+  animação não é calculada (para continuar leve no navegador). As texturas foram reduzidas para 1024 px.

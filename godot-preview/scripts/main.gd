@@ -8,6 +8,8 @@ static var capitulo := 0          # 0 = abertura, 1 = Hannah, 2 = Antônio, 3 = 
 
 var auto := false                 # --autotest: o jogo se joga sozinho (para testar)
 var pasta_fotos := ""
+var mede_fps := false              # --fps: escreve quadros por segundo e quantos infectados há (teste de leveza)
+var _fps_ms := 0
 var amb: Ambiente
 var cidade: Cidade
 var col: Colisao
@@ -35,12 +37,13 @@ var _funcionarias: Array = []
 var _corredor: Infectado = null
 var mordidos := 0                 # contágio: quantos foram mordidos e quantos já viraram
 var viraram := 0
-const MAX_INFECTADOS := 120       # acima disso, some o infectado mais longe da câmera (leveza)
+const MAX_INFECTADOS := 90        # acima disso, some o infectado mais longe da câmera (leveza)
 
 func _ready() -> void:
 	randomize()
 	var args := OS.get_cmdline_user_args()
 	auto = "--autotest" in args
+	mede_fps = "--fps" in args
 	for a in args:
 		if a.begins_with("--fotos="):
 			pasta_fotos = a.substr(8)
@@ -181,10 +184,19 @@ func destroco(p: Vector3, ang: float, pegando_fogo := true, tipo := "hatch") -> 
 func virar_infectado(c: Civil) -> Infectado:
 	if not is_instance_valid(c):
 		return null
-	var z := novo_infectado(c.global_position, "comum", "paciente" if c.idoso else "")
+	# quem vira infectado continua parecido: policial vira o zumbi policial, mulher vira a zumbi
+	var vv := "paciente" if c.idoso else ""
+	if c.variante == "civ_policial":
+		vv = "policial"
+	elif c.variante in ["civ_atendente", "civ_estudante2", "civ_torcedora", "civ_idosa", "civ_funcionaria"]:
+		vv = "mulher"
+	var z := novo_infectado(c.global_position, "comum", vv)
 	z.dir = c.dir
-	z.tocar("hit", true)
-	z.atordoado = 1.0
+	if z.modelo:
+		z.levantar()
+	else:
+		z.tocar("hit", true)
+		z.atordoado = 1.0
 	z.visao = 18.0
 	z.pensa = 1.0
 	viraram += 1
@@ -291,6 +303,9 @@ func _physics_process(_delta: float) -> void:
 				b.global_position -= Vector3(dx * e, 0, dz * e)
 
 func _process(delta: float) -> void:
+	if mede_fps and Time.get_ticks_msec() - _fps_ms > 4000:
+		_fps_ms = Time.get_ticks_msec()
+		print("[fps] %d quadros/s  infectados=%d  civis=%d  capitulo=%d" % [Engine.get_frames_per_second(), infectados.size(), civis.size(), capitulo])
 	var foco := cam.foco if not cam.livre else cam.global_position - cam.global_transform.basis.z * 30.0
 	audio.cama(audio.cama_horda, infectados_perto(foco, 25.0) / 9.0, -8.0, delta)
 	var np := 0
