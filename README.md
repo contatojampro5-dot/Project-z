@@ -535,3 +535,14 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Berrador** (onda 4): para, enche o peito e **grita** (onda de som no chão). Os infectados em volta ficam agitados e andam
   mais rápido por uns segundos. Derrube ele primeiro.
 - Na primeira vez que cada um aparece, um aviso na tela explica o que ele faz.
+
+## R53 · Última Cartada — os zumbis 3D do Mixamo no jogo
+- Os **zumbis 3D que o Theo baixou do Mixamo** (os mesmos da prévia em Godot) agora estão no jogo do navegador, no lugar
+  do infectado comum e do corredor. Cada modelo foi "fotografado" em 8 direções com os movimentos do Mixamo: andar
+  arrastando, correr, socar, levar tiro, cair morto e rastejar sem as pernas.
+- **Infectado comum:** Prisioneiro, Soldado (Warzombie), Policial, Parasita, Recém-virado (Ch18) e Swat, sorteados.
+  **Corredor:** Yaku e Zombiegirl.
+- Braço arrancado por tiro some do desenho de verdade (folhas sem o braço esquerdo e sem o direito para cada um), e o
+  Rastejante (R52) e quem perde as pernas se arrastam sem elas.
+- Explosivo, Cuspidor, Tanque, Invocador, Notívago e chefes continuam com o desenho deles.
+- Para comparar com os antigos: `window.__PZ_OLD_ZOMBIES=true` no console antes de começar a partida.

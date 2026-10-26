@@ -1,0 +1,76 @@
+<!doctype html><html><body style="margin:0;background:#333">
+<script type="importmap">{"imports":{"three":"./three/build/three.module.js","three/addons/":"./three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
+const loader=new FBXLoader();const cache={};
+const load=u=>cache[u]||(cache[u]=new Promise((res,rej)=>loader.load(u,res,undefined,rej)));
+const CW=64,CH=72,GROUND=60,PX=50,SS=3; // célula, chão, px por unidade de altura, supersample
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setSize(CW*SS,CH*SS);renderer.setClearColor(0,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xc9d6e0,0x3a3328,1.25));
+const sun=new THREE.DirectionalLight(0xfff1dc,2.1);sun.position.set(-2,4,2.5);scene.add(sun);
+const rim=new THREE.DirectionalLight(0x9fb8d0,.9);rim.position.set(2,2,-3);scene.add(rim);
+const PITCH=36*Math.PI/180;
+const cam=new THREE.OrthographicCamera(-32/PX,32/PX,GROUND/PX,-(CH-GROUND)/PX,.1,50);
+cam.position.set(0,Math.sin(PITCH)*10,Math.cos(PITCH)*10);cam.lookAt(0,0,0);
+// a altura na tela encolhe com o ângulo; compensa para o boneco ter ~PX px
+const prefixOf=root=>{let p=null;root.traverse(o=>{if(o.isBone&&/Hips$/.test(o.name)&&!p)p=o.name.slice(0,-4);});return p;};
+function retarget(clip,pre,ratio){
+  const c=clip.clone();c.tracks=c.tracks.filter(t=>!/\.scale$/.test(t.name)||/Hips/.test(t.name)===false);
+  for(const t of c.tracks){t.name=t.name.replace(/^mixamorig\d*[_:]?/,pre);
+    if(/Hips\.position$/.test(t.name)){const v=t.values,x0=v[0],z0=v[2];for(let i=0;i<v.length;i+=3){v[i]=0;v[i+1]*=ratio;v[i+2]=0;}}}
+  c.tracks=c.tracks.filter(t=>!/\.scale$/.test(t.name));
+  return c;
+}
+window.bake=async function(job){
+  const ch=await load('mixamo/personagens/'+job.who+'.fbx');
+  const root=ch;scene.add(root);
+  root.traverse(o=>{if(o.isMesh){o.frustumCulled=false;const ms=Array.isArray(o.material)?o.material:[o.material];for(const m of ms){if(m.map)m.map.colorSpace=THREE.SRGBColorSpace;m.shininess=4;m.specular?.setRGB?.(.05,.05,.05);if(m.transparent&&m.opacity<.05)m.opacity=1;}}});
+  const imgs=[];root.traverse(o=>{if(o.isMesh)for(const m of [].concat(o.material))for(const k of ['map','normalMap','emissiveMap'])if(m[k]?.image)imgs.push(m[k].image);});
+  await Promise.all(imgs.map(im=>im.complete===false?new Promise(r=>{im.addEventListener('load',r);im.addEventListener('error',r);setTimeout(r,15000);}):0));
+  await new Promise(r=>setTimeout(r,400));renderer.render(scene,cam);
+  const pre=prefixOf(root);let hips=null;root.traverse(o=>{if(o.isBone&&o.name===pre+'Hips')hips=o;});
+  const bone=n=>{let b=null;root.traverse(o=>{if(o.isBone&&o.name===pre+n)b=o;});return b;};
+  // escala: altura do corpo parado
+  root.scale.setScalar(1);root.rotation.set(0,0,0);root.position.set(0,0,0);root.updateMatrixWorld(true);
+  const box=new THREE.Box3().setFromObject(root,true);const h=box.max.y-box.min.y;
+  const s=(job.height||1)/h/Math.cos(PITCH)*.92;root.scale.setScalar(s);
+  const mixer=new THREE.AnimationMixer(root);
+  const out=document.createElement('canvas');out.width=CW*8;out.height=CH*job.rows.reduce((n,r)=>n+r.frames,0);
+  const g=out.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  let row=0;const hipRest=hips.position.y;
+  for(const R of job.rows){
+    const a=await load('mixamo/'+R.anim+'.fbx');const src=a.animations[0];
+    let ah=null;for(const t of src.tracks)if(/Hips\.position$/.test(t.name)){ah=t.values[1];break;}
+    const clip=retarget(src,pre,ah?hipRest/ah:1);
+    mixer.stopAllAction();const act=mixer.clipAction(clip);act.reset();act.play();
+    const dur=clip.duration,from=(R.from||0)*dur,to=(R.to??1)*dur;
+    for(let f=0;f<R.frames;f++){
+      const t=R.loop?from+(to-from)*f/R.frames:from+(to-from)*f/Math.max(1,R.frames-1);
+      for(let d=0;d<8;d++){
+        const th=d*Math.PI/4;root.rotation.y=Math.atan2(Math.cos(th),Math.sin(th));
+        act.time=Math.min(t,dur-1e-4);mixer.update(0);
+        for(const n of (R.hide||job.hide||[])){const b=bone(n);if(b)b.scale.setScalar(1e-4);}
+        root.updateMatrixWorld(true);
+        // pés no chão: menor y do corpo neste quadro
+        const bb=new THREE.Box3().setFromObject(root,true);root.position.y-=bb.min.y;
+        // corpo caído/rastejando: centraliza o quadril na célula
+        if(R.center){const hp=new THREE.Vector3();hips.getWorldPosition(hp);root.position.x-=hp.x*.6;root.position.z-=hp.z*.6;}
+        renderer.render(scene,cam);
+        const x=d*CW,y=(row+f)*CH;
+        g.save();g.fillStyle='rgba(0,0,0,.32)';g.beginPath();g.ellipse(x+32,y+GROUND-1,R.center?18:12,R.center?6:4.5,0,0,Math.PI*2);g.fill();g.restore();
+        g.drawImage(renderer.domElement,x,y,CW,CH);
+        root.position.set(0,0,0);
+        for(const n of (R.hide||job.hide||[])){const b=bone(n);if(b)b.scale.setScalar(1);}
+      }
+    }
+    row+=R.frames;
+  }
+  scene.remove(root);delete cache['mixamo/personagens/'+job.who+'.fbx'];
+  return out.toDataURL('image/webp',.88);
+};
+window.ready=true;
+</script></body></html>
