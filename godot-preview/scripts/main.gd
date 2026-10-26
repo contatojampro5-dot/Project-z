@@ -185,7 +185,7 @@ func virar_infectado(c: Civil) -> Infectado:
 	if not is_instance_valid(c):
 		return null
 	# quem vira infectado continua parecido: policial vira o zumbi policial, mulher vira a zumbi
-	var vv := "paciente" if c.idoso else ""
+	var vv := "paciente" if c.idoso else "civil"
 	if c.variante == "civ_policial":
 		vv = "policial"
 	elif c.variante in ["civ_atendente", "civ_estudante2", "civ_torcedora", "civ_idosa", "civ_funcionaria"]:
@@ -1012,7 +1012,8 @@ func _cap3() -> void:
 		FX.fogo(parede_fogo, Vector3(fx_, 0.2, 19.0), 1.2)
 	var horda: Array = []
 	for k in 26:
-		horda.append(novo_infectado(Vector3(randf_range(-30, 30), 0, randf_range(-40, -14))))
+		# a polícia de choque que tentou segurar o hospital também virou (Swat)
+		horda.append(novo_infectado(Vector3(randf_range(-30, 30), 0, randf_range(-40, -14)), "comum", "policial" if k % 5 == 0 else ""))
 	await esperar(1.6)
 	camera_lenta(0.3, 1.4)
 	foto("engavetamento")

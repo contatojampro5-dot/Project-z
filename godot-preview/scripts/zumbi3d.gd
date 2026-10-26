@@ -5,7 +5,8 @@ class_name Zumbi3D
 ## personagem, monta um corpo feito por código preso nos mesmos ossos.
 
 const BASE := "res://assets/mixamo/s_zombie_idle.fbx"
-const PERSONAGENS := ["parasite", "prisoner", "warzombie", "zombiegirl", "copzombie", "yaku"]
+const PERSONAGENS := ["parasite", "prisoner", "warzombie", "zombiegirl", "copzombie", "yaku"]   # sorteio dos comuns
+## também existem "swat" (policial que virou) e "ch18" (gente que acabou de virar), escolhidos pelo Infectado
 const ALTURA := 1.82          # altura do personagem em metros (do pé ao topo da cabeça)
 const QUADRIL_ANIM := 0.94    # altura do quadril no esqueleto das animações
 ## nome lógico -> [arquivo, repete, velocidade natural em m/s (para os pés não deslizarem)]

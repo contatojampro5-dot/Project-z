@@ -485,5 +485,7 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
   Zombie": andar arrastando, correr, rastejar, morder, morder o pescoço, gritar, levar golpe, morrer e levantar do chão.
 - Quem é mordido levanta com a animação de levantar do Mixamo; o policial vira o zumbi policial e as mulheres viram a
   Zombiegirl. O corredor é o Yaku ou a Zombiegirl correndo.
+- **R49b:** entraram o **Swat** (a polícia de choque que virou: aparece na horda do capítulo 3 e quando um policial é
+  mordido) e o **Ch18** (gente que acabou de virar ainda parece gente normal).
 - O ritmo dos passos acompanha a velocidade do corpo, o modelo faz sombra de verdade no chão e, fora da tela, a
   animação não é calculada (para continuar leve no navegador). As texturas foram reduzidas para 1024 px.

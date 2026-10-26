@@ -4,10 +4,11 @@ class_name Infectado
 ## animado com os movimentos do Mixamo (Zumbi3D); `USAR_3D = false` volta aos desenhos do laboratório.
 
 const USAR_3D := true
-## qual personagem do Mixamo veste cada tipo (o corredor é o Yaku ou a Zombiegirl; a polícia vira o Copzombie)
-const PERSONAGEM_DE := {"operario": ["prisoner", "warzombie"], "executivo": ["copzombie", "warzombie", "parasite"],
-	"paciente": ["parasite", "zombiegirl"], "atleta": ["yaku", "zombiegirl"], "policial": ["copzombie"],
-	"mulher": ["zombiegirl"]}
+## qual personagem do Mixamo veste cada tipo (o corredor é o Yaku ou a Zombiegirl; a polícia vira o Copzombie ou o
+## Swat; quem acabou de virar ainda tem cara de gente: o Ch18)
+const PERSONAGEM_DE := {"operario": ["prisoner", "warzombie", "ch18"], "executivo": ["copzombie", "warzombie", "parasite", "ch18"],
+	"paciente": ["parasite", "zombiegirl"], "atleta": ["yaku", "zombiegirl"], "policial": ["copzombie", "swat"],
+	"mulher": ["zombiegirl"], "civil": ["ch18", "ch18", "prisoner", "warzombie", "parasite"]}
 
 var tipo := "comum"
 var hp := 2
@@ -37,6 +38,8 @@ func montar(c: Node, t := "comum", variante_ := "") -> Infectado:
 		modelo.montar(-1, 1.0, (PERSONAGEM_DE.get(v, Zumbi3D.PERSONAGENS) as Array).pick_random())
 		_sombra_3d()
 	else:
+		if not Pessoa.indice().has(v):
+			v = ["operario", "executivo", "paciente"].pick_random()
 		vestir(v, 0.93)
 	if t == "corredor":
 		rapidez = randf_range(4.4, 4.9)
