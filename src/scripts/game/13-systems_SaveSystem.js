@@ -4,13 +4,13 @@
 // PROJECT Z — BLOCO 5: preferências visuais e comandos configuráveis.
 const GRAPHIC_LEVELS=Object.freeze(['low','medium','high']);
 const GRAPHIC_DEFAULTS=Object.freeze({graphicsQuality:'medium',shadowsQuality:'medium',particlesQuality:'medium',lightingQuality:'medium',weatherQuality:'medium'});
-const KEYBIND_DEFAULTS=Object.freeze({up:'KeyW',left:'KeyA',down:'KeyS',right:'KeyD',reload:'KeyR',grenade:'KeyG',backpack:'KeyI',backpackAlt:'Tab',consumable:'KeyV',medkit:'KeyH',skill:'Space',interact:'KeyE',weapon1:'Digit1',weapon2:'Digit2',pause:'Escape'});
-const KEYBIND_NAMES=Object.freeze({up:'MOVER PARA CIMA',left:'MOVER PARA ESQUERDA',down:'MOVER PARA BAIXO',right:'MOVER PARA DIREITA',reload:'RECARREGAR',grenade:'GRANADA',backpack:'INVENTÁRIO (I)',backpackAlt:'INVENTÁRIO (TAB)',consumable:'ESCUDO',medkit:'CURA RÁPIDA',skill:'HABILIDADE ESPECIAL',interact:'INTERAGIR',weapon1:'ARMA PRINCIPAL',weapon2:'ARMA SECUNDÁRIA',pause:'PAUSAR'});
+const KEYBIND_DEFAULTS=Object.freeze({up:'KeyW',left:'KeyA',down:'KeyS',right:'KeyD',reload:'KeyR',grenade:'KeyG',backpack:'KeyI',backpackAlt:'Tab',consumable:'KeyV',medkit:'KeyH',skill:'Space',interact:'KeyE',weapon1:'Digit1',weapon2:'Digit2',pause:'Escape',sprint:'ShiftLeft',dodge:'KeyQ'});
+const KEYBIND_NAMES=Object.freeze({up:'MOVER PARA CIMA',left:'MOVER PARA ESQUERDA',down:'MOVER PARA BAIXO',right:'MOVER PARA DIREITA',reload:'RECARREGAR',grenade:'GRANADA',backpack:'INVENTÁRIO (I)',backpackAlt:'INVENTÁRIO (TAB)',consumable:'ESCUDO',medkit:'CURA RÁPIDA',skill:'HABILIDADE ESPECIAL',interact:'INTERAGIR',weapon1:'ARMA PRINCIPAL',weapon2:'ARMA SECUNDÁRIA',pause:'PAUSAR',sprint:'CORRER (SEGURAR)',dodge:'ESQUIVAR'});
 function graphicLevel(value){return GRAPHIC_LEVELS.includes(value)?value:'medium';}
 function keyFor(action){const keys=window.__projectZGame?.save?.settings?.keybinds;return keys&&Object.hasOwn(keys,action)?keys[action]:KEYBIND_DEFAULTS[action];}
 function pzKeyName(v){return v===null?'SEM TECLA':String(v||'').replace(/^Key/,'').replace(/^Digit/,'').replace('Escape','ESC').replace('Space','ESPAÇO').replace('Tab','TAB');}
-const PAD_BIND_DEFAULTS=Object.freeze({confirm:0,special:1,reload:2,swap:3,heal:4,grenade:5,shield:6,fire:7,inventory:8,pause:9,interact:0});
-const PAD_BIND_NAMES=Object.freeze({confirm:'CONFIRMAR NOS MENUS',special:'HABILIDADE',reload:'RECARREGAR',swap:'TROCAR ARMA',heal:'CURA RÁPIDA',grenade:'GRANADA',shield:'ESCUDO',fire:'ATIRAR',inventory:'INVENTÁRIO',pause:'PAUSAR',interact:'INTERAGIR'});
+const PAD_BIND_DEFAULTS=Object.freeze({confirm:0,special:1,reload:2,swap:3,heal:4,grenade:5,shield:6,fire:7,inventory:8,pause:9,interact:0,sprint:10,dodge:11});
+const PAD_BIND_NAMES=Object.freeze({confirm:'CONFIRMAR NOS MENUS',special:'HABILIDADE',reload:'RECARREGAR',swap:'TROCAR ARMA',heal:'CURA RÁPIDA',grenade:'GRANADA',shield:'ESCUDO',fire:'ATIRAR',inventory:'INVENTÁRIO',pause:'PAUSAR',interact:'INTERAGIR',sprint:'CORRER (L3)',dodge:'ESQUIVAR (R3)'});
 const GRAPHIC_SCALE=Object.freeze({low:.45,medium:1,high:1.18});
 const KEY = 'project-z:save:v1';
 function createDefaultSave() {

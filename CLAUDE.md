@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R46 · ATLAS A26** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R51 · ÚLTIMA CARTADA** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -74,6 +74,10 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   numa tela pequena do ar (`pzAirCtx`/`pzAirFlush`, 40%); tinta/divisão/vinheta + degradê de cima/baixo do 38-core viram fundos de
   um só `.pz-post.pz-merged`; grão anda com transform; canvas sem filtro depois da entrada; medida da cor dos carros 3D no começo.
   `window.__PZ_NO_AIRBUF=true` volta ao jeito antigo. Evitar `ctx.filter` por quadro (use `pzFlinchGlow`, 34b) e `getImageData` no meio da partida.
+- `38x-core_UltimaCartada.js` (R51, fase "Última Cartada") inércia no `Player.move`, corrida com fôlego (`sprint`: SHIFT/L3/analógico
+  no talo), esquiva por personagem (`UC_DODGE`, `dodge`: Q/botão direito/R3/botão ESQUIVA no toque; i-frames em `hurtPlayer`), infectados
+  com jeito de andar (`ucPersona`), golpe com preparo (`UC_WIND`), bote do corredor (`ucPounce`) e derrubada por tiro forte (`UC_KD`).
+  `window.__PZ_NO_ULTIMA=true` volta ao antigo.
 - `40-core_Game.js` `PhysicalGamepad` (Gamepad API): controle Bluetooth/cabo, botões em `PAD_BIND_DEFAULTS` (`13-systems_SaveSystem.js`), remapeáveis em Controles. R45: aceita controle genérico (mapping vazio).
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).

@@ -1,0 +1,9 @@
+/* R51 · Última Cartada — botão ESQUIVA ao lado do analógico de andar (só toque) */
+.app[data-scene="field"] .uc-dodge-button{position:absolute;z-index:8;pointer-events:auto;width:58px;height:58px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;
+  background:rgba(12,22,24,.62);border:1.5px solid rgba(191,243,207,.55);color:#dff7e6;
+  font:700 8px/1 Manrope,system-ui,sans-serif;letter-spacing:.08em;touch-action:none;-webkit-tap-highlight-color:transparent;
+  box-shadow:0 2px 10px rgba(0,0,0,.35);transition:opacity .15s,transform .08s}
+.app[data-scene="field"] .uc-dodge-button strong{font-size:20px;line-height:.9}
+.app[data-scene="field"] .uc-dodge-button:active{transform:scale(.92)}
+.app[data-scene="field"] .uc-dodge-button.uc-wait{opacity:.45}

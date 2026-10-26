@@ -506,3 +506,21 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
   partir da onda 3, noite chegando, caixas de bala e de cura, níveis com escolha de 1 de 3 melhorias e recorde salvo.
 - Mira com o mouse ou analógico direito (ou automática), tiro com clique / J / RT, recarga com R / LB.
 - Jogo do navegador (`src/`, `jogo/`) não foi mexido. Detalhes em `godot-preview/README.md`.
+
+## R51 · Última Cartada — movimento, esquiva e infectados com comportamento
+- Fase **Última Cartada** no jogo do navegador (o mesmo jogo de sempre, só melhorado). Tudo no `38x-core_UltimaCartada.js`;
+  `window.__PZ_NO_ULTIMA=true` volta ao jeito antigo para comparar.
+- **Movimento com peso:** o personagem arranca e freia com uma inércia curtinha (vira para trás quase na hora) e perde a
+  velocidade quando raspa numa parede. A velocidade normal não mudou (regra dos 20% mais lentos continua).
+- **Correr:** segurar **SHIFT** (controle: **L3** liga até parar; celular: empurrar o analógico até o fim). Corre 32% mais
+  rápido, gasta fôlego e não dá para atirar correndo. O fôlego aparece num arco fino nos pés e some quando está cheio.
+- **Esquivar:** **Q** ou **botão direito do mouse** (controle: **R3**; celular: botão **ESQUIVA** ao lado do analógico). Cada
+  personagem tem a sua: **Antônio rola**, **Hadassa dá um passo lateral** rápido, **Hanna desliza** mais longe e **San faz
+  esquiva de boxe** que empurra e derruba quem estiver no caminho. Durante a esquiva nada machuca; esquivar na hora do golpe
+  mostra **ESQUIVOU!** e devolve um pouco de fôlego. Teclas e botões podem ser trocados em Controles.
+- **Infectados com jeito próprio:** cada um anda num ritmo (uns mais lentos, uns agitados), com tranco a cada passo e
+  cambaleio de lado. O golpe agora tem **preparo** (o braço sobe antes): quem sai do alcance ou esquiva, escapa.
+- **Bote do corredor:** de média distância ele agacha (com rosnado), pula em você e depois tropeça para se recuperar.
+- **Tiro forte derruba:** escopeta de perto, revólver ou um tiro que tira quase metade da vida derruba o infectado comum ou o
+  corredor; ele cai, fica no chão um instante e levanta.
+- Sem tremor de tela.

@@ -34,7 +34,8 @@
     "src/styles/32-atlas-a9-mobile-fit.css",
     "src/styles/33-r33c-story.css",
     "src/styles/34-r41-rain-timer.css",
-    "src/styles/35-r42-bag-discard.css"
+    "src/styles/35-r42-bag-discard.css",
+    "src/styles/36-r51-ultima-cartada.css"
   ],
   "headScripts": [
     "src/scripts/01-embedded-music.js",
@@ -118,6 +119,7 @@
     "src/scripts/game/38v-data_ambientFiles.js",
     "src/scripts/game/38v-core_AmbientLife.js",
     "src/scripts/game/38w-rendering_PerfAir.js",
+    "src/scripts/game/38x-core_UltimaCartada.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",
     "src/scripts/game/39c-ui_StoryScreen.js",
