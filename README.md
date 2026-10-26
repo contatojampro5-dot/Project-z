@@ -524,3 +524,14 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Tiro forte derruba:** escopeta de perto, revólver ou um tiro que tira quase metade da vida derruba o infectado comum ou o
   corredor; ele cai, fica no chão um instante e levanta.
 - Sem tremor de tela.
+
+## R52 · Última Cartada — empurrão e três infectados novos
+- **Empurrão:** tecla **X** (controle: cruz para cima; celular: botão **EMPURRAR** ao lado do analógico de mirar). Afasta
+  quem está na frente, derruba o comum e o corredor, corta o golpe que ele estava preparando e solta você de um Agarrador.
+  O **San dá um jab** que machuca mais. Gasta um pouco de fôlego.
+- **Agarrador** (a partir da onda 3): parece um infectado comum, mas quando acerta ele **segura** você. Você fica lento e ele
+  morde de tempos em tempos até você empurrar, esquivar ou derrubá-lo com tiro.
+- **Rastejante** (onda 2): já vem sem pernas, se arrastando pelo chão, baixo e fácil de não ver no meio da horda.
+- **Berrador** (onda 4): para, enche o peito e **grita** (onda de som no chão). Os infectados em volta ficam agitados e andam
+  mais rápido por uns segundos. Derrube ele primeiro.
+- Na primeira vez que cada um aparece, um aviso na tela explica o que ele faz.

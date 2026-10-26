@@ -30,13 +30,14 @@ Player.prototype.move=function(axis,dt){
   this.idleTime+=dt;
   const len=Math.hypot(axis.x,axis.y),power=Math.min(1,len);
   const g=window.__projectZGame,r=g?.scenes?.current?.run;
-  u.cd=Math.max(0,u.cd-dt);u.iframes=Math.max(0,u.iframes-dt);u.req=Math.max(0,u.req-dt);u.perfect=Math.max(0,u.perfect-dt);
+  u.cd=Math.max(0,u.cd-dt);u.shoveCd=Math.max(0,(u.shoveCd||0)-dt);u.shoveFx=Math.max(0,(u.shoveFx||0)-dt);this._ucHeld=Math.max(0,(this._ucHeld||0)-dt);u.iframes=Math.max(0,u.iframes-dt);u.req=Math.max(0,u.req-dt);u.perfect=Math.max(0,u.perfect-dt);
   for(const gh of u.ghosts)gh.t-=dt;while(u.ghosts.length&&u.ghosts[0].t<=0)u.ghosts.shift();
   // pedido de esquiva guardado por 0,15 s (apertar um pouco antes ainda vale)
   if(u.req>0&&!u.dodge&&u.cd<=0&&u.stamina>=u.spec.cost*.5&&this.alive){
     let dx=len>.2?axis.x/len:Math.cos(this.facing),dy=len>.2?axis.y/len:Math.sin(this.facing);
     u.dodge={t:0,dx,dy,shoved:new Set()};u.req=0;u.cd=u.spec.cd+u.spec.time;u.iframes=u.spec.iframes;
-    u.stamina=Math.max(0,u.stamina-u.spec.cost);u.rest=.7;u.perfectShown=false;
+    u.stamina=Math.max(0,u.stamina-u.spec.cost);u.rest=.7;this._ucHeld=0; // esquivar solta de quem agarrou
+    u.perfectShown=false;
     g?.audio?.ucWhoosh?.(this.charId);
     for(let i=0;i<5;i++)ucDust.push({x:this.x-dx*6+(Math.random()-.5)*14,y:this.y+10+(Math.random()-.5)*6,vx:-dx*(30+Math.random()*40),vy:-dy*(30+Math.random()*40),t:0,life:.45+Math.random()*.25,s:5+Math.random()*5});
   }
@@ -59,7 +60,8 @@ Player.prototype.move=function(axis,dt){
     const shooting=(r?.aimHold||0)>0;
     if(u.stamina<=0)u.tired=true;else if(u.stamina>u.staminaMax*.3)u.tired=false;
     u.sprinting=want&&power>.35&&!shooting&&!u.tired&&this.medkitCharge<=0&&this.shieldCharge<=0;
-    const top=this.speed*(u.sprinting?UC_SPRINT:1)*power;
+    const held=this._ucHeld>0;if(held)u.sprinting=false;
+    const top=this.speed*(u.sprinting?UC_SPRINT:1)*power*(held?.3:1);
     const tx=len>.001?axis.x/len*top:0,ty=len>.001?axis.y/len*top:0;
     // arranque rápido, freada um pouco mais longa, virada para trás quase na hora
     const cur=Math.hypot(u.vx,u.vy),dot=cur>1&&top>1?(u.vx*tx+u.vy*ty)/(cur*top):1;
@@ -318,4 +320,136 @@ Enemy.prototype.draw=function(ctx,assets){
     try{return _ucEnemyDraw.call(this,ctx,assets);}finally{this.stride=st;}
   }
   return _ucEnemyDraw.call(this,ctx,assets);
+};
+
+// ---------------- R52 · empurrão e infectados novos ----------------
+// Empurrão (X / cruz ↑ / botão EMPURRAR no toque): afasta e derruba quem está na frente, corta o golpe em preparo
+// e solta o Agarrador. San dá um jab que machuca mais. Infectados novos usam a arte do comum:
+// Agarrador (segura e deixa você lento até empurrar ou esquivar), Rastejante (já nasce sem pernas, vem pelo chão)
+// e Berrador (para, grita e deixa a horda em volta agitada por uns segundos).
+const ucRings=[];
+const UC_ROLES=Object.freeze({
+  grab:{name:'AGARRADOR',tip:'SEGURA VOCÊ — EMPURRE (X) OU ESQUIVE (Q)'},
+  crawl:{name:'RASTEJANTE',tip:'VEM PELO CHÃO, DEVAGAR E QUIETO'},
+  scream:{name:'BERRADOR',tip:'GRITA E AGITA A HORDA — DERRUBE PRIMEIRO'},
+});
+CombatScene.prototype.requestShove=function(){
+  const r=this.run;if(!r||r.over||this.game.previewPaused||this.game.ui?.modal||r.backpackOpen||r.progress.selecting||r.discovery.selecting||ucOff())return false;
+  const p=r.player,u=p._uc||ucInit(p);if(!p.alive||u.dodge||u.shoveCd>0)return false;
+  u.shoveCd=.75;u.shoveFx=.2;u.stamina=Math.max(0,u.stamina-12);u.rest=.5;
+  const cx=Math.cos(p.facing),cy=Math.sin(p.facing),san=p.charId==='san';let hits=0;
+  for(const e of r.spatial.query(p.x,p.y,80)){
+    if(!e.alive)continue;const dx=e.x-p.x,dy=e.y-p.y,d=Math.hypot(dx,dy)||1;
+    if(d>e.radius+p.radius+34||(d>10&&(dx*cx+dy*cy)/d<.34))continue; // cone de ~140° na frente
+    const died=e.hit(san?11:4,{dx:dx/d,dy:dy/d,zone:null,knock:true,shotId:-3});
+    if(e.alive&&e.kind!=='normal'&&e.kind!=='runner'){const f=e.kind==='tank'?70:170;e.hitVX+=dx/d*f;e.hitVY+=dy/d*f;}
+    if(e._uc){e._uc.wind=0;e._uc.grabbing=false;e._uc.scream=0;}
+    r.effects.emit(e.x,e.y,died?'kill':'hit',died?3:2);this.creditKill(e,died);hits++;
+  }
+  if(p._ucHeld>0)p._ucHeld=0;
+  this.game.audio.ucWhoosh?.(san?'san':'hadassa');if(hits)this.game.audio.effect('hit');
+  return true;
+};
+const _ucSpawn=CombatScene.prototype.spawnEnemy;
+CombatScene.prototype.spawnEnemy=function(...a){
+  const ok=_ucSpawn.apply(this,a),r=this.run;
+  if(!ok||ucOff()||!r)return ok;
+  const e=r.enemies.at(-1);if(!e||e.kind!=='normal')return ok;
+  const w=r.waves.wave,roll=Math.random();let role=null;
+  if(w>=4&&roll<.06)role='scream';else if(w>=3&&roll<.20)role='grab';else if(w>=2&&roll<.28)role='crawl';
+  if(!role)return ok;
+  const u=e._uc||ucPersona(e);u.role=role;
+  if(role==='crawl'){e.crawling=true;e.lostLimbs.add('leftLeg');e.lostLimbs.add('rightLeg');e.radius=Math.max(9,e.radius*.78);u.mul=1.6;u.sway=.05;}
+  if(role==='scream')u.scd=2+Math.random()*2;
+  r.ucSeen??=new Set();
+  if(!r.ucSeen.has(role)){r.ucSeen.add(role);r.noticeText=`NOVO · ${UC_ROLES[role].name} — ${UC_ROLES[role].tip}`;r.noticeTextTime=3;}
+  return ok;
+};
+const _uc2Update=Enemy.prototype.update;
+Enemy.prototype.update=function(dt,player,others,context={}){
+  if(!this.alive||ucOff()||this.kind==='midnight')return _uc2Update.call(this,dt,player,others,context);
+  const u=this._uc||ucPersona(this);
+  if(u.rage>0)u.rage=Math.max(0,u.rage-dt);
+  const dx=player.x-this.x,dy=player.y-this.y,d=Math.hypot(dx,dy)||1;
+  // Berrador: para, enche o peito e grita
+  if(u.role==='scream'&&u.kd<=0){
+    u.scd=(u.scd??3)-dt;
+    if(u.scream>0){
+      u.scream-=dt;this.animation='attack';this.heading=Math.atan2(dy,dx);this.flinch=Math.max(0,this.flinch-dt);this.hitStun=Math.max(0,this.hitStun-dt);
+      if(u.scream<=0){
+        ucRings.push({x:this.x,y:this.y,t:0});if(ucRings.length>8)ucRings.shift();
+        for(const o of context.nearby?.(this.x,this.y,300)||others||[]){if(o!==this&&o.alive&&o.kind!=='midnight'&&!o.isBoss)(o._uc||ucPersona(o)).rage=4.5;}
+        context.sound?.('zombieGrowl',{x:this.x,y:this.y});context.sound?.('runnerGrowl',{x:this.x,y:this.y});
+      }
+      return 0;
+    }
+    if(u.scd<=0&&d<290&&d>70&&this.hitStun<=0){u.scream=.9;u.scd=9+Math.random()*4;context.sound?.('zombieGrowl',{x:this.x,y:this.y});return 0;}
+  }
+  // Agarrador segurando: fica grudado e morde de tempos em tempos
+  if(u.grabbing){
+    if(player._ucHeld>0&&player._ucGrabber===this&&u.kd<=0&&player.alive){
+      const reach=this.radius+player.radius+2,p=slideCircle(this.x,this.y,(player.x-dx/d*reach-this.x)*Math.min(1,dt*12),(player.y-dy/d*reach-this.y)*Math.min(1,dt*12),this.radius);
+      this.x=p.x;this.y=p.y;this.heading=Math.atan2(dy,dx);this.animation='attack';this.stride+=dt*6;
+      this.attackCooldown=Math.max(0,this.attackCooldown-dt);this.flinch=Math.max(0,this.flinch-dt);this.hitStun=Math.max(0,this.hitStun-dt);
+      if(this.attackCooldown<=0){this.attackCooldown=1;return this.damage*.6;}
+      return 0;
+    }
+    u.grabbing=false;this.attackCooldown=Math.max(this.attackCooldown,1.2);
+    if(player._ucGrabber===this){player._ucGrabber=null;player._ucHeld=0;}
+  }
+  const px=this.x,py=this.y;
+  const dmg=_uc2Update.call(this,dt,player,others,context);
+  if(!this.alive)return dmg;
+  // agitado pelo grito: anda 30% mais rápido
+  if(u.rage>0&&u.kd<=0&&!dmg&&this.hitStun<=0){const p=slideCircle(this.x,this.y,(this.x-px)*.3,(this.y-py)*.3,this.radius);this.x=p.x;this.y=p.y;}
+  if(dmg>0&&u.role==='grab'&&!this.crawling&&!(player._uc?.iframes>0)&&!(player._ucHeld>0)){
+    u.grabbing=true;player._ucHeld=1.6;player._ucGrabber=this;this.attackCooldown=1;
+  }
+  return dmg;
+};
+const _ucSceneUpdate2=CombatScene.prototype.update;
+CombatScene.prototype.update=function(dt){
+  const out=_ucSceneUpdate2.call(this,dt);
+  let n=0;for(const g of ucRings){g.t+=dt;if(g.t<.9)ucRings[n++]=g;}ucRings.length=n;
+  const r=this.run;if(r?.player?._ucHeld>0&&!ucOff()){r.noticeText='AGARRADO! EMPURRE (X) OU ESQUIVE (Q)';r.noticeTextTime=Math.max(r.noticeTextTime,.2);}
+  return out;
+};
+const _ucDrawUnder2=CombatEffects.prototype.drawUnder;
+CombatEffects.prototype.drawUnder=function(ctx){
+  _ucDrawUnder2.call(this,ctx);if(!ucRings.length)return;
+  ctx.save();for(const g of ucRings){const k=g.t/.9;ctx.globalAlpha=(1-k)*.5;ctx.strokeStyle='#e7a07a';ctx.lineWidth=3*(1-k)+1;
+    ctx.beginPath();ctx.ellipse(g.x,g.y+8,30+k*270,(30+k*270)*.45,0,0,Math.PI*2);ctx.stroke();}ctx.restore();
+};
+const _ucPlayerDraw2=Player.prototype.draw;
+Player.prototype.draw=function(ctx,assets){
+  _ucPlayerDraw2.call(this,ctx,assets);
+  const u=this._uc;if(!u||ucOff()||ctx.__ucGhost)return;
+  if(u.shoveFx>0){
+    // golpe do empurrão: meia-lua clara na frente
+    const k=1-u.shoveFx/.2,a=this.facing;ctx.save();ctx.globalAlpha*=(1-k)*.75;ctx.strokeStyle='#eef4e6';ctx.lineCap='round';
+    ctx.lineWidth=5*(1-k)+1.5;ctx.beginPath();ctx.ellipse(this.x,this.y-4,24+k*16,(24+k*16)*.7,0,a-1.1,a+1.1);ctx.stroke();ctx.restore();
+  }
+  const gr=this._ucGrabber;
+  if(this._ucHeld>0&&gr?.alive){
+    // mãos do Agarrador presas no corpo
+    ctx.save();ctx.globalAlpha*=.7;ctx.strokeStyle='#7a3b35';ctx.lineWidth=3;ctx.lineCap='round';
+    for(const s of [-5,5]){ctx.beginPath();ctx.moveTo(gr.x+s,gr.y-8);ctx.lineTo(this.x+s*.6,this.y-6);ctx.stroke();}ctx.restore();
+  }
+};
+// toque: botão EMPURRAR à esquerda do analógico de mirar
+const _ucTouch=ucTouchButton;
+ucTouchButton=function(scene){
+  _ucTouch(scene);
+  const root=scene.game?.root,sticks=root?.querySelector('.combat-sticks'),aim=sticks?.querySelector('.stick-aim');
+  let btn=root?.querySelector('.uc-shove-button');
+  if(!sticks||!aim||!root.querySelector('.uc-dodge-button')){btn?.remove();return;}
+  if(!btn||btn.parentNode!==sticks){
+    btn?.remove();btn=document.createElement('button');btn.type='button';btn.className='uc-dodge-button uc-shove-button';
+    btn.setAttribute('aria-label','Empurrar');btn.innerHTML='<strong>✋</strong><small>EMPURRAR</small>';
+    btn.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();scene.game.scenes.current?.requestShove?.();});
+    sticks.appendChild(btn);
+  }
+  const a=aim.getBoundingClientRect(),b=sticks.getBoundingClientRect();
+  if(a.width>0){btn.style.left=Math.round(a.left-b.left-64)+'px';btn.style.top=Math.round(a.top-b.top-8)+'px';}
+  const u=scene.run?.player?._uc;btn.classList.toggle('uc-wait',!!u&&u.shoveCd>0);
 };

@@ -451,6 +451,7 @@ class Game {
         if(code===keyFor('grenade')){e.preventDefault();this.scenes.current?.useGrenade();}
         if(code===keyFor('skill')){e.preventDefault();this.scenes.current?.activateSpecial();}
         if(code===keyFor('dodge')&&!e.repeat){e.preventDefault();this.scenes.current?.requestDodge?.();}
+        if(code===keyFor('shove')&&!e.repeat){e.preventDefault();this.scenes.current?.requestShove?.();}
         if(code===keyFor('interact')){e.preventDefault();this.scenes.current?.interact();}
         if(code===keyFor('weapon1')){e.preventDefault();this.scenes.current?.selectWeapon(0);}
         if(code===keyFor('weapon2')){e.preventDefault();this.scenes.current?.selectWeapon(1);}
@@ -861,6 +862,7 @@ PhysicalGamepad.prototype.tick=function(){
    if(edge(b.shield))game.scenes.current.useShieldCell();
    if(edge(b.special))game.scenes.current.activateSpecial();
    if(edge(b.dodge))game.scenes.current.requestDodge?.();
+   if(edge(b.shove))game.scenes.current.requestShove?.();
    if(edge(b.sprint)&&r?.player)r.player.padSprint=!r.player.padSprint;
    if(edge(b.interact))game.scenes.current.interact();
    if(r?.discovery.selecting&&edge(b.interact))game.scenes.current.closeDiscovery();
