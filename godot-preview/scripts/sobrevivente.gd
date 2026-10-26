@@ -25,6 +25,14 @@ var bpm := 78.0
 var tem_coracao := false
 var invencivel := false
 var anim_fixa := ""            # cena pede uma animação (phone, look, cower...)
+# modo Sobrevivência (ondas): vida em vez da luta para se soltar, mira e força do extintor
+var vida := -1.0               # -1 = regras do prólogo (agarrado = luta)
+var vida_max := 100.0
+var dor_espera := 0.0
+var mira_t := 0.0             # > 0: olha para onde está mirando (não para onde anda)
+var mira_dir := 0.0
+var golpe_dano := 1
+var golpe_forca := 1.0
 
 signal agarrado
 signal soltou
@@ -54,6 +62,7 @@ func _physics_process(delta: float) -> void:
 		return
 	luta_espera = max(0.0, luta_espera - delta)
 	golpe_espera = max(0.0, golpe_espera - delta)
+	dor_espera = max(0.0, dor_espera - delta)
 	atordoado = max(0.0, atordoado - delta)
 	if agarrado_por != null:
 		_lutar(delta)
@@ -96,7 +105,10 @@ func _physics_process(delta: float) -> void:
 	if atordoado > 0:
 		v *= 0.3
 	vel = quer.limit_length(1.0) * v
-	if quer.length() > 0.1:
+	if mira_t > 0.0:
+		mira_t -= delta
+		dir = mira_dir
+	elif quer.length() > 0.1:
 		dir = atan2(quer.z, quer.x)
 	if correndo and vel.length() > 0.5:
 		folego = max(0.0, folego - delta * (0.11 if not tem_coracao else 0.15))
@@ -145,6 +157,26 @@ func _pular(delta: float) -> void:
 			pulo_t = 0.62
 			return
 		fantasma = false
+
+## Modo ondas: a mordida tira vida (sem agarrar). Vida zero = caiu.
+func morder(z: Node) -> void:
+	if dor_espera > 0 or invencivel or not vivo or pulo_t >= 0:
+		return
+	dor_espera = 0.75
+	vida -= z.dano
+	clarao(0.15)
+	cena.audio.som("dor", global_position, -2.0)
+	cena.marca(global_position, 0.6, "sangue")
+	if is_instance_valid(z):
+		z.empurrado((z.global_position - global_position).normalized() * 3.0, 0.35)
+	if vida <= 0.0:
+		vida = 0.0
+		vivo = false
+		vel = Vector3.ZERO
+		tocar("death", true)
+		pego.emit()
+	elif not golpeando:
+		tocar("hit", true)
 
 ## Um infectado agarrou: aperte E sem parar para se soltar.
 func agarrar(z: Node) -> bool:
@@ -199,7 +231,7 @@ func _acertar() -> void:
 		var d: Vector3 = z.global_position - global_position
 		d.y = 0
 		if d.length() < 1.9 and f.dot(d.normalized()) > 0.1:
-			z.ferir(1, d.normalized())
+			z.ferir(golpe_dano, d.normalized() * golpe_forca)
 			acertou = true
 	if acertou:
 		cena.audio.som("pancada", global_position, 2.0)

@@ -24,6 +24,7 @@ var gemido := 0.0
 var corpo_t := 0.0
 var modelo: Zumbi3D = null
 var _lod_t := 0.0
+var dano := 10.0               # modo ondas: quanto a mordida tira
 
 func montar(c: Node, t := "comum", variante_ := "") -> Infectado:
 	cena = c
@@ -196,7 +197,11 @@ func _alcancar(a: Node3D) -> void:
 			alvo = null
 			cena.audio.som("mordida", global_position, -2.0)
 	elif a is Sobrevivente:
-		if a.controlado:
+		if a.vida >= 0.0:
+			a.morder(self)
+			comendo = 0.55
+			pensa = 0.55
+		elif a.controlado:
 			if a.agarrar(self):
 				segurando = a
 		elif a.vivo:

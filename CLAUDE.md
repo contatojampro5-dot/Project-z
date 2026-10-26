@@ -136,6 +136,11 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   `h_back`, `h_crouch`, `h_crawl_back`, `h_slip`, `h_writhe`, `h_stand`...); `Civil.CIVIS_3D` diz quais civis já são 3D
   (policial = swat, jovem/motoboy = ch18). Faltam mais personagens humanos (o Theo vai subir pelo GitHub em
   `godot-preview/assets/mixamo/novos/`) e os heróis.
+- **Modo Sobrevivência no Godot (R50):** `scripts/ondas.gd` (`ModoOndas`, `main.capitulo = 9`); tela inicial em
+  `main._menu()`/`Hud.menu_inicial()` (só na 1ª vez; `--ondas` ou `--direto` pulam). Vida do jogador só existe nesse modo
+  (`Sobrevivente.vida >= 0` → mordida tira vida em vez de agarrar). Teste: `-- --autotest --ondas` ("[autotest] OK — sobrevivência").
+  O canteiro da avenida deixa de colidir nesse modo; bala só para em prédio; zumbi preso reaparece numa rua perto.
+  Falta (ideias): sprite do Antônio com pistola, outras armas (escopeta/rifle), Hadassa/Hanna/San jogáveis, chefes, toque no celular.
 - Interiores visíveis/acessíveis: saguão do PS, ala norte e sala do TCC da faculdade, mercado (prédio "oco" + `cidade.cortes`).
 - Vozes: falas listadas em `assets/audio/vozes/falas.json` (ids); gravadas só r01–r04, h01–h04, a01 (ElevenLabs bloqueou
   o plano gratuito). Um `<id>.mp3` novo entra sozinho.

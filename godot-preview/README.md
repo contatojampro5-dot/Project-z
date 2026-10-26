@@ -17,6 +17,26 @@ O jogo do navegador (`src/`, `jogo/`) não foi mexido.
 4. Clique em **Importar e editar**. Na primeira vez o Godot leva um tempinho preparando as imagens.
 5. Aperte **F5** (ou o ▶ lá em cima) para jogar.
 
+## Modo Sobrevivência (ondas) — R50
+
+O modo principal do jogo do navegador agora também existe no Godot, dentro da mesma cidade 3D. Ao abrir o jogo
+aparece a **tela inicial** com duas opções: **Prólogo · Dia Zero** (a história) e **Sobrevivência · Ondas**.
+Também dá para entrar pela pausa ("Modo Sobrevivência (ondas)").
+
+- O Antônio fica na **Av. dos Tecelões, na frente do mercado**, com uma pistola e o extintor.
+- Cada **onda** traz mais infectados (5 + 3 por onda); a partir da **onda 3** chegam os **corredores**. Eles ficam
+  mais resistentes a cada 3 ondas, e a tarde vai virando noite conforme as ondas passam (os postes acendem).
+- **Tiro** com o mouse (mira onde o mouse aponta), J, ou gatilho RT do controle (mira no analógico direito; sem
+  analógico, mira sozinha no infectado mais perto). **R / LB** recarrega (pente de 12). Sem bala, o **extintor** (F / B).
+- Zumbi morto pode largar **caixa amarela de bala** (+15) ou **kit branco com cruz** (+35 de vida). As caixas giram no chão.
+- Cada **nível** pausa e dá para escolher **1 de 3 melhorias**: Mão firme (dano), Gatilho rápido, Pente estendido,
+  Couro de bombeiro (vida), Pernas leves, Bala que atravessa, Extintor pesado e Olho de catador (mais caixas).
+- Morreu: aparece "VOCÊ CAIU NA ONDA N", com abates, nível e o **recorde** (fica salvo no navegador/computador).
+- Sons do jogo do navegador (pistola, recarga, onda, nível, pegar item) e a música de partida.
+- Código: `scripts/ondas.gd` (`ModoOndas`). Teste: `godot --headless --path godot-preview -- --autotest --ondas`
+  (o Antônio joga sozinho, atira, pega caixas, escolhe melhorias e depois da onda 4 para de se defender para testar a
+  tela do fim; termina com "[autotest] OK — sobrevivência").
+
 ## Controles
 
 | Ação | Teclado | Controle |
@@ -107,7 +127,8 @@ O jogo do navegador (`src/`, `jogo/`) não foi mexido.
 
 | Arquivo | O que faz |
 | --- | --- |
-| `scripts/main.gd` | Diretor: abertura, os 3 capítulos, câmeras de cena, eventos, falas e objetivos |
+| `scripts/main.gd` | Diretor: tela inicial, abertura, os 3 capítulos, câmeras de cena, eventos, falas e objetivos |
+| `scripts/ondas.gd` | Modo Sobrevivência (ondas): tiro, mira, ondas, caixas, níveis e melhorias, fim de partida |
 | `scripts/mapa.gd` | Planta da cidade em metros (ruas, lugares da história, morro e trilha) |
 | `scripts/cidade.gd` | Monta a cidade 3D inteira |
 | `scripts/predio.gd` | Prédio com fachada, telhado, marquise e o buraco de visão |
@@ -130,6 +151,8 @@ O jogo do navegador (`src/`, `jogo/`) não foi mexido.
 godot --headless --path godot-preview -- --autotest
 # confere se dá para andar entre todos os pontos do roteiro (deve dar "TUDO OK")
 godot --headless --path godot-preview -- --rotas
+# modo Sobrevivência sozinho até cair (deve terminar com "[autotest] OK — sobrevivência")
+godot --headless --path godot-preview -- --autotest --ondas
 # fotos de cada momento (precisa de tela; no servidor use xvfb-run)
 xvfb-run godot --path godot-preview --rendering-driver opengl3 -- --autotest --fotos=/pasta
 # versão Web em jogo-godot/ (precisa dos modelos de exportação Web do Godot 4.7.2)

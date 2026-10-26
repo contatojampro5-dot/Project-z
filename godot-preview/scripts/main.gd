@@ -4,7 +4,9 @@ extends Node3D
 ## Antônio vê pelas câmeras o ataque às funcionárias, baixa o portão, vê tudo do telhado e salva a
 ## Hadassa do corredor com o extintor. Os dois fogem da horda até a casa no alto do morro.
 
-static var capitulo := 0          # 0 = abertura, 1 = Hannah, 2 = Antônio, 3 = fuga
+static var capitulo := 0          # 0 = abertura, 1 = Hannah, 2 = Antônio, 3 = fuga, 9 = modo Sobrevivência (ondas)
+static var _menu_visto := false   # a tela inicial aparece só na primeira vez
+const ONDAS := 9
 
 var auto := false                 # --autotest: o jogo se joga sozinho (para testar)
 var pasta_fotos := ""
@@ -37,6 +39,7 @@ var _funcionarias: Array = []
 var _corredor: Infectado = null
 var mordidos := 0                 # contágio: quantos foram mordidos e quantos já viraram
 var viraram := 0
+var ondas: ModoOndas = null
 const MAX_INFECTADOS := 90        # acima disso, some o infectado mais longe da câmera (leveza)
 
 func _ready() -> void:
@@ -47,6 +50,10 @@ func _ready() -> void:
 	for a in args:
 		if a.begins_with("--fotos="):
 			pasta_fotos = a.substr(8)
+	if "--ondas" in args and not _menu_visto:
+		capitulo = ONDAS
+	if "--ondas" in args or auto or "--direto" in args:
+		_menu_visto = true
 	if auto:
 		Engine.time_scale = 2.5
 		print("[autotest] capítulo ", capitulo)
@@ -80,7 +87,17 @@ func _ready() -> void:
 	if "--rotas" in args:
 		_checar_rotas()
 		return
+	if capitulo == 0 and not _menu_visto:
+		_menu_visto = true
+		if await _menu() == "ondas":
+			capitulo = ONDAS
+			get_tree().reload_current_scene()
+			return
 	match capitulo:
+		ONDAS:
+			ondas = ModoOndas.new()
+			add_child(ondas)
+			ondas.comecar(self)
 		0:
 			_preparar_cap1()
 			_abertura_e_cap1()
@@ -397,6 +414,26 @@ func usar(p: Vector3, r: float, txt: String, segurar := 0.0) -> void:
 	hud.show_prompt("")
 	hud.waypoint = null
 
+## Tela inicial: a cidade vista do alto, devagar, e a escolha do modo.
+func _menu() -> String:
+	var cf := ConfigFile.new()
+	var rec := 0
+	if cf.load("user://ondas.cfg") == OK:
+		rec = int(cf.get_value("ondas", "recorde", 0))
+	amb.aplicar(0.35)
+	colunas_de_fumaca(5)
+	cam.livre = true
+	cam.transform = cam.pose_de(Vector3(110, 0, -10), -60.0, 24.0, 150.0)
+	cam.voar(Vector3(140, 0, -30), -20.0, 22.0, 130.0, 40.0)
+	hud.fade.color.a = 1.0
+	hud.fade_to(0.0, 1.5)
+	audio.tocar_musica("musica_final", -16.0, 3.0)
+	var id := await hud.menu_inicial(rec)
+	audio.parar_musica(1.0)
+	await hud.fade_to(1.0, 0.8)
+	cam.livre = false
+	return id
+
 func cena() -> void:
 	## começo de cena: tira o controle e solta o jogador se estiver agarrado
 	controle_livre = false
@@ -434,7 +471,7 @@ func proximo(n: int) -> void:
 	get_tree().reload_current_scene()
 
 func _quando_pego() -> void:
-	if _pego:
+	if _pego or capitulo == ONDAS:
 		return
 	_pego = true
 	controle_livre = false
@@ -445,7 +482,7 @@ func _quando_pego() -> void:
 	get_tree().reload_current_scene()
 
 func toggle_pause() -> void:
-	if _fim:
+	if _fim or (ondas and (ondas.escolhendo or ondas._fim)):
 		return
 	get_tree().paused = not get_tree().paused
 	hud.toggle_pause(get_tree().paused)
@@ -456,6 +493,9 @@ func on_pause_button(id: String) -> void:
 	Engine.time_scale = 1.0
 	match id:
 		"restart":
+			get_tree().reload_current_scene()
+		"ondas":
+			capitulo = ONDAS
 			get_tree().reload_current_scene()
 		"skip":
 			capitulo = min(capitulo + 1, 3) if capitulo > 0 else 2

@@ -48,6 +48,9 @@ var marker: Control
 var photo: TextureRect
 var pause_panel: PanelContainer
 var end_box: VBoxContainer
+var pause_btns := {}
+var pause_hint: Label
+signal escolheu(id: String)
 var waypoint = null
 var skip_line := false
 var _faces := {}
@@ -358,7 +361,7 @@ func _build_pause() -> void:
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 10)
 	vb.add_child(_label("Pausado", font_title, 60, Color("e8b10d")))
-	for b in [["Continuar", "continue"], ["Recomeçar capítulo", "restart"], ["Pular capítulo", "skip"], ["Começar do início", "begin"]]:
+	for b in [["Continuar", "continue"], ["Recomeçar capítulo", "restart"], ["Pular capítulo", "skip"], ["Começar do início", "begin"], ["Modo Sobrevivência (ondas)", "ondas"]]:
 		var btn := Button.new()
 		btn.text = b[0]
 		btn.add_theme_font_override("font", font_bold)
@@ -366,7 +369,9 @@ func _build_pause() -> void:
 		btn.custom_minimum_size = Vector2(320, 46)
 		btn.pressed.connect(main.on_pause_button.bind(b[1]))
 		vb.add_child(btn)
-	vb.add_child(_label("WASD/setas: andar · Shift: correr · Espaço: pular\nE: interagir/se soltar · F ou clique: golpear · Enter: pular fala", font_ui, 16, Color("b8b2a2")))
+		pause_btns[b[1]] = btn
+	pause_hint = _label("WASD/setas: andar · Shift: correr · Espaço: pular\nE: interagir/se soltar · F ou clique: golpear · Enter: pular fala", font_ui, 16, Color("b8b2a2"))
+	vb.add_child(pause_hint)
 	pause_panel.add_child(vb)
 	pause_panel.visible = false
 	root.add_child(pause_panel)
@@ -501,6 +506,41 @@ func _unhandled_input(e: InputEvent) -> void:
 
 func toggle_pause(on: bool) -> void:
 	pause_panel.visible = on
+	if on:
+		pause_btns["continue"].grab_focus()
+
+## Tela inicial (R50): escolher entre o prólogo e o modo Sobrevivência. Devolve "prologo" ou "ondas".
+func menu_inicial(recorde: int) -> String:
+	var pn := PanelContainer.new()
+	pn.add_theme_stylebox_override("panel", _panel_style(0.86))
+	pn.set_anchors_preset(Control.PRESET_CENTER_LEFT)
+	pn.grow_vertical = Control.GROW_DIRECTION_BOTH
+	pn.position.x = 70
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 12)
+	vb.add_child(_label("PROJECT Z", font_title, 96, Color("e8b10d")))
+	vb.add_child(_label("ZONA LESTE  ·  SÃO PAULO", font_label, 16, Color("b8b2a2")))
+	vb.add_child(_label(" ", font_ui, 8))
+	var primeiro: Button = null
+	for b in [["Prólogo  ·  Dia Zero", "prologo", "A história do primeiro dia do surto"], ["Sobrevivência  ·  Ondas", "ondas", "Aguente as ondas na Av. dos Tecelões" + ("  ·  recorde: onda %d" % recorde if recorde > 0 else "")]]:
+		var btn := Button.new()
+		btn.text = b[0]
+		btn.add_theme_font_override("font", font_bold)
+		btn.add_theme_font_size_override("font_size", 26)
+		btn.custom_minimum_size = Vector2(400, 54)
+		btn.pressed.connect(func(): escolheu.emit(b[1]))
+		vb.add_child(btn)
+		vb.add_child(_label(b[2], font_ui, 15, Color("9a958a")))
+		if primeiro == null:
+			primeiro = btn
+	pn.add_child(vb)
+	root.add_child(pn)
+	pn.modulate.a = 0.0
+	create_tween().tween_property(pn, "modulate:a", 1.0, 0.8)
+	primeiro.grab_focus()
+	var id: String = await escolheu
+	pn.queue_free()
+	return id
 
 # ------------------------------------------------------------------ desenho
 func _process(delta: float) -> void:

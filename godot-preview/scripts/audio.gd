@@ -14,8 +14,12 @@ const ARQ := {
 	"portao": ["portao_el.mp3", "portao.wav"], "radio": ["radio.wav"], "golpe": ["golpe.wav"], "pulo": ["golpe.wav"],
 	"celular": ["celular.wav"], "jato": ["jato_el.mp3", "jato.wav"], "vidro": ["vidro_el.mp3", "impact.mp3"],
 	"estadio": ["estadio_el.mp3", "people_02.mp3"], "alarme": ["alarme_el.mp3", "sirene.wav"],
+	# modo Sobrevivência (sons do jogo do navegador)
+	"tiro": ["tiro_01.mp3", "tiro_02.mp3", "tiro_03.mp3"], "recarga": ["recarga.mp3"], "sem_bala": ["sem_bala.mp3"],
+	"pegar": ["pegar.mp3"], "nivel": ["nivel.mp3"], "onda": ["onda.mp3"], "dor": ["dor.mp3", "hurt.mp3"],
+	"musica_ondas": ["musica_ondas.mp3"],
 }
-const LOOPS := ["fogo", "horda", "motor", "multidao", "sirene", "coracao", "helicoptero", "radio", "musica_fuga", "musica_final", "estadio", "alarme"]
+const LOOPS := ["fogo", "horda", "motor", "multidao", "sirene", "coracao", "helicoptero", "radio", "musica_fuga", "musica_final", "estadio", "alarme", "musica_ondas"]
 
 var cena: Node = null
 var _cache := {}

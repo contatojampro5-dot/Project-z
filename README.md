@@ -499,3 +499,10 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - O contágio ficou com cara de cinema: a mordida derruba (escorrega e cai), a pessoa se arrasta de costas, levanta
   e foge mancando, se contorce de dor no chão antes de virar e levanta como zumbi com a mesma cara.
 - O jogo aceita esqueletos do Mixamo com ossos numerados (`mixamorig12_`).
+
+## R50 · Godot — Modo Sobrevivência (ondas)
+- O **modo de ondas** (o foco do jogo) foi levado para o Godot, dentro da cidade 3D da prévia: tela inicial com
+  **Prólogo** ou **Sobrevivência**, o Antônio na Av. dos Tecelões com pistola e extintor, ondas que crescem, corredores a
+  partir da onda 3, noite chegando, caixas de bala e de cura, níveis com escolha de 1 de 3 melhorias e recorde salvo.
+- Mira com o mouse ou analógico direito (ou automática), tiro com clique / J / RT, recarga com R / LB.
+- Jogo do navegador (`src/`, `jogo/`) não foi mexido. Detalhes em `godot-preview/README.md`.
