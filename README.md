@@ -546,3 +546,12 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
   Rastejante (R52) e quem perde as pernas se arrastam sem elas.
 - Explosivo, Cuspidor, Tanque, Invocador, Notívago e chefes continuam com o desenho deles.
 - Para comparar com os antigos: `window.__PZ_OLD_ZOMBIES=true` no console antes de começar a partida.
+
+## R53b · Jogo mais leve, poça no chão e sem noite por enquanto
+- **Mais leve:** o jogo carregava de uma vez umas 36 folhas grandes de zumbi (as novas, as sem braço e as antigas). Agora só as
+  8 dos zumbis do Mixamo entram no começo; as folhas sem braço baixam na primeira vez que um braço é arrancado. Isso tira
+  bastante memória e evita que, num PC mais fraco, alguma folha falhe e o zumbi vire um **quadrado verde** (agora ele usa outra variação).
+- **Poça por baixo:** o reflexo das luzes e do sol nas poças passou a ser desenhado no chão, por baixo dos personagens, zumbis e carros
+  (antes ficava por cima de todo mundo).
+- **Sem noite por enquanto** (pedido do Theo): o dia vai da manhã ao pôr do sol e recomeça, sem escurecer. A noite e o Notívago
+  voltam quando o jogo estiver leve (`window.__PZ_NIGHT=true` no console traz a noite de volta para testar).
