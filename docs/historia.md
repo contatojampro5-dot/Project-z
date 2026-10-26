@@ -127,6 +127,12 @@ cânone.
 > As duas tentam se encontrar, mas seguem rotas diferentes: uma vai em
 > direção à região do hospital e a outra à região da faculdade. Elas não
 > se encontram. O trajeto exato de cada uma ainda será definido.
+>
+> *Cena aprovada pelo Theo em 25/10/2026 (prévia em Godot):* Hannah chega
+> ao pronto-socorro do hospital procurando a irmã. Um enfermeiro conta que
+> Hadassah saiu meia hora antes para buscá-la na faculdade. Uma paciente
+> idosa na maca convulsiona e levanta infectada, o contágio começa ali
+> dentro, e Hannah foge do hospital.
 
 **19. Ataque no mercado** *\[Definido\]*
 

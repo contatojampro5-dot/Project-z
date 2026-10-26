@@ -119,7 +119,7 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 - Testes: `-- --autotest` (joga sozinho até o fim, "[autotest] OK") e `-- --rotas` (caminhos livres, "TUDO OK").
   Fotos: `xvfb-run godot --path godot-preview --rendering-driver opengl3 -- --autotest --fotos=PASTA`;
   cidade/interiores: `res://vitrine.tscn -- --pasta=PASTA [--so=estadio,hospital_dentro]`.
-- **Contágio (regra do Theo, 26/10):** mordido ou agarrado vira infectado em **15 s** (`Civil.TEMPO_VIRAR`): cai, levanta
+- **Contágio (regra do Theo, 25/10):** mordido ou agarrado vira infectado em **15 s** (`Civil.TEMPO_VIRAR`): cai, levanta
   e foge machucado, convulsiona nos últimos 3 s e levanta. O infectado morde, larga e vai atrás do próximo mais perto.
 - **Nomes fictícios dos lugares (pedido do Theo):** Av. dos Tecelões, R. São Crispim, R. das Torcidas, R. do Cruzeiro,
   R. dos Armazéns, Hospital Municipal São Crispim, Faculdade Integrada do Pari, Arena Fúria (time Fúria Leste F.C.),
@@ -130,6 +130,7 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
 - Interiores visíveis/acessíveis: saguão do PS, ala norte e sala do TCC da faculdade, mercado (prédio "oco" + `cidade.cortes`).
 - Vozes: falas listadas em `assets/audio/vozes/falas.json` (ids); gravadas só r01–r04, h01–h04, a01 (ElevenLabs bloqueou
   o plano gratuito). Um `<id>.mp3` novo entra sozinho.
+- Aprovado pelo Theo (25/10): a cena da Hannah no pronto-socorro (cap. 1), anotada em `docs/historia.md` (item 18).
 - Decidido pelo Theo (25/10): objeto do Antônio = **extintor** (cânone); coração = só bpm na tela (mais lento acima de
   150, fôlego volta devagar), **sem minijogo de respiração**. San não aparece (entrada pendente).
 
