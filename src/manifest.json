@@ -35,7 +35,8 @@
     "src/styles/33-r33c-story.css",
     "src/styles/34-r41-rain-timer.css",
     "src/styles/35-r42-bag-discard.css",
-    "src/styles/36-r51-ultima-cartada.css"
+    "src/styles/36-r51-ultima-cartada.css",
+    "src/styles/37-fazenda.css"
   ],
   "headScripts": [
     "src/scripts/01-embedded-music.js",
@@ -126,6 +127,10 @@
     "src/scripts/game/39b-ui_AntonioFaces.js",
     "src/scripts/game/39c-ui_StoryScreen.js",
     "src/scripts/game/40-core_Game.js",
+    "src/scripts/fazenda/F00-fazenda_Core.js",
+    "src/scripts/fazenda/F01-fazenda_Arvores.js",
+    "src/scripts/fazenda/F02-fazenda_Cercas.js",
+    "src/scripts/fazenda/F03-fazenda_Hud.js",
     "src/scripts/game/41-main.js"
   ]
 }

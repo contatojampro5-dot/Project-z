@@ -1,0 +1,32 @@
+/* R55 · MODO FAZENDA — painel de recursos, botão no menu e botões AÇÃO / CONSTRUIR no toque */
+.pz-c6b-continue.pz-cs-cta.fz-cta{margin-top:8px;background:#d9a84a}
+.pz-c6b-continue.pz-cs-cta.fz-cta small{display:block;font-size:8px;letter-spacing:.18em;opacity:.7;margin-top:2px}
+.fz-hud{display:none}
+.app[data-scene="field"][data-mode="fazenda"] .fz-hud{display:block;position:absolute;z-index:7;left:14px;bottom:18px;min-width:168px;max-width:240px;
+  padding:9px 12px 10px;border-radius:4px;pointer-events:none;background:rgba(18,14,8,.66);border:1px solid rgba(217,168,74,.45);
+  color:#f3e6c8;font:600 11px/1.25 Manrope,system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.35);backdrop-filter:blur(2px)}
+.fz-hud-title{font:800 9px/1 Syne,Manrope,system-ui,sans-serif;letter-spacing:.22em;color:#d9a84a;margin-bottom:6px}
+.fz-hud-row{display:flex;align-items:center;gap:7px;margin:2px 0}
+.fz-hud-row b{font:800 17px/1 Manrope,system-ui,sans-serif;min-width:26px;text-align:right}
+.fz-hud-row small{font-size:9px;letter-spacing:.16em;opacity:.75}
+.fz-ico{width:16px;height:12px;display:inline-block;border-radius:2px}
+.fz-ico-wood{background:linear-gradient(90deg,#7a5a3a 0 30%,#c8a070 30% 36%,#7a5a3a 36% 64%,#c8a070 64% 70%,#7a5a3a 70%);border-radius:6px}
+.fz-ico-fence{background:repeating-linear-gradient(90deg,#9a7450 0 3px,transparent 3px 5px),linear-gradient(transparent 30%,#5a4028 30% 42%,transparent 42% 68%,#5a4028 68% 80%,transparent 80%)}
+.fz-hud-hint{margin-top:6px;padding-top:6px;border-top:1px solid rgba(217,168,74,.25);font-size:10px;letter-spacing:.08em;color:#ffe3a0}
+.fz-hud.is-building{border-color:rgba(120,230,140,.7)}
+.fz-hud.is-building .fz-hud-title{color:#8ee09a}
+.fz-touch{display:none}
+@media (pointer:coarse){
+  .app[data-scene="field"][data-mode="fazenda"] .fz-touch{position:absolute;z-index:8;pointer-events:auto;width:58px;height:58px;border-radius:50%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;bottom:62px;
+    background:rgba(24,18,8,.66);border:1.5px solid rgba(217,168,74,.7);color:#f3e6c8;
+    font:700 8px/1 Manrope,system-ui,sans-serif;letter-spacing:.08em;touch-action:none;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+  .app[data-scene="field"][data-mode="fazenda"] .fz-touch strong{font-size:20px;line-height:.9}
+  .app[data-scene="field"][data-mode="fazenda"] .fz-touch:active{transform:scale(.92)}
+  .app[data-scene="field"][data-mode="fazenda"] .fz-touch-act{left:calc(50% - 64px)}
+  .app[data-scene="field"][data-mode="fazenda"] .fz-touch-build{left:calc(50% + 6px)}
+  .app[data-scene="field"][data-mode="fazenda"] .fz-touch-build.is-on{background:rgba(40,90,50,.75);border-color:#8ee09a}
+  .app[data-scene="field"][data-mode="fazenda"] .fz-hud{bottom:auto;top:100px;min-width:0;max-width:170px;padding:6px 9px 7px;font-size:10px}
+  .app[data-scene="field"][data-mode="fazenda"] .fz-hud-row b{font-size:14px}
+}
+.app[data-scene="field"][data-mode="fazenda"] .fz-hidden{display:none!important}

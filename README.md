@@ -572,3 +572,19 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - **Leve:** o chão do morro (relevo com luz do leste, capim, pedras, estrada, sombras) e a mata fechada de fora do mapa são
   pintados uma vez só, no começo. Por quadro só entram as árvores e construções que estão na tela. Na máquina de teste o
   morro roda mais solto que o centro da cidade.
+
+## R55 · Modo Fazenda (fase 1) — cortar árvore, juntar madeira e levantar cerca
+- **Plano completo do modo** em `docs/fazenda/design.md`: pesquisa de jogos parecidos (They Are Billions, 7 Days to Die,
+  State of Decay 2, Kingdom Two Crowns, RimWorld, Days Gone, Project Zomboid, Last Day on Earth, Frostpunk), recursos,
+  cercas em 5 níveis, produção, sobreviventes com profissão e treino (arqueiro, atirador, lenhador…), expedições à cidade
+  (mercado, hospital, delegacia) e as fases seguintes.
+- **Novo botão MODO FAZENDA** na tela de dificuldade (embaixo de INICIAR SOBREVIVÊNCIA). O modo Sobrevivência continua igual.
+- Começa na varanda da casa sede, com **relógio de preparação** (40 s na primeira horda, 30 s depois de cada uma).
+- **Cortar árvore:** chegue perto do tronco e aperte **E** (botão A no controle, AÇÃO no celular). O machado bate sozinho
+  enquanto você fica parado; a árvore cai para o lado, vira toco e dá madeira (3 a 7, conforme o tamanho).
+- **Construir:** **T** (cruz ↓ no controle, CONSTRUIR no celular) mostra a peça na sua frente (verde = dá, amarelo = falta
+  madeira, vermelho = não cabe). **E** põe a cerca. Mirando numa cerca, **E** evolui:
+  Cerca de estaca (3 madeira) → Paliçada de tábuas (+6) → Paliçada de ponta (+10, machuca quem bate).
+- Os zumbis **batem na cerca até quebrar** (barra de vida aparece), não mordem através dela e o tanque quebra bem mais rápido.
+  Você **pula a sua cerca** e o tiro passa por cima. Fora do modo construção, **E** perto de cerca batida conserta (1 madeira).
+- Código separado em `src/scripts/fazenda/` (F00 núcleo, F01 árvores, F02 cercas, F03 painel) e `src/styles/37-fazenda.css`.
