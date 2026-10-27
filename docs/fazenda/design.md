@@ -97,7 +97,7 @@ Regras: você **pula a cerca** (zumbi não); zumbi encostado na cerca bate nela 
 com mais habilidade faz a cerca nascer com mais vida (fase 3).
 
 ### 4.3 Ondas
-- Relógio de **preparação** antes de cada horda (40 s na primeira, 30 s depois; fase 2 deixa o jogador chamar a horda mais cedo por bônus).
+- **Decisão do Theo (27/10, R56):** onda de **10 minutos**, depois **5 minutos para construir**; cortar e construir só nesse tempo e só na área da fazenda. Machado pego uma vez no cepo do lado da casa; segurar E por 3 s corta a árvore.
 - A horda nasce **fora da tela, na mata** e sobe o morro; a cada 5 ondas, uma horda grande (tipo lua de sangue).
 - Fase 2: zumbis escolhem o lado mais fraco da cerca; Colosso mira a cerca; Berrador chama reforço.
 
@@ -171,4 +171,4 @@ docs/fazenda/design.md     este documento
 - O modo fica **no mesmo jogo do navegador**, numa pasta separada (não num projeto/plataforma novo): reaproveita mapa, zumbis 3D, armas, luz e chuva já prontos.
 - O jogador **pula** a própria cerca (zumbi não) — evita ficar preso e dispensa porteira na fase 1.
 - Cerca **não segura tiro** (dá para atirar por cima).
-- Primeira preparação de 40 s; as seguintes de 30 s.
+- ~~Primeira preparação de 40 s; as seguintes de 30 s.~~ Trocado pelo ciclo do Theo (10 min de onda / 5 min de construção, R56).

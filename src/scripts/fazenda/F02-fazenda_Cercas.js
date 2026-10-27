@@ -11,6 +11,12 @@ const FZ_FENCE_TIERS=[null,
   {name:'PALIÇADA DE TÁBUAS',cost:6,hp:360,h:26,pw:6,gap:.6,c:['#6a4c30','#94704a','#b89064'],band:'#4a3420'},
   {name:'PALIÇADA DE PONTA',cost:10,hp:700,h:32,pw:7,gap:.4,c:['#4e3620','#7a5634','#a07a4e'],band:'#3a2a18',point:1,thorns:7},
 ];
+// pôr direto uma cerca de nível N custa a soma dos níveis até N (estaca 3, tábuas 9, ponta 19)
+function fzPlaceCost(tier){let c=0;for(let i=1;i<=tier;i++)c+=FZ_FENCE_TIERS[i].cost;return c;}
+function fzSelect(scene,n){
+  const fz=scene.run.fz,N=FZ_FENCE_TIERS.length-1;fz.sel=((n-1+N)%N)+1;
+  scene.notify(`${FZ_FENCE_TIERS[fz.sel].name} · ${fzPlaceCost(fz.sel)} MADEIRA`,1.2);scene.game.audio.feedback?.('select');fzHudUpdate(scene,1);
+}
 const FZ_FENCE_DPS={normal:8,runner:6,tank:38,bomber:14,spitter:5,summoner:6,midnight:10};
 const FZ_FL=48,FZ_FT=10,FZ_SNAP=24,FZ_GC=64;
 const FZ_LIVE={list:[],grid:new Map(),ignore:false};
@@ -67,6 +73,7 @@ function fzGhost(run){
   if(!target){
     const W=GAME.map;
     if(rect.x<4||rect.y<4||rect.x+rect.w>W.width-4||rect.y+rect.h>W.height-4)reason='FORA DO MAPA';
+    else if(!fzInZone(cx,cy))reason='FORA DA ÁREA DA FAZENDA';
     else if(near.some(f=>fzRectsOverlap(f,rect,1)))reason='JÁ TEM CERCA AQUI';
     else if(nearbyObstacles(rect.x,rect.y,rect.x+rect.w,rect.y+rect.h).some(o=>!o.destroyed&&(o.carShape?circleIntersectsRect(cx,cy,FZ_FT,o):fzRectsOverlap(o,rect,1))))reason='TEM ALGO NO CAMINHO';
   }
@@ -74,6 +81,7 @@ function fzGhost(run){
 }
 function fzBuildAction(scene){
   const r=scene.run,fz=r.fz,g=fz.ghost||fzGhost(r);
+  const why=fzBuildBlock(r);if(why){scene.notify(why,1.4);return false;}
   if(g.target){
     const f=g.target;
     if(f.tier<FZ_FENCE_TIERS.length-1){
@@ -87,10 +95,10 @@ function fzBuildAction(scene){
     scene.notify('ESSA CERCA JÁ ESTÁ NO NÍVEL MÁXIMO DE MADEIRA',1.5);return false;
   }
   if(g.reason){scene.notify(g.reason,1.2);return false;}
-  const T=FZ_FENCE_TIERS[1];
-  if(fz.wood<T.cost){scene.notify(`FALTA MADEIRA · CERCA CUSTA ${T.cost} · CORTE ÁRVORES`,1.6);return false;}
-  fz.wood-=T.cost;fz.built++;
-  const f=fzAddFence(fz,g.cx,g.cy,g.horiz,1);f.hitT=.2;
+  const T=FZ_FENCE_TIERS[fz.sel],cost=fzPlaceCost(fz.sel);
+  if(fz.wood<cost){scene.notify(`FALTA MADEIRA · ${T.name} CUSTA ${cost} · CORTE ÁRVORES`,1.6);return false;}
+  fz.wood-=cost;fz.built++;
+  const f=fzAddFence(fz,g.cx,g.cy,g.horiz,fz.sel);f.hitT=.2;
   r.effects.emit(g.cx,g.cy-8,'wood',5);scene.game.audio.effect('reload');
   return true;
 }
@@ -185,17 +193,22 @@ function fzFenceDrawables(run){
       }
     }
   }
+  // contorno da área construível no tempo de construir
+  if(fzBuildPhase(run)){const F=PZ_MORRO.F,Z=FZ.ZONE;
+    out.push({x:F.x,y:-1e9,__tall:1,draw(ctx){ctx.save();ctx.strokeStyle=fz.build?'rgba(140,230,150,.55)':'rgba(255,220,140,.28)';ctx.lineWidth=2;ctx.setLineDash([10,8]);
+      ctx.beginPath();ctx.ellipse(F.x,F.y+Z.dy,Z.rx,Z.ry,0,0,Math.PI*2);ctx.stroke();ctx.restore();}});}
   // peça fantasma do modo construção (por cima de tudo)
   const g=fz.ghost;
   if(g){
     out.push({x:g.cx,y:g.cy+1e5,__tall:1,draw(ctx){
-      const t=g.target,ok=t?true:!g.reason,R=t||g.rect,nextT=t?FZ_FENCE_TIERS[Math.min(FZ_FENCE_TIERS.length-1,t.tier+1)]:FZ_FENCE_TIERS[1];
-      const can=ok&&(t?(t.tier<FZ_FENCE_TIERS.length-1?fz.wood>=nextT.cost:t.hp<t.max&&fz.wood>=1):fz.wood>=nextT.cost);
+      const t=g.target,ok=t?true:!g.reason,R=t||g.rect,nextT=t?FZ_FENCE_TIERS[Math.min(FZ_FENCE_TIERS.length-1,t.tier+1)]:FZ_FENCE_TIERS[fz.sel];
+      const cost=t?nextT.cost:fzPlaceCost(fz.sel);
+      const can=ok&&(t?(t.tier<FZ_FENCE_TIERS.length-1?fz.wood>=cost:t.hp<t.max&&fz.wood>=1):fz.wood>=cost);
       const col=can?'120,230,140':ok?'240,200,90':'240,90,80',pulse=.55+.25*Math.sin(performance.now()*.006);
       ctx.save();ctx.fillStyle=`rgba(${col},${(.18*pulse).toFixed(3)})`;ctx.fillRect(R.x,R.y,R.w,R.h);
       ctx.strokeStyle=`rgba(${col},${pulse.toFixed(2)})`;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.strokeRect(R.x-.5,R.y-.5,R.w+1,R.h+1);ctx.setLineDash([]);
       if(!t){ctx.fillStyle=`rgba(${col},.35)`;if(g.horiz)for(let x=R.x;x<R.x+R.w;x+=6)ctx.fillRect(x,R.y+R.h-20,3,20);else for(let y=R.y;y<R.y+R.h;y+=8)ctx.fillRect(g.cx-2,y-14,4,16);}
-      const label=t?(t.tier<FZ_FENCE_TIERS.length-1?`EVOLUIR · ${nextT.cost} MADEIRA`:t.hp<t.max?'CONSERTAR · 1 MADEIRA':'NÍVEL MÁXIMO'):g.reason||`CERCA · ${nextT.cost} MADEIRA`;
+      const label=t?(t.tier<FZ_FENCE_TIERS.length-1?`EVOLUIR · ${nextT.cost} MADEIRA`:t.hp<t.max?'CONSERTAR · 1 MADEIRA':'NÍVEL MÁXIMO'):g.reason||`${nextT.name} · ${cost} MADEIRA`;
       ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='rgba(10,10,10,.85)';
       const ly=(g.horiz?R.y:R.y)-26;ctx.strokeText(label,g.cx,ly);ctx.fillStyle=`rgb(${col})`;ctx.fillText(label,g.cx,ly);
       ctx.restore();}});

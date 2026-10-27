@@ -588,3 +588,17 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
 - Os zumbis **batem na cerca até quebrar** (barra de vida aparece), não mordem através dela e o tanque quebra bem mais rápido.
   Você **pula a sua cerca** e o tiro passa por cima. Fora do modo construção, **E** perto de cerca batida conserta (1 madeira).
 - Código separado em `src/scripts/fazenda/` (F00 núcleo, F01 árvores, F02 cercas, F03 painel) e `src/styles/37-fazenda.css`.
+
+## R56 · Modo Fazenda — onda de 10 minutos, 5 minutos para construir e o machado do Seu João
+Pedido do Theo:
+- **Ciclo novo:** a partida começa com a **onda de 10 minutos**. Quando ela acaba vêm **5 minutos para construir**
+  (cortar árvore e levantar cerca); depois começa a próxima onda. Durante a onda não dá para cortar nem construir.
+- **Só na fazenda:** a área construível é em volta da fazenda (aparece um contorno tracejado no tempo de construir).
+  Na cidade não dá para construir, e só as árvores dessa área podem ser cortadas.
+- **Machado:** fica num cepo do lado da casa (junto da lenha). Chegue perto e aperte **E**: você pega uma vez e fica com ele
+  (aparece na mão e no painel).
+- **Cortar:** perto da árvore, **segure E por 3 segundos** (botão A no controle, AÇÃO no celular). Aparece um anel com o tempo,
+  o personagem bate com o machado (lascas e toc a cada golpe) e a árvore cai girando até o chão. Aparece **"1 ÁRVORE COLETADA"**,
+  o contador de árvores sobe e logo depois a árvore **vira madeira**. Soltou antes dos 3 s, recomeça.
+- **Escolher a cerca:** no modo construção (**T**) aparece uma barra com as 3 cercas: **1** Estaca (3 madeira), **2** Tábuas (9),
+  **3** Ponta (19). Escolha com 1/2/3, cruz ←→ no controle ou tocando. **E** põe a escolhida; mirando numa cerca, **E** evolui.

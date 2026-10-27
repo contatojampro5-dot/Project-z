@@ -30,3 +30,20 @@
   .app[data-scene="field"][data-mode="fazenda"] .fz-hud-row b{font-size:14px}
 }
 .app[data-scene="field"][data-mode="fazenda"] .fz-hidden{display:none!important}
+/* R56 · fase da onda, machado, árvores coletadas e escolha da cerca */
+.fz-hud-phase{font:800 9px/1.3 Manrope,system-ui,sans-serif;letter-spacing:.12em;color:#8ee09a;margin:-2px 0 6px}
+.fz-hud.is-wave .fz-hud-phase{color:#f08a7a}
+.fz-ico-tree{background:radial-gradient(circle at 50% 38%,#5a9a48 0 42%,transparent 44%),linear-gradient(90deg,transparent 42%,#6a4a2c 42% 58%,transparent 58%);border-radius:0}
+.fz-ico-axe{background:linear-gradient(135deg,transparent 40%,#8a6440 40% 54%,transparent 54%),radial-gradient(circle at 72% 28%,#c8d0d4 0 30%,transparent 32%)}
+.fz-hud-axe small{opacity:.55}.fz-hud-axe.is-on small{opacity:1;color:#ffe3a0}
+.fz-hud-row.is-flash b{color:#ffd166;text-shadow:0 0 8px rgba(255,209,102,.8)}
+.fz-pick{display:none}
+.app[data-scene="field"][data-mode="fazenda"] .fz-pick.is-on{display:flex;gap:8px;position:absolute;z-index:8;left:50%;transform:translateX(-50%);bottom:96px;pointer-events:auto}
+.fz-pick-item{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;min-width:150px;padding:7px 10px;border-radius:4px;
+  background:rgba(18,14,8,.72);border:1px solid rgba(217,168,74,.35);color:#f3e6c8;text-align:left;cursor:pointer;font:600 10px/1.2 Manrope,system-ui,sans-serif}
+.fz-pick-item kbd{grid-row:1/3;font:800 11px/1 monospace;padding:3px 6px;border-radius:3px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2)}
+.fz-pick-item b{font-size:10px;letter-spacing:.08em}.fz-pick-item small{font-size:9px;opacity:.7}
+.fz-pick-item.is-sel{border-color:#8ee09a;background:rgba(30,60,34,.8);box-shadow:0 0 0 1px #8ee09a inset}
+.fz-pick-item.is-poor small{color:#f08a7a;opacity:1}
+.fz-pick-art{display:none}
+@media (pointer:coarse){.app[data-scene="field"][data-mode="fazenda"] .fz-pick.is-on{bottom:auto;top:56px;gap:4px}.fz-pick-item{min-width:0;padding:5px 7px}.fz-pick-item kbd{display:none}.fz-pick-item{grid-template-columns:1fr}}

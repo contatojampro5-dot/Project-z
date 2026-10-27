@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R55 · MODO FAZENDA** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R56 · MODO FAZENDA** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -99,6 +99,10 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   e T/cruz ↓ (`toggleBuild`). F01: cortar árvore do `PZ_MORRO.trees` (toco, madeira, colisor `destroyed`; replanta a cada partida).
   F02: cercas `FZ_FENCE_TIERS` (estaca/tábuas/ponta), colisão só no `canOccupy` (jogador pula, tiro passa), zumbi bate
   (`FZ_FENCE_DPS`), não morde através. F03: painel `.fz-hud` e botões AÇÃO/CONSTRUIR no toque. `window.__PZ_NO_FAZENDA=true` esconde o modo.
+  R56 (pedido do Theo): onda de 10 min (`FZ.WAVE`, horda no ritmo × `FZ.SPAWN_RATE`) e 5 min de construção (`FZ.BUILD`); cortar/construir
+  só no tempo de construir e dentro de `fzInZone` (área em volta da fazenda, `FZ.ZONE`); machado no cepo `FZ.AXE` (pega uma vez,
+  `fz.axe`); segurar E 3 s (`FZ_HOLD`, `FZ_CHOP.hold`) com anel, golpes e queda; "1 ÁRVORE COLETADA" (`fz.logs`) vira madeira;
+  barra de escolha da cerca no modo construção (1/2/3, cruz ←→, toque; `fz.sel`, `fzPlaceCost`). Teste rápido: `window.__PZ_FZ_FAST={wave:20,build:30}`.
 - `40-core_Game.js` `PhysicalGamepad` (Gamepad API): controle Bluetooth/cabo, botões em `PAD_BIND_DEFAULTS` (`13-systems_SaveSystem.js`), remapeáveis em Controles. R45: aceita controle genérico (mapping vazio).
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).
