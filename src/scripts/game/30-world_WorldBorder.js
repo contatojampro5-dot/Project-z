@@ -118,7 +118,7 @@ class ExternalBarricadeCrowd {
 
 class WorldBorder{
   constructor(){
-    const W=GAME.map.width,H=GAME.map.height,M=WB_M;
+    const W=GAME.map.cityWidth||GAME.map.width,H=GAME.map.height,M=WB_M; // R54: bordas da cidade; o morro (38z) ocupa o leste
     this.W=W;this.H=H;this.M=M;
     this.fires=[];
     this.lamps=[];this.floods=[]; // ATLAS A9: luzes reais das bordas (postes e refletores)
@@ -129,7 +129,8 @@ class WorldBorder{
       this.strip(-M,-M,W+M,M,c=>this.paintCity(c,'top')),
       this.strip(-M,H,W+M,M,c=>this.paintCity(c,'bottom')),
       this.strip(-M,0,M,H,c=>this.paintCity(c,'left')),
-      this.strip(W,-M,M,H+2*M,c=>this.paintBeach(c)),
+      // R54: a praia virou o Morro do Cruzeiro (38z-world_Morro.js)
+      typeof pzMorroPaint==='function'?this.strip(W,-M,PZ_MORRO.X1-W+PZ_MORRO.OUT,H+2*M,c=>pzMorroPaint(this,c)):this.strip(W,-M,M,H+2*M,c=>this.paintBeach(c)),
     ];
     this.seedPerimeterInferno();
     this.fires.sort((a,b)=>a.y-b.y);
@@ -864,7 +865,7 @@ class WorldBorder{
     ctx.imageSmoothingEnabled=false;
     // campo distante (além das faixas desenhadas)
     ctx.fillStyle='#1c1d20';ctx.fillRect(x0,y0,x1-x0,y1-y0);
-    if(x1>W){const sx=Math.max(W,x0);ctx.fillStyle='#143a52';ctx.fillRect(sx,y0,x1-sx,y1-y0);}
+    if(x1>W){const sx=Math.max(W,x0);ctx.fillStyle=this.shore?'#143a52':'#1f2a18';ctx.fillRect(sx,y0,x1-sx,y1-y0);}
     for(const s of this.strips){
       const ix0=Math.max(s.x,Math.floor(x0/2)*2),iy0=Math.max(s.y,Math.floor(y0/2)*2),ix1=Math.min(s.x+s.w,Math.ceil(x1/2)*2),iy1=Math.min(s.y+s.h,Math.ceil(y1/2)*2);
       if(ix1<=ix0||iy1<=iy0)continue;
@@ -873,7 +874,7 @@ class WorldBorder{
     const still=window.__projectZGame?.save?.settings?.reducedMotion;
     const t=still?0:performance.now()*.001;
     // ATLAS A9: arrebentação — lâmina d'água que sobe e desce na areia, espuma rendada e brilhos.
-    if(x1>W){
+    if(x1>W&&this.shore){
       const ya=Math.max(y0,-WB_M),yb=Math.min(y1,H+WB_M),Y=[];
       for(let y=Math.floor(ya/12)*12;y<=yb+12;y+=12)Y.push(y);
       const swash=(y)=>Math.sin(t*.55+y*.004)*16+Math.sin(t*.9+y*.013)*5;

@@ -121,6 +121,7 @@
     "src/scripts/game/38w-rendering_PerfAir.js",
     "src/scripts/game/38x-core_UltimaCartada.js",
     "src/scripts/game/38y-world_MixamoZombies.js",
+    "src/scripts/game/38z-world_Morro.js",
     "src/scripts/game/39-ui_UIManager.js",
     "src/scripts/game/39b-ui_AntonioFaces.js",
     "src/scripts/game/39c-ui_StoryScreen.js",

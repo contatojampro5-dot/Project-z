@@ -555,3 +555,20 @@ Baseado na pesquisa de referência visual da Zona Leste (Brás, Mooca, Belém, P
   (antes ficava por cima de todo mundo).
 - **Sem noite por enquanto** (pedido do Theo): o dia vai da manhã ao pôr do sol e recomeça, sem escurecer. A noite e o Notívago
   voltam quando o jogo estiver leve (`window.__PZ_NIGHT=true` no console traz a noite de volta para testar).
+
+## R54 · Morro do Cruzeiro — a praia virou morro, com a fazenda do Seu João lá em cima
+- **Mapa maior:** a área jogável cresceu 1600 px para o leste (2800 → 4400 de largura). Onde era a praia agora começa o
+  **Morro do Cruzeiro**: a avenida do pé do morro continua, sem a barreira de "praia fechada", e dali dá para subir a pé.
+- **Estrada do Cruzeiro:** estrada de terra com sulcos de pneu, capim no meio, poças de lama e cerca de mourão no lado do
+  barranco. Sai da avenida de baixo e sobe em zigue-zague até a porteira da fazenda. A **Trilha do Cruzeiro** (mais estreita,
+  com degraus de pedra) sai da avenida de cima, atravessa a mata e chega no cruzeiro.
+- **Fazenda do Seu João** no topo (o primeiro refúgio da história): casa sede caiada com janelas azuis, varanda com rede e
+  telhado de barro (sai fumaça da chaminé do fogão a lenha), paiol vermelho com feno, caixa d'água de madeira, galinheiro,
+  horta, curral, poço, trator velho, lenha, varal e a cruz de madeira que dá nome ao morro. Placa na porteira:
+  "FAZENDA DO SEU JOÃO". Ao entrar aparece ZONA 05 · MORRO DO CRUZEIRO e ZONA 06 · FAZENDA DO SEU JOÃO.
+- **Floresta:** mata atlântica em volta (copas de vários verdes, ipês amarelos e roxos, embaúbas prateadas, palmitos e
+  eucaliptos), com clareiras. As árvores **ficam transparentes quando você passa atrás delas**, igual prédios, carros e muro,
+  e se inclinam na câmera 3D. Os troncos e as construções têm colisão; os zumbis contornam.
+- **Leve:** o chão do morro (relevo com luz do leste, capim, pedras, estrada, sombras) e a mata fechada de fora do mapa são
+  pintados uma vez só, no começo. Por quadro só entram as árvores e construções que estão na tela. Na máquina de teste o
+  morro roda mais solto que o centro da cidade.

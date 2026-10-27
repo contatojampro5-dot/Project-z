@@ -6,7 +6,7 @@ agência **"Olimpo"** (agentes de setor com nomes de deuses gregos: Hera = teste
 Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda sempre em português, simples e direto.
 
 - Jogável (GitHub Pages): https://contatojampro5-dot.github.io/Project-z/  (P maiúsculo; a raiz redireciona para `jogo/`)
-- Versão atual: **R53b · ÚLTIMA CARTADA** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
+- Versão atual: **R54 · MORRO DO CRUZEIRO** (selo no canto da tela, em `src/index.html`). Cada entrega sobe a versão
   (R32, R33...) e ganha uma seção no fim do `README.md`.
 
 ## Regras do dono (não quebrar)
@@ -86,6 +86,12 @@ Deméter = cenário, Afrodite = arte, Ares = combate, Hélio = luz...). Responda
   R53b: folhas sem braço e desenhos antigos saem do pré-carregamento (`PZ_LAZY`/`pzLazyImg`, baixam na hora); folha que falhou usa outra
   variação (nada de quadrado verde); poças (reflexo das luzes/sol) desenhadas no chão por baixo dos personagens (`__PZ_PUDDLE_OVER=true` volta);
   **noite desligada por enquanto** (pedido do Theo, 26/10: jogo pesado) — o ciclo só passa por manhã/dia/pôr do sol; `window.__PZ_NIGHT=true` volta.
+- `38z-world_Morro.js` (R54) a praia virou o **Morro do Cruzeiro**: o mapa cresceu para o leste (`GAME.map.width` 4400; a cidade
+  continua em `GAME.map.cityWidth` = 2800, e as bordas/muro/fogo do `30` usam a largura da cidade). Relevo (`pzMorroH`) pintado uma vez
+  na faixa da borda, Estrada do Cruzeiro (terra, zigue-zague, sai da avenida de baixo) e Trilha do Cruzeiro (sai da de cima) até a
+  **Fazenda do Seu João** no topo (casa sede com fumaça na chaminé, paiol, caixa d'água, galinheiro, horta, curral, poço, trator, porteira, cruzeiro).
+  Mata atlântica (`PZ_TREE_KINDS`: copas, ipê amarelo/roxo, embaúba, palmito, eucalipto) como objetos em pé na fila do `pzWallDrawables`,
+  translúcidos quando o jogador passa atrás; só troncos e construções colidem. Zonas novas no `districtAt`: MORRO DO CRUZEIRO (05) e FAZENDA DO SEU JOÃO (06).
 - `40-core_Game.js` `PhysicalGamepad` (Gamepad API): controle Bluetooth/cabo, botões em `PAD_BIND_DEFAULTS` (`13-systems_SaveSystem.js`), remapeáveis em Controles. R45: aceita controle genérico (mapping vazio).
 - `29-world_World.js` ruas (`PZ_ROADS`), postes; `29b` prédios altos; `29c` placas de rua; `29d` pichações/cartazes
   políticos; `29e` carros brasileiros; `29f` rua paulista (calçada "mapa de SP", ciclofaixa, fios, orelhão, banca).

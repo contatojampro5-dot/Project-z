@@ -20,7 +20,7 @@ class WorldFX {
   makePuddles(){
     const rnd=mulberry32(4471),out=[];
     for(let i=0;i<900&&out.length<150;i++){
-      const x=40+rnd()*(GAME.map.width-80),y=40+rnd()*(GAME.map.height-80),rx=12+rnd()*30,ry=rx*(.35+rnd()*.35);
+      const x=40+rnd()*((GAME.map.cityWidth||GAME.map.width)-80),y=40+rnd()*(GAME.map.height-80),rx=12+rnd()*30,ry=rx*(.35+rnd()*.35);
       if(!canOccupy(x,y,rx+6))continue;
       // contorno orgânico: borda irregular com lóbulos, como água que se acumula nas falhas do asfalto
       const n=22,ph1=rnd()*6.28,ph2=rnd()*6.28,ph3=rnd()*6.28,k1=.12+rnd()*.14,k2=.06+rnd()*.08,pts=[];

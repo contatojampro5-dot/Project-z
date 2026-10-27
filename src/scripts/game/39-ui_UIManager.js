@@ -440,7 +440,7 @@ class UIManager {
     set('[data-wave]',`ONDA ${String(run.waves.wave).padStart(2,'0')}`);
     set('[data-phase]',run.waves.phase==='rest'?'INTERVALO · RECUPERE O FÔLEGO':'ONDA EM CURSO');
     set('[data-level]',`NÍVEL ${run.progress.level}`);
-    set('[data-area]',`ZONA 0${['center','suburb','industry','highway'].indexOf(run.district.id)+1} // ${run.district.name}`);
+    set('[data-area]',`ZONA 0${['center','suburb','industry','highway','morro','fazenda'].indexOf(run.district.id)+1} // ${run.district.name}`);
     set('[data-xp]',`${run.progress.xp-run.progress.currentLevelXP} / ${run.progress.threshold-run.progress.currentLevelXP} XP`);
     const xpFill=this.root.querySelector('[data-xp-fill]');if(xpFill)xpFill.style.width=`${Math.max(0,Math.min(100,run.progress.progress*100))}%`;
     set('[data-kills]',String(run.kills));set('[data-weapon]',run.gun.config.name);

@@ -3,7 +3,7 @@ const GAME = Object.freeze({
   name: 'PROJECT Z',
   version: 'R13-C6B',
   delivery: 'Fase Cronos — Parte 4B: Seleção de personagens',
-  map: { width: 2800, height: 2800, tile: 16 },
+  map: { width: 4400, height: 2800, tile: 16, cityWidth: 2800 }, // R54: +1600 a leste para o Morro do Cruzeiro (38z)
   fixedStep: 1 / 60,
   maxFrameDelta: 0.1,
   maxDevicePixelRatio: 2,
